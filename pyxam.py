@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Author: Eric Buss <ebuss@ualberta.ca>
 
 """
@@ -38,14 +38,22 @@ __version__= '1.0.0'
 # Imports
 #
 
+import os as _os
 import sys as _sys
 import argparse as _argparse
+import shutil as _shutil
 
 #
 # Constants
 #
 
 CONST_SOLUTION_POSTFIX = '_solution'
+
+#
+# Global vars
+#
+
+TMP_DIR = []
 
 #
 # Main and pyxam
@@ -55,6 +63,7 @@ def main():
     # if args == 1
     #   print type help
     #   exit
+    # check_dependencies()
     # args = process_args(pre_process_template(template))
     # args = process_args(sys.args)
     # pyxam( args )
@@ -91,6 +100,14 @@ def pyxam(template,         # Template file
 #
 # Workhorse
 #
+
+def check_dependencies():
+    # check python version needs python3
+    # check for tex 
+    # check for pdflatex
+    # check for pweave
+    # check for matplotlib
+    print('TODO check_dependencies')
 
 def process_args(args_list):
     # for item : args_list
@@ -168,6 +185,16 @@ class student:
 #
 
 def tex_match(buffer, prefix):
+    balance_counter = 0
+    escape_flag = False
+    quote_flag = False
+    build = ""
+    for character in buffer:
+        if character == '\\':
+            escape_flag = not escape_flag
+        else:
+            escape_flag = False
+            
     # for character buffer 
     #   if !quote && {} are balanced check prefix
     # return (start_index, end_index + 1)
@@ -178,27 +205,61 @@ def read(file):
     Opens and reads file as a String. Returns String
     with newlines intact.
 
-    Will throw a FileNotFoundError if the file does not exsist
-    Will throw a PermissionError if the file is inaccessible
-        or a directory
+    Will throw a FileNotFoundError if the file does not exist
+    Will throw a IsADirectoryError if the file is a directory
     """
     with open(file, 'r') as reader:
         buffer = reader.read()
     return buffer
 
-def write(file, name, buffer, s):
-    with open(file + '\\' + name) as writer:
+def write(file, buffer, s):
+    """
+    Writes a buffer to a directory (file) with the filename (name).
+    If the s flag is set than a second file will be written with
+    the \printanswers command added and CONST_SOLUTION_POSTFIX 
+    appended to the filename
+    """
+    with open(file + '.tex', 'w') as writer:
         writer.write(buffer)
     if s:
-        with open(file + '\\' + name + CONST_SOLUTION_POSTFIX):
+        with open(file + CONST_SOLUTION_POSTFIX + '.tex', 'w') as writer:
             writer.write('\\printanswers\n' + buffer)
 
 def remove_file(file):
-    os.remove(file)
+    """
+    Attempts to remove a file (file).
+    
+    Will throw a FileNotFoundError if the file does not exist
+    Will throw a IsADirecotryError if the file is a directory
+    """
+    _os.remove(file)
 
 def remove_dir(file):
-    os.rmdir(file)
-    
+    """
+    Attempts to remove a directory (file). 
+
+    Will throw a FileNotFoundError if the file does not exist
+    Will throw a NotADirectoryError if the fill is not a directory
+    """
+    _shutil.rmtree(file)
+
+def create_tmp_dir(file):
+    """
+    Create a temporary directory (file). Adds directory to a list
+    of temporary directories to be deleted when remove_tmp_dir is
+    called
+    """
+    TMP_DIR.append(file)
+    if not _os.path.exists(file):
+        _os.makedirs(file)
+
+def remove_tmp_dir():
+    """
+    Removes all temporary directories created via create_tmp_dir.
+    This will also delete all files contained by those directories
+    """
+    for file in TMP_DIR:
+        remove_dir(file)
 
 def parse_import(str, nsamp):
     # check if file or directory
