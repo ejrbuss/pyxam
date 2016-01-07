@@ -4,6 +4,6 @@
 def export_pdf(file):
     print('TODO export_pdf')
 
-if __name__ == '__main__'
+if __name__ == '__main__':
     print('This is a library file. Use pyxam.py')
     exit()

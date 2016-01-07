@@ -10,6 +10,8 @@ Tester for pyxam
 #
 
 import unittest as _unittest
+import os as _os
+
 import pyxam as _pyxam
 import csv_reader as _csv_reader
 
@@ -26,14 +28,52 @@ CONST_SOLUTION_POSTFIX = '_solution'
 # Main
 #
 
-def main():
+def start_tests():
     _unittest.main()
 
 #
-# Unit Tests
+# Pyxam unit tests
 #
 
 class test_pyxam_methods(_unittest.TestCase):
+
+    # check_dependencies tests
+
+    def test_check_dependencies_1(self):
+        self.assertEqual(_pyxam.check_dependencies(['tex', 'pdflatex', 'pweave']),
+                         None)
+
+    def test_check_dependencies_2(self):
+        self.assertEqual(_pyxam.check_dependencies(['^^^']), '^^^')
+
+    # pre_process_template tests
+
+    def test_pre_process_template(self):
+        self.assertEqual(_pyxam.pre_process_template('examples/ArgTest'),
+                         ('\nSome text to ignore\n\\\\Parg{arg3=11} an escaped arg',
+                          'arg1=5 arg2=7 '))
+
+    def test_pre_process_template(self):
+        self.assertRaises(SystemExit, _pyxam.pre_process_template, '^^^')
+
+    # process_args tests
+
+    def test_process_args_1(self):
+        self.assertEqual(_pyxam.process_args(''),
+                         [False, False, 1, False, '', 'pyxam_tmp', 'figures',
+                          'exam', 'pdf', False, False, None])
+
+    def test_process_args_2(self):
+        self.assertEqual(_pyxam.process_args('-name "exam name" ignore'),
+                         [False, False, 1, False, '', 'pyxam_tmp', 'figures',
+                          '"exam name"', 'pdf', False, False, None])
+
+    def test_process_args_3(self):
+        self.assertEqual(
+            _pyxam.process_args('-f tex', [True, True, 1, False, '', 'pyxam_tmp', 
+                                     'figures', 'exam', 'pdf', False, False, None]),
+                         [True, True, 1, False, '', 'pyxam_tmp', 'figures',
+                          'exam', 'tex', False, False, None])
 
     # tex_match tests
 
@@ -131,8 +171,32 @@ class test_pyxam_methods(_unittest.TestCase):
     
     def test_create_tmp_dir(self):
         _pyxam.create_tmp_dir(CONST_TMP)
-        self.assertRaises(Exception, _pyxam.read, CONST_TMP)
+        self.assertTrue(_os.path.isdir(CONST_TMP))
         _pyxam.remove_dir(CONST_TMP)
+
+    # arg_append tests
+    
+    def test_arg_append_1(self):
+        self.assertEqual(_pyxam.appropriate_arg(
+            '( -f)', CONST_STR + ' -f', None, False, True ), True)
+
+    def test_arg_append_2(self):
+        self.assertEqual(_pyxam.appropriate_arg(
+            '( -f)', CONST_STR, None, False, True ), False)
+
+    def test_arg_append_3(self):
+        self.assertEqual(_pyxam.appropriate_arg(
+            '-opt ([0-9]+)', CONST_STR + '-opt 99', None, None, False ), '99')
+    
+    def test_arg_append_4(self):
+        self.assertEqual(_pyxam.appropriate_arg(
+            '( -f)', CONST_STR, 99, False, True ), 99)
+
+#
+# csv_reader unit tests
+#
+
+class csv_reader(_unittest.TestCase):
 
     # student tests
 
@@ -145,4 +209,4 @@ class test_pyxam_methods(_unittest.TestCase):
 #
 
 if __name__ == '__main__':
-    main()
+    start_tests()
