@@ -39,6 +39,7 @@ __version__= '1.0.0'
 #
 
 import os as _os
+import re as _re
 import sys as _sys
 import argparse as _argparse
 import shutil as _shutil
@@ -171,34 +172,47 @@ def export(file, fmt):
     # if fmt == moodle
     print('TODO export')
 
-# 
-# Utility classes
-#
-
-class student:
-    def __init__(self, name, number=0):
-        self.name = name
-        self.number = number
-
 #
 # Utility methods
 #
 
-def tex_match(buffer, prefix):
-    balance_counter = 0
-    escape_flag = False
-    quote_flag = False
-    build = ""
-    for character in buffer:
-        if character == '\\':
-            escape_flag = not escape_flag
-        else:
-            escape_flag = False
-            
-    # for character buffer 
-    #   if !quote && {} are balanced check prefix
-    # return (start_index, end_index + 1)
-    print('TODO tex_match')
+def tex_match(buffer, prefix, m=False):
+    """
+    Returns a list of tuples which indicate the starting and ending
+    indeces for arguments that are contained in the latex formatted
+    command prefix.
+
+    Arguments:
+        - buffer -- The String to search
+        - prefix -- The prefix command to match
+        - m -- if True will return the full match, if false
+            this will return only the command arguments
+
+    Example:
+    tex_match(r'\command{some argument}', 'command')
+    will return
+
+    Regex Used:
+    (?:[^\\]|^)(?:\\\\)*\\prefix{(([^{}]*({[^{}]*})*[^{}}]*)*)}
+    (?:[^\\]|^) Requires not backslash or start of string
+    (?:\\\\)*   Requires even number of backslashes
+    (\\prefix{) Requires command syntax
+    [^{}]       Requires non curly parens
+    [{[^{}]*}]  Allows for dictionaries in Pexpr{}
+
+    This will still have conflicts with Strings in Pexpr, but should
+    parse all other commands fine.
+    """
+    args = []
+    matches = [(m.start(), m.end()) for m in
+        _re.finditer(r'(?:[^\\]|^)(?:\\\\)*\\' + prefix +
+                     r'{(([^{}]*({[^{}]*})*[^{}}]*)*)}', buffer)]
+    if m:
+        return matches
+    for pair in matches:
+        m = _re.search('{', buffer[pair[0]:])
+        args.append((pair[0] + m.start() + 1, pair[1] - 1))
+    return args
 
 def read(file):
     """
@@ -212,7 +226,7 @@ def read(file):
         buffer = reader.read()
     return buffer
 
-def write(file, buffer, s):
+def write(file, buffer, s=False):
     """
     Writes a buffer to a directory (file) with the filename (name).
     If the s flag is set than a second file will be written with
