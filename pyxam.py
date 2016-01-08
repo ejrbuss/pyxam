@@ -22,8 +22,10 @@ Runnable code block
 
     SNUMBER student number
 
-\Pimport{ file }
+    NAME the base name of the exam
 
+\Pimport{ file }
+    cmd_args.template = cmd_args.template()
     FILENAME [rep=1] will copy in rep number of the file
     provided
 
@@ -73,49 +75,104 @@ CONST_SOLUTION_POSTFIX = '_solution'
 
 TMP_DIR = []
 
+class default:
+    template = ''
+    solutions = False
+    number = 1
+    lettered = False
+    sample = 1
+    scramble = False
+    out = ''
+    temp = 'pyxam_tmp'
+    figure = 'figures'
+    name = 'exam'
+    format = 'pdf'
+    matplotlib = False
+    clean = False
+    students = None
+
 #
 # Main and pyxam
 #
 
-def main():
+def pyxam(args):
     required = check_dependencies(['tex', 'pdflatex', 'pweave'])
     if required != None:
         print(required, ' could not be found. Please install to continue.')
         exit()
-    if len(sys.argv) == 1:
+    if len(_sys.argv) == 1:
         print("This is Pyxam, enter Pyxam -h for help")
         exit()
-    buffer, args = process_args(pre_process_template(template))
-    # args = process_args(sys.args)
-    
-    print('TODO main')
+    parser = _argparse.ArgumentParser(prog='Pyxam', usage='Pyxam [options] template')
+    parser.add_argument('template', nargs=1, 
+                        help="""Template file location""")
+    parser.add_argument('-s', '--solutions', action='store_true', default=None, 
+                        help="""Produce a copy of solutions for each exam
+                        created""")
+    parser.add_argument('-n', '--number', type=int, nargs='?', 
+                        help='The number of exams to create')
+    parser.add_argument('-l', '--lettered', action='store_true', default=None,  
+                        help="""Have exam files labelled by letter rather
+                        than number""")
+    parser.add_argument('-S', '--sample', type=int, nargs='?', 
+                        help="""The default number of questions that will be
+                        sampled when selecting questions from a directory""")
+    parser.add_argument('-c', '--scramble', action='store_true', default=None,  
+                        help="""Scramble the order of questions""")
+    parser.add_argument('-o', '--out', nargs='?', 
+                        help="""The output directory""")
+    parser.add_argument('-t', '--temp', nargs='?', 
+                        help="""The temporary directory used while creating
+                        exam(s)""")
+    parser.add_argument('-F', '--figure', nargs='?', 
+                        help=("""The name of the directory created to store any
+                        figures needed for the exam"""))
+    parser.add_argument('-nm', '--name', nargs='?', 
+                        help="""The base name for the exam""")
+    parser.add_argument('-f', '--format', nargs='?',
+                        help="""The format of the output file. Either pdf, html, 
+                        or moodle""")
+    parser.add_argument('-m', '--matplotlib', action='store_true',default=None, 
+                        help="""Disable matplotlib when using pweave""")
+    parser.add_argument('-C', '--clean', action='store_true', default=None, 
+                        help="""Disable cleanup of messy question tags""")
+    parser.add_argument('-st', '--students', nargs='?',
+                        help="""CSV file with student names """)
+    if _sys.argv == args:
+        cmd_args = parser.parse_args()
+    else:
+        cmd_args = parser.parese(args)
+    buffer, tmp_args = pre_process_template(cmd_args.template)
+    tmp_args = parser.parse_args(tmp_args)
+    process(buffer, *process_args(cmd_args, tmp_args))
 
-def pyxam(template,         # Template file
-            s=False,        # Solutions flag
-            n=1,            # Number of exams
-            v=False,        # Flag for lettered exams
-            nsamp=1,        # Default number of question samples
-            scram=False,    # Scramble flag
-            out='',         # Ouput directory
-            tout='',        # Temporary directory
-            fout='figures', # Figures directory
-            name='exam',    # Name of exam
-            f='pdf',        # Output format
-            m=True,         # Use matplotlib flag
-            cln=True,       # Perform cleanup on imported questions
-            students=None   # A list of students
-           ):
-    # buffer = read(template)
+def process(buffer, template, solutions, number, lettered, sample, scramble, out,
+          temp, figure, name, format, matplotlib, clean, students):
+    print('\tProcessing with the args:')
+    print('\ttemplate:   ', template)
+    print('\tsolutions:  ', solutions)
+    print('\tnumber:     ', number)
+    print('\tlettered:   ', lettered)
+    print('\tsample:     ', sample)
+    print('\tout:        ', out)
+    print('\ttemp:       ', temp)
+    print('\tfigure:     ', figure)
+    print('\tname:       ', name)
+    print('\tformat:     ', format)
+    print('\tmatplotlib: ', matplotlib)
+    print('\tclean:      ', clean)
+    print('\tstudents:   ', students)
+    create_tmp_dir(temp)
     # buffer = fill_template(buffer, nsamp)
     # buffer = clean_template(buffer, cln)
     # buffer = scramble_template(buffer, scram)
-    # write(buffer, tout, s)
-    # for( i : n )
-    #    pweave(tout, f, m, fout)
+    write(temp + '/exam', buffer, solutions)
+    for i in range(number):
+        files = pweave(temp, matplotlib, figure)
     #    replace(tout, v, i)
     #    tout = rename(tout, name, v, i, s)
-    #    expot(file, f)
-    print('TODO pyxam')
+     #   expot(file, f)
+   # remove_tmp_dir()
 
 #
 # Workhorse
@@ -128,7 +185,7 @@ def check_dependencies(required):
     """
     for process in required:
         try:
-            _subprocess.call([process, '--version'])
+            _subprocess.check_output([process, '--version'])
         except OSError:
             return process
 
@@ -150,50 +207,51 @@ def pre_process_template(template):
             args = args + buffer[pair[0]:pair[1]] + ' '
             for pair in matches:
                 buffer = buffer[:pair[0]] + buffer[pair[1]:]
-                return buffer, args
+                return buffer, args.split()
+        return buffer, None
     except FileNotFoundError:
         print('Could not find template file.')
         exit()
 
-def process_args(args, previous=None):
-    processed = []
-    processed.append(appropriate_arg(
-        '( -s)', args, None if previous is None else previous[0],
-        False, True))
-    processed.append(appropriate_arg(
-        '( -v)', args, None if previous is None else previous[1],
-        False, True))
-    processed.append(appropriate_arg(
-        ' -nsamp ([0-9]+)', args, None if previous is None else previous[2],
-        1, False))
-    processed.append(appropriate_arg(
-        '( -scram)', args, None if previous is None else previous[3],
-        False, True))
-    processed.append(appropriate_arg(
-        '-out (("[^"]+")|([^ ]+))', args, None if previous is None else previous[4],
-        '', False))
-    processed.append(appropriate_arg(
-        '-tout (("[^"]+")|([^ ]+))', args, None if previous is None else previous[5],
-        'pyxam_tmp', False))
-    processed.append(appropriate_arg(
-        '-fout (("[^"]+")|([^ ]+))', args, None if previous is None else previous[6],
-        'figures', False))
-    processed.append(appropriate_arg(
-        '-name (("[^"]+")|([^ ]+))', args, None if previous is None else previous[7],
-        'exam', False))
-    processed.append(appropriate_arg(
-        '-f ([^ ]+)', args, None if previous is None else previous[8],
-        'pdf', False))
-    processed.append(appropriate_arg(
-        '( -m)', args, None if previous is None else previous[9],
-        False, True))
-    processed.append(appropriate_arg(
-        '( -cln)', args, None if previous is None else previous[10],
-        False, True))
-    processed.append(appropriate_arg(
-        '-students (("[^"]+")|([^ ]+))', args, None if previous is None else previous[11],
-        None, False))
-    return processed
+def process_args(cmd, tmp):
+    """
+    Builds a complete arg list from the command line 
+    arguments, any arguments specified by the template and
+    the default arguments.
+
+    Command line arguments are preffered over template 
+    arguments which are preffered over default arguments.
+    """
+    process = [sanitize(cmd.template)]
+    process.append(process_arg(cmd.solutions, tmp.solutions, default.solutions))
+    process.append(process_arg(cmd.number, tmp.number, default.number))
+    process.append(process_arg(cmd.lettered, tmp.lettered, default.lettered))
+    process.append(process_arg(cmd.sample, tmp.sample, default.sample))
+    process.append(process_arg(cmd.scramble, tmp.scramble, default.scramble))
+    process.append(process_arg(cmd.out, tmp.out, default.out))
+    process.append(process_arg(cmd.temp, tmp.temp, default.temp))
+    process.append(process_arg(cmd.figure, tmp.figure, default.figure))
+    process.append(process_arg(cmd.name, tmp.name, default.name))
+    process.append(process_arg(cmd.format, tmp.format, default.format))
+    process.append(process_arg(cmd.matplotlib, tmp.matplotlib, default.matplotlib))
+    process.append(process_arg(cmd.clean, tmp.clean, default.clean))
+    process.append(process_arg(cmd.students, tmp.students, default.students))
+    return process
+
+def process_arg(cmd, tmp, default):
+    """
+    Returns the final arg from an option between a command
+    line argument, template argument, and default argument.
+
+    Command line arguments are preffered over template 
+    arguments which are preffered over default arguments.
+    """
+    if cmd is not None:
+        return cmd
+    elif tmp is not None:
+        return tmp
+    else:
+        return default
 
 def fill_template(buffer, nsamp):
     # str = tex_match(buffer, 'Pimport')
@@ -217,10 +275,14 @@ def scramble_template(buffer, scram):
     # return buffer
     print('TODO scramble_template')
 
-def pweave(tout, f, m, fout):
-    # call pweave with repsepctive args
-    # translate fout into useable format !moodle
-    print('TODO pweave')
+def pweave(temp, matplotlib, figure):
+    files = [_os.path.join(temp, file) for file in _os.listdir(temp)]
+    for file in files:
+        args = ['pweave', file, '-f', 'tex', '-F', figure]
+        if matplotlib:
+            args.append( '-m' )
+        out = _subprocess.call(args)
+    return files
 
 def replace(tout, v, n, students):
     # if v:
@@ -240,7 +302,9 @@ def rename(tout, name, v, n, s ):
 
 def export(file, fmt):
     # if fmt == pdf:
-    #   call pdflatex
+    #   call pdflatex# call pweave with repsepctive args
+    # translate fout into useable format !moodle
+    print('TODO pweave')
     # if fmt == hmtl
     #   copy over
     # if fmt == moodle
@@ -249,6 +313,18 @@ def export(file, fmt):
 #
 # Utility methods
 #
+
+def sanitize(buffer):
+    """
+    Sanitize to string. Turns the argument into a valid 
+    filename string.
+    """
+    if isinstance(buffer, str):
+        return buffer
+    try:
+        return str(buffer[0])
+    except:
+        return str(buffer)
 
 def tex_match(buffer, prefix, m=False):
     """Returns a list of tuples which indicate the starting and
@@ -298,7 +374,8 @@ def read(file):
     directory
 
     """
-    with open(file, 'r') as reader:
+    print('Reading from ', file)
+    with open(_os.path.abspath(sanitize(file)).replace('\\ ', ' '), 'r') as reader:
         buffer = reader.read()
     return buffer
 
@@ -308,9 +385,9 @@ def write(file, buffer, s=False):
     (name).  If the s flag is set than a second file will be
     written with the \printanswers command added and
     CONST_SOLUTION_POSTFIX appended to the filename
-
     """
-    with open(file + '.tex', 'w') as writer:
+    print('Writing to ', file)
+    with open(_os.path.abspath(sanitize(file)) + '.tex', 'w') as writer:
         writer.write(buffer)
     if s:
         with open(file + CONST_SOLUTION_POSTFIX + '.tex', 'w') as writer:
@@ -340,6 +417,7 @@ def create_tmp_dir(file):
     list of temporary directories to be deleted when
     remove_tmp_dir is called
     """
+    print('Creating tmp directory: ', file)
     TMP_DIR.append(file)
     if not _os.path.exists(file):
         _os.makedirs(file)
@@ -350,29 +428,9 @@ def remove_tmp_dir():
     create_tmp_dir.  This will also delete all files
     contained by those directories
     """
+    print('Removing tmp dirs: ', TMP_DIR)
     for file in TMP_DIR:
         remove_dir(file)
-
-def appropriate_arg(regex, args, previous, default, flag):
-    """Returns the appropriate argument. The appropriate
-    argument is determined by first checking if there is a
-    regex match between args, if there is either the value
-    of the match of True is supplied if flag is is true. If
-    a previous value is supplied and there is no regex match
-    than that value is used. Otherwise default is used.
-
-    """
-    arg = _re.search(regex, args)
-    if arg is not None:
-        if flag:
-            return True
-        else:
-            return arg.group(1)
-    elif previous is not None:
-        return previous
-    else:
-        return default
-    
 
 def parse_import(str, nsamp):
     # check if file or directory
@@ -390,4 +448,4 @@ def parse_import(str, nsamp):
     print('TODO parse_import')
 
 if __name__ == '__main__':
-    main()
+    pyxam(_sys.argv)

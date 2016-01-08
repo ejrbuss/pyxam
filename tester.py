@@ -57,23 +57,40 @@ class test_pyxam_methods(_unittest.TestCase):
         self.assertRaises(SystemExit, _pyxam.pre_process_template, '^^^')
 
     # process_args tests
+    
+    def test_process_args(self):
+        class cmd(_pyxam.default):
+            pass
+        class tmp(_pyxam.default):
+            pass
+        cmd.number = 2
+        cmd.solutions = None
+        tmp.number = 3
+        tmp.solutions = True
+        self.assertEqual(_pyxam.process_args(cmd, tmp)[:4],
+                         ['', True, 2, False] )
+    
+    # process_arg tests
+    
+    def test_process_arg(self):
+        self.assertEqual(_pyxam.process_arg(CONST_STR, True, False),
+                         CONST_STR)
 
-    def test_process_args_1(self):
-        self.assertEqual(_pyxam.process_args(''),
-                         [False, False, 1, False, '', 'pyxam_tmp', 'figures',
-                          'exam', 'pdf', False, False, None])
+    def test_process_arg(self):
+        self.assertEqual(_pyxam.process_arg(None, CONST_STR, False),
+                         CONST_STR)
 
-    def test_process_args_2(self):
-        self.assertEqual(_pyxam.process_args('-name "exam name" ignore'),
-                         [False, False, 1, False, '', 'pyxam_tmp', 'figures',
-                          '"exam name"', 'pdf', False, False, None])
+    def test_process_arg(self):
+        self.assertEqual(_pyxam.process_arg(None, None, CONST_STR),
+                         CONST_STR)
 
-    def test_process_args_3(self):
-        self.assertEqual(
-            _pyxam.process_args('-f tex', [True, True, 1, False, '', 'pyxam_tmp', 
-                                     'figures', 'exam', 'pdf', False, False, None]),
-                         [True, True, 1, False, '', 'pyxam_tmp', 'figures',
-                          'exam', 'tex', False, False, None])
+    # sanitize tests
+
+    def test_sanitize_1(self):
+        self.assertEqual(_pyxam.sanitize([CONST_STR]), CONST_STR)
+
+    def test_sanitize_2(self):
+        self.assertEqual(_pyxam.sanitize(CONST_STR), CONST_STR)
 
     # tex_match tests
 
@@ -173,24 +190,6 @@ class test_pyxam_methods(_unittest.TestCase):
         _pyxam.create_tmp_dir(CONST_TMP)
         self.assertTrue(_os.path.isdir(CONST_TMP))
         _pyxam.remove_dir(CONST_TMP)
-
-    # arg_append tests
-    
-    def test_arg_append_1(self):
-        self.assertEqual(_pyxam.appropriate_arg(
-            '( -f)', CONST_STR + ' -f', None, False, True ), True)
-
-    def test_arg_append_2(self):
-        self.assertEqual(_pyxam.appropriate_arg(
-            '( -f)', CONST_STR, None, False, True ), False)
-
-    def test_arg_append_3(self):
-        self.assertEqual(_pyxam.appropriate_arg(
-            '-opt ([0-9]+)', CONST_STR + '-opt 99', None, None, False ), '99')
-    
-    def test_arg_append_4(self):
-        self.assertEqual(_pyxam.appropriate_arg(
-            '( -f)', CONST_STR, 99, False, True ), 99)
 
 #
 # csv_reader unit tests
