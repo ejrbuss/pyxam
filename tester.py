@@ -67,9 +67,11 @@ class test_pyxam_methods(_unittest.TestCase):
         cmd.solutions = None
         tmp.number = 3
         tmp.solutions = True
-        self.assertEqual(_pyxam.process_args(cmd, tmp)[:4],
-                         ['', True, 2, False] )
-    
+        _pyxam.process_args(cmd, tmp)
+        self.assertEqual(cmd.number, 2)
+        self.assertEqual(cmd.solutions, True)
+        self.assertEqual(cmd.sample, 1)
+        
     # process_arg tests
     
     def test_process_arg(self):
@@ -134,25 +136,16 @@ class test_pyxam_methods(_unittest.TestCase):
     # write tests
 
     def test_write_1(self):
-        _pyxam.write(CONST_TMP, CONST_STR)
+        _pyxam.write(CONST_TMP + '.tex', CONST_STR)
         self.assertEqual(_pyxam.read(CONST_TMP + '.tex'), CONST_STR)
         _pyxam.remove_file(CONST_TMP + '.tex')
-
-    def test_write_2(self):
-        _pyxam.write(CONST_TMP, CONST_STR, s=True)
-        self.assertEqual(_pyxam.read(CONST_TMP + '.tex'), CONST_STR)
-        self.assertEqual(_pyxam.read(CONST_TMP + CONST_SOLUTION_POSTFIX +
-                                     '.tex'), '\\printanswers\n' + CONST_STR)
-        _pyxam.remove_file(CONST_TMP + '.tex')
-        _pyxam.remove_file(CONST_TMP + CONST_SOLUTION_POSTFIX + '.tex')
 
     # remove_file tests
 
     def test_remove_file_1(self):
-        _pyxam.write(CONST_TMP, CONST_STR)
+        _pyxam.write(CONST_TMP + '.tex', CONST_STR)
         _pyxam.remove_file(CONST_TMP + '.tex')
-        self.assertRaises(FileNotFoundError, _pyxam.read, CONST_TMP + 
-                                                        '.tex')
+        self.assertRaises(FileNotFoundError, _pyxam.read, CONST_TMP + '.tex')
 
     def test_remove_file_2(self):
         self.assertRaises(FileNotFoundError, _pyxam.remove_file,

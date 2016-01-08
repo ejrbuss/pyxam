@@ -52,6 +52,7 @@ import sys as _sys
 import shutil as _shutil
 import argparse as _argparse
 import subprocess as _subprocess
+
 try:
     import matplotlib as _matplotlib
 except:
@@ -62,12 +63,6 @@ import export_tex as _export_tex
 import export_pdf as _export_pdf
 import export_html as _export_html
 import export_moodle as _export_moodle
-
-#
-# Constants
-#
-
-CONST_SOLUTION_POSTFIX = '_solution'
 
 #
 # Global vars
@@ -82,11 +77,12 @@ class default:
     lettered = False
     sample = 1
     scramble = False
-    out = ''
+    out = 'out'
     temp = 'pyxam_tmp'
     figure = 'figures'
     name = 'exam'
     format = 'pdf'
+    shell = 'python'
     matplotlib = False
     clean = False
     students = None
@@ -132,47 +128,41 @@ def pyxam(args):
     parser.add_argument('-f', '--format', nargs='?',
                         help="""The format of the output file. Either pdf, html, 
                         or moodle""")
-    parser.add_argument('-m', '--matplotlib', action='store_true',default=None, 
+    parser.add_argument('-sh', '--shell', nargs='?',
+                        help=""""The shell to run code through: python, epython
+                        ipython, matlab, octave, or julia""")
+    parser.add_argument('-m', '--matplotlib', action='store_true', default=None, 
                         help="""Disable matplotlib when using pweave""")
     parser.add_argument('-C', '--clean', action='store_true', default=None, 
                         help="""Disable cleanup of messy question tags""")
     parser.add_argument('-st', '--students', nargs='?',
                         help="""CSV file with student names """)
+    # Build cmd args and template args
     if _sys.argv == args:
         cmd_args = parser.parse_args()
     else:
         cmd_args = parser.parese(args)
     buffer, tmp_args = pre_process_template(cmd_args.template)
     tmp_args = parser.parse_args(tmp_args)
-    process(buffer, *process_args(cmd_args, tmp_args))
-
-def process(buffer, template, solutions, number, lettered, sample, scramble, out,
-          temp, figure, name, format, matplotlib, clean, students):
-    print('\tProcessing with the args:')
-    print('\ttemplate:   ', template)
-    print('\tsolutions:  ', solutions)
-    print('\tnumber:     ', number)
-    print('\tlettered:   ', lettered)
-    print('\tsample:     ', sample)
-    print('\tout:        ', out)
-    print('\ttemp:       ', temp)
-    print('\tfigure:     ', figure)
-    print('\tname:       ', name)
-    print('\tformat:     ', format)
-    print('\tmatplotlib: ', matplotlib)
-    print('\tclean:      ', clean)
-    print('\tstudents:   ', students)
-    create_tmp_dir(temp)
-    # buffer = fill_template(buffer, nsamp)
-    # buffer = clean_template(buffer, cln)
-    # buffer = scramble_template(buffer, scram)
-    write(temp + '/exam', buffer, solutions)
-    for i in range(number):
-        files = pweave(temp, matplotlib, figure)
-    #    replace(tout, v, i)
-    #    tout = rename(tout, name, v, i, s)
-     #   expot(file, f)
-   # remove_tmp_dir()
+    # Process args
+    process_args(cmd_args, tmp_args)
+    # Process
+    create_tmp_dir(cmd_args.temp)
+    # buffer = fill_template(buffer, cmd_args.sample)
+    # buffer = scramble_template(buffer, cmd_args.scramble)
+    write(cmd_args.temp + '/' + cmd_args.name, buffer)
+    for n in range(cmd_args.number):
+        name = cmd_args.temp + '/' + cmd_args.name + str(chr(n + ord('A')) 
+                   if cmd_args.lettered else n)
+        write(name, buffer)
+        pweave(name, cmd_args.matplotlib, cmd_args.figure, cmd_args.shell)
+    for file in _os.listdir(cmd_args.temp) :
+        if file.endswith('.tex'):
+            # replace(file,s, v, i)
+            export(file, cmd_args.format, cmd_args.temp, cmd_args.out)
+    if _os.listdir(cmd_args.figure) == []:
+        remove_dir(cmd_args.figure)
+    remove_tmp_dir()
 
 #
 # Workhorse
@@ -222,21 +212,21 @@ def process_args(cmd, tmp):
     Command line arguments are preffered over template 
     arguments which are preffered over default arguments.
     """
-    process = [sanitize(cmd.template)]
-    process.append(process_arg(cmd.solutions, tmp.solutions, default.solutions))
-    process.append(process_arg(cmd.number, tmp.number, default.number))
-    process.append(process_arg(cmd.lettered, tmp.lettered, default.lettered))
-    process.append(process_arg(cmd.sample, tmp.sample, default.sample))
-    process.append(process_arg(cmd.scramble, tmp.scramble, default.scramble))
-    process.append(process_arg(cmd.out, tmp.out, default.out))
-    process.append(process_arg(cmd.temp, tmp.temp, default.temp))
-    process.append(process_arg(cmd.figure, tmp.figure, default.figure))
-    process.append(process_arg(cmd.name, tmp.name, default.name))
-    process.append(process_arg(cmd.format, tmp.format, default.format))
-    process.append(process_arg(cmd.matplotlib, tmp.matplotlib, default.matplotlib))
-    process.append(process_arg(cmd.clean, tmp.clean, default.clean))
-    process.append(process_arg(cmd.students, tmp.students, default.students))
-    return process
+    cmd.template = sanitize(cmd.template)
+    cmd.solutions = process_arg(cmd.solutions, tmp.solutions, default.solutions)
+    cmd.number = process_arg(cmd.number, tmp.number, default.number)
+    cmd.lettered = process_arg(cmd.lettered, tmp.lettered, default.lettered)
+    cmd.sample = process_arg(cmd.sample, tmp.sample, default.sample)
+    cmd.scramble = process_arg(cmd.scramble, tmp.scramble, default.scramble)
+    cmd.out = process_arg(cmd.out, tmp.out, default.out)
+    cmd.temp = process_arg(cmd.temp, tmp.temp, default.temp)
+    cmd.figure = process_arg(cmd.figure, tmp.figure, default.figure)
+    cmd.name = process_arg(cmd.name, tmp.name, default.name)
+    cmd.format = process_arg(cmd.format, tmp.format, default.format)
+    cmd.shell = process_arg(cmd.shell, tmp.shell, default.shell)
+    cmd.matplotlib = process_arg(cmd.matplotlib, tmp.matplotlib, default.matplotlib)
+    cmd.clean = process_arg(cmd.clean, tmp.clean, default.clean)
+    cmd.students = process_arg(cmd.students, tmp.students, default.students)
 
 def process_arg(cmd, tmp, default):
     """
@@ -261,12 +251,6 @@ def fill_template(buffer, nsamp):
     # return buffer
     print('TODO fill_template')
 
-def clean_template(buffer, cln):
-    # if cln:
-    #    print('TODO')
-    # return buffer
-    print('TODO clean_template')
-
 def scramble_template(buffer, scram):
     # if(scram)
     #    questions = tex_match(buffer, '\question')
@@ -275,14 +259,22 @@ def scramble_template(buffer, scram):
     # return buffer
     print('TODO scramble_template')
 
-def pweave(temp, matplotlib, figure):
-    files = [_os.path.join(temp, file) for file in _os.listdir(temp)]
-    for file in files:
-        args = ['pweave', file, '-f', 'tex', '-F', figure]
-        if matplotlib:
-            args.append( '-m' )
-        out = _subprocess.call(args)
-    return files
+def clean_template(buffer, cln):
+    # if cln:
+    #    print('TODO')
+    # return buffer
+    print('TODO clean_template')
+
+def pweave(file, matplotlib, figure, shell):
+    """
+    Call pweave with command line options on file (file). Options
+    include disabling matplotlib (matplotlib), the figure directory
+    (figure) and the shell used for parsing code (shell).
+    """
+    args = ['pweave', file, '-f', 'tex', '-F', figure]
+    if matplotlib:
+        args.append( '-m' )
+    out = _subprocess.call(args)
 
 def replace(tout, v, n, students):
     # if v:
@@ -300,15 +292,17 @@ def rename(tout, name, v, n, s ):
     # return renamed
     print('TODO rename')
 
-def export(file, fmt):
+def export(file, fmt,temp, out):
+    if not _os.path.exists(out):
+        _os.makedirs(out)
+    if fmt == 'pdf':
+        _export_pdf.export(file, temp, out)
     # if fmt == pdf:
     #   call pdflatex# call pweave with repsepctive args
     # translate fout into useable format !moodle
-    print('TODO pweave')
     # if fmt == hmtl
     #   copy over
     # if fmt == moodle
-    print('TODO export')
 
 #
 # Utility methods
@@ -379,7 +373,7 @@ def read(file):
         buffer = reader.read()
     return buffer
 
-def write(file, buffer, s=False):
+def write(file, buffer):
     """
     Writes a buffer to a directory (file) with the filename
     (name).  If the s flag is set than a second file will be
@@ -387,11 +381,8 @@ def write(file, buffer, s=False):
     CONST_SOLUTION_POSTFIX appended to the filename
     """
     print('Writing to ', file)
-    with open(_os.path.abspath(sanitize(file)) + '.tex', 'w') as writer:
+    with open(_os.path.abspath(sanitize(file)), 'w') as writer:
         writer.write(buffer)
-    if s:
-        with open(file + CONST_SOLUTION_POSTFIX + '.tex', 'w') as writer:
-            writer.write('\\printanswers\n' + buffer)
 
 def remove_file(file):
     """
