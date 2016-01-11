@@ -8,10 +8,10 @@ import sys
 # Module Imports
 
 
+import pweave
 import logger
 import fileutil
 import templater
-import pweave
 
 
 def weave(path, matplotlib, figure, shell):

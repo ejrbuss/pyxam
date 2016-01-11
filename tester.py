@@ -82,13 +82,13 @@ class FileutilTester(unittest.TestCase):
 
     def test_make_temp(self):
         fileutil.make_temp('test')
-        self.assertRaises(PermissionError if os.name == 'nt' else FileNotFoundError, fileutil.read, 'test')
+        self.assertRaises(PermissionError if os.name == 'nt' else IsADirectoryError, fileutil.read, 'test')
         fileutil.remove(fileutil.TEMP)
         self.assertRaises(FileNotFoundError, fileutil.read, 'test' )
 
     def test_make_out(self):
         fileutil.make_out('test')
-        self.assertRaises(PermissionError if os.name == 'nt' else FileNotFoundError, fileutil.read, 'test')
+        self.assertRaises(PermissionError if os.name == 'nt' else IsADirectoryError, fileutil.read, 'test')
         fileutil.remove(fileutil.OUT)
         self.assertRaises(FileNotFoundError, fileutil.read, 'test' )
 

@@ -74,6 +74,7 @@ def remove(path):
 
     Raises FileNotFoundError if the path does not point to a file or directory
     Raises OSError if path points to symbolic link
+
     :param path:The relative or absolute path for the file or directory
     :return: None
     """

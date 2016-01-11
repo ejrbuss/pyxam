@@ -21,7 +21,7 @@ import exporter
 # Global Variables
 
 
-DEPENDENCIES = []# ['pdflatex'] !!!!!!!!!! uncomment for running !!!!!!!!!!
+DEPENDENCIES = ['pdflatex']
 SOLUTIONS = '_solutions'
 
 
@@ -66,6 +66,7 @@ def pyxam(cmdl_options):
             buffer = fileutil.read_temp(options.title)
             buffer = templater.pimport(buffer, options.sample)
             buffer = templater.clean(buffer)
+            # Replace constants
             buffer = templater.parse_constant(buffer, 'VERSION', index(n, options))
             buffer = templater.parse_constant(buffer, 'TITLE', options.title)
             fileutil.write_temp(name, buffer)
@@ -81,9 +82,14 @@ def pyxam(cmdl_options):
     exporter.switch(options.format)
     # Cleanup
     logger.log('core.pyxam', 'Cleaning up')
-    fileutil.remove(options.figure)
-    fileutil.remove_temp()
-
+    try: fileutil.remove(options.figure)
+    except: pass
+    try: fileutil.remove_temp()
+    except: pass
+    try: fileutil.remove('weave')
+    except: pass
+    try: fileutil.remove('compile')
+    except: pass
 
 def index(n, options):
     """
