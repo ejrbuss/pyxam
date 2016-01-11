@@ -35,14 +35,16 @@ def weave(path, matplotlib, figure, shell):
         arg = command[arg[0][0]:arg[0][1]]
         buffer = buffer[:pair[0]] + '<%= ' + arg + ' %>' + buffer[pair[1]:]
     fileutil.write_temp(path, buffer)
-    old_stdout = sys.stdout
-    sys.stdout = open(fileutil.TEMP + '/weave', 'w')
+    old_stdout = None
+    if logger.DEBUG != logger.LEVEL.INFO:
+        old_stdout = sys.stdout
+        sys.stdout = open(fileutil.TEMP + '/weave', 'w')
     try:
         try:
             pweave.weave(fileutil.TEMP + '/' + path, doctype='tex', shell=shell, figdir=figure, plot=matplotlib)
         finally:
-            sys.stdout.close()
-            sys.stdout = old_stdout
-            logger.log('weaver.weave', 'Pweave output:\n' + fileutil.read_temp('weave'))
+            if logger.DEBUG != logger.LEVEL.INFO:
+                sys.stdout.close()
+                sys.stdout = old_stdout
     except:
         exit('Failed to Pweave file: ' + fileutil.TEMP + '/' + path)

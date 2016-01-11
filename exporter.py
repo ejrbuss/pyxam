@@ -19,7 +19,7 @@ import fileutil
 # Global Variables
 
 
-FORMAT_LIST = ['pdf', 'dvi', 'tex', 'moodle']
+FORMAT_LIST = ['pdf', 'dvi', 'tex', 'html', 'moodle']
 
 
 # Utility Methods
@@ -47,14 +47,9 @@ def pdf():
     """
     for name in os.listdir(fileutil.TEMP):
         if os.path.isfile(fileutil.TEMP + '/' + name) and name.endswith('.tex'):
-            out = open(fileutil.TEMP + '/compile', 'w')
             try:
-                try:
-                    subprocess.call(['pdflatex', name], cwd=fileutil.TEMP, stdout=out)
-                    export('.pdf')
-                finally:
-                    out.close()
-                    logger.log('exporter.pdf', 'pdflatex output:\n' + fileutil.read_temp('compile'))
+                subprocess.call(['pdflatex', name], cwd=fileutil.TEMP)
+                export('.pdf')
             except:
                 exit('Failed to compile latex file: ' + fileutil.TEMP + '/' + name)
 
@@ -90,29 +85,17 @@ def tex():
 
 def html():
     """
-    Calls Pweave html exporter.
-    This does not translate LaTex.
-    This is not currently a valid export.
-
-    Exits if Pweave throws an Exception
+    Compile LaTeX files to html and copy html files to OUT directory.
 
     :return: None
     """
-    logger.log('exporter.html', 'HTML is not currently a functional export.', logger.LEVEL.WARNING)
     for name in os.listdir(fileutil.TEMP):
         if os.path.isfile(fileutil.TEMP + '/' + name) and name.endswith('.tex'):
-            old_stdout = sys.stdout
-            sys.stdout = open(fileutil.TEMP + '/weave', 'w')
             try:
-                try:
-                    pweave.weave(fileutil.TEMP + '/' + name, doctype='html')
-                    export('.html')
-                finally:
-                    sys.stdout.close()
-                    sys.stdout = old_stdout
-                    logger.log('weaver.weave', 'Pweave output:\n' + fileutil.read_temp('weave'))
+                subprocess.call(['ht', 'latex', name], cwd=fileutil.TEMP)
+                export('.html')
             except:
-                exit('Failed to Pweave file: ' + fileutil.TEMP + '/' + name)
+                exit('Failed to compile latex file: ' + fileutil.TEMP + '/' + name)
 
 
 def moodle():

@@ -1,0 +1,143 @@
+\documentclass[12pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Work Term Task Description for  Eric Buss    (January = April 2016)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{url}
+
+
+\textheight26cm \textwidth17cm \topmargin-2.5cm \oddsidemargin-1cm
+\evensidemargin-1mm
+\parindent0mm
+\parskip2.ex plus1ex minus1ex
+\pagestyle{empty}
+
+\begin{document}
+ver1.00 \hfill  \today
+\section*{Work Term Task Description for Eric Buss}
+
+The main idea of this work is to provide:
+\begin{enumerate}
+  \item automation tools for my research and teaching program
+  \item provide support for the department
+\end{enumerate}
+%The work will be split with 60\% of the time doing research automation and 40\% of the time doing department work.
+The work will be split doing teaching/research automation and doing department work. Mehran will supervising the department side and providing day to day supervision since I am on sabbatical.
+
+
+\section{Teaching and Research Automation}
+
+I would like to have you investigate and develop tools in the two main areas of \textbf{automated assessment} and \textbf{reproducible research}. As will be described in the next sections, both of these areas require: a system for generating flexible output formats (pdf, html, etc), a programming language that is embedded in the documentation, and an environment for executing the code segments. The tools should be open source (except for Matlab) to allow easy upload to the web.
+
+
+
+I propose that the main too    Not formatting correctly.ls that we use are:
+\begin{description}
+  \item[Python]  - Main open source programming language must including numerical (numpy), symbolic (sympy) and plots (matplotfig)
+  \item[Matlab] Programming language for compatibility
+  \item[\LaTeX] For mathematical documents with code embedded (\url{https://www.latex-project.org/})
+  \item[emacs] (\url{https://www.gnu.org/software/emacs/}) Latex mode for flexible document generation including embedded code --  needs AUCTeX, Preview
+  \item[emacs] Org mode (\url{http://orgmode.org/}) for very flexible document generation \\
+     (\url{https://www.youtube.com/watch?v=fgizHHd7nOo})
+  \item[emacs] Lisp mode to extend the system to allow for custom document generation
+\end{description}
+
+\subsection{Automated assessment}
+
+For more effective teaching at both the graduate and undergraduate level, I would like to develop tools that will allow automated assessment. In particular, I would like to embed code into questions to allow for questions to have text and code that allows for a question to change for each student. The answers to the question must also be generated. Finally, the automated system should be able to produce individual questions, groups of questions (like homework assignments or exams) in pdf format or eClass format. The eClass format is desired as this is the current web based system used by the University of Alberta for teaching.
+
+Systems for doing just this using the Latex combined with R and a program called Sweave are available. I would prefer not to use R but rather Python and/or Matlab. An environment that allows for executing code directly in the editor is also desired and it appears that after a steep learning curve, emacs is the best method.
+
+The proposed strategy is as follows:
+\begin{enumerate}
+  \item Setup tools. Install: Latex, emacs, Python, R and Matlab
+  \begin{itemize}
+    \item Computer - to be determined. This needs to be preferably on Linux (Open Suse) or PC
+    \item The configuration is important and needs to be documented as I will want to use this later on my own machine
+    \item Become familiar with the tools - Latex and emacs including org mode.
+  \end{itemize}
+  \item Duplicate the existing sweave results (\url{https://www.statistik.lmu.de/~leisch/Sweave/})
+  \begin{itemize}
+    \item Run sweave examples and generate pdf's (see attached files)
+    \item generate e-class (Moodle) questions
+    \item create e-class sandbox and try questions
+  \end{itemize}
+  \item One MECE 420 exam in automated tools
+  \begin{itemize}
+    \item  put into python - need numpy, smypy and matplotlib - to generate questions and answers.
+    \item  generate pdf
+    \item  put in a range for variables and generate 5 different pdf's where the question (and answer) varies in the selected range.
+    \item Look at Matlab automated tools and document how well they work for this task (if at all)
+  \end{itemize}
+  \item now try and generate the eClass format of one question -- try multiple choice, true/false and numerical answer. For the numerical answer, a range of correct answers should be specified as described in e-class so that the student can get the right answer for a range of responses. eg. If 19.1 is the answer, I can specify that 19.0 to 19.2 will be correct.
+  \item generate a sample e-class exam with several questions that are different for each student using the random variable approach above.
+  \item do the same for pdf file but now generate individual pdf exams and solutions.
+    \begin{itemize}
+    \item  it would be desirable to create exams where the student name is printed from a spread sheet.  Use org mode in emacs.
+    \item  An answer section of boxes on the front page for scanning and character recognition would be useful.
+    \item  Try Latex exam class
+  \end{itemize}
+  \item document all of the above including how to install the tools and a tutorial for me. In Org mode?
+\end{enumerate}
+
+The final deliverables for this part are how to setup and use the tools to efficiently generate individual pdf's and eClass questions with answers that have text, math, and plots. Numerical calculations, symbolic calculations, and figures are needed for both the question and the answer. A flag is needed to allow for the answers to be displayed for the solutions or not for the questions.
+
+
+\subsection{Reproducible research}
+
+The goal here is to embed code into a document to allow the reader to execute and change the code rather than having to only rely on the final pdf document. That is for every published paper and thesis that my group produces as a pdf, there will be a document on my website with all the embedded code and required data to allow all the results to be generated. Most journals take latex format submissions with figure files. Each journal has a specific formatting style which is contained in the their style file -- sort of like a css file for HTML.  This will be specified at the start of the Latex file and usually has some options such as draft mode etc.
+
+
+In fact, the pdf should come directly from this document. This concept allows the reader to reproduce the research results while having the ability to look at the raw data and how the the results were analyzed. Typically, for this to work the code must be open source. I think python is the best choice at the moment although some Journals allow for Matlab figure files to be used. I thus think exploring the new Matlab tools for reproducible research are needed.
+
+The Journal paper and thesis producing process involves the Latex manuscript source file and usually many figure files. The manuscript and figure files undergoes many revisions as I iterate with my collaborators and students. For simplicity, at each iteration many files and a directory structure are simply duplicated. For a PhD thesis this can be 100's of Mb and thousands of files. I would like to start using a document version control system. The one that seems to be work well with the other tools that I use is Github. I would like you to learn this and then teach me how to use it by providing simple documentation and demos.
+
+In addition, often I use stand alone FORTRAN code. How to integrate this (or any other code including C) would be useful. That is the best way to have source code and executable code on the website including documenting compiler versions and having scripts to make, install and test.
+
+This task should use the same set of tools as above automated assessment and the proposed strategy is:
+(\url{})
+\begin{enumerate}
+  \item Tools again use Latex, emacs, Python, Matlab and Github
+  \item Duplicate the existing emacs org mode from John Kitchin\\
+  (\url{http://kitchingroup.cheme.cmu.edu/blog/category/emacs/})\\
+  (\url{https://www.youtube.com/watch?v=1-dUkyn_fZA})
+  \begin{itemize}
+    \item Watch video from John Kilchin
+    \item Learn how to generate presentations in org mode for latex Beamer and other
+  \end{itemize}
+  \item Reproduce on one paper - work with a graduate student (To be determined)
+  \begin{itemize}
+    \item  find all the data and code needed to generate all the results and figures for the paper
+    \item  Use Matlab - for plots and analysis (if that worked for automated assessment)
+    \item  put into python - need numpy, smypy and matplotlib - for plots and analysis - this will allow anyone to run the code
+  \end{itemize}
+  \item Now generate a pdf and create a system that can run on the website or be downloadable for both the Matlab and python version
+  \item website - what is needed so that anyone can run the code?
+  \item FORTRAN interface to Matlab for our custom fluid codes (Diablo and for thinfilm)
+  \item learn version control system github
+  \item document all of the above including how to install the tools and a tutorial for me.
+\end{enumerate}
+
+The final deliverables for this part are how to setup and use the tools to efficiently generate individual pdf's and eClass questions with answers that have text, math, and plots. Numerical calculations, symbolic calculations, and figures are needed for both the question and the answer. A flag is needed to allow for the answers to be displayed for the solutions or not for the questions.
+
+
+\subsection{Other}
+
+\begin{itemize}
+    \item Rules for open access - automate searching\\
+    (\url{http://www.sherpa.ac.uk/romeo/index.php})
+    \item Automation of my citations for CV, Webpage, etc
+    \item Pull information off google scholar for Latex\\
+    (\url{https://github.com/cute-jumper/gscholar-bibtex})
+    \item Best way for automated backup - cloud, etc.
+    \item My engine data on the web - database interface to the web
+    \item Website automation - active website
+ \end{itemize}
+
+\section{Department work}
+
+Need to define tasks with Mehran.
+
+
+\end{document}
