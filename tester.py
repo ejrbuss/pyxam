@@ -1,204 +1,196 @@
-#!/usr/bin/env python3
-# Author: Eric Buss <ebuss@ualberta.ca>
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
+# Python Imports
 
-"""
-Tester for pyxam
-"""
 
-#
-# Imports
-#
+import io
+import os
+import unittest
 
-import unittest as _unittest
-import os as _os
 
-import pyxam as _pyxam
-import csv_reader as _csv_reader
+# Global Variables
 
-#
-# Constants
-#
 
-CONST_TMP = 'examples/testing'
-CONST_STR = 'Hello World!'
-CONST_PREFIX = 'prefix'
-CONST_SOLUTION_POSTFIX = '_solution'
+DEBUG = False # Set this to True to see logs from running the tester
 
-#
-# Main
-#
 
-def start_tests():
-    _unittest.main()
+# Module Imports
 
-#
-# Pyxam unit tests
-#
 
-class test_pyxam_methods(_unittest.TestCase):
+import core
+import exporter
+import fileutil
+import logger
+import populationmixer
+import pyxamopts
+import templater
+import weaver
 
-    # check_dependencies tests
 
-    def test_check_dependencies_1(self):
-        self.assertEqual(_pyxam.check_dependencies(['tex', 'pdflatex', 'pweave']),
-                         None)
+STR = 'Hello World!'
+TST = 'examples/test.txt'
+NAF = '\\\\'
 
-    def test_check_dependencies_2(self):
-        self.assertEqual(_pyxam.check_dependencies(['^^^']), '^^^')
 
-    # pre_process_template tests
+def init():
+    if not DEBUG:
+        logger.DEBUG = logger.LEVEL.SILENT
+    unittest.main()
 
-    def test_pre_process_template(self):
-        self.assertEqual(_pyxam.pre_process_template('examples/ArgTest'),
-                         ('\nSome text to ignore\n\\\\Parg{arg3=11} an escaped arg',
-                          'arg1=5 arg2=7 '))
 
-    def test_pre_process_template(self):
-        self.assertRaises(SystemExit, _pyxam.pre_process_template, '^^^')
+class CoreTester(unittest.TestCase):
 
-    # process_args tests
-    
-    def test_process_args(self):
-        class cmd(_pyxam.default):
-            pass
-        class tmp(_pyxam.default):
-            pass
-        cmd.number = 2
-        cmd.solutions = None
-        tmp.number = 3
-        tmp.solutions = True
-        _pyxam.process_args(cmd, tmp)
-        self.assertEqual(cmd.number, 2)
-        self.assertEqual(cmd.solutions, True)
-        self.assertEqual(cmd.sample, 1)
-        
-    # process_arg tests
-    
-    def test_process_arg(self):
-        self.assertEqual(_pyxam.process_arg(CONST_STR, True, False),
-                         CONST_STR)
+    def test_index_1(self):
+        options = pyxamopts.PyxamOptions()
+        self.assertEqual(core.index(3, options), '4')
 
-    def test_process_arg(self):
-        self.assertEqual(_pyxam.process_arg(None, CONST_STR, False),
-                         CONST_STR)
+    def test_index_2(self):
+        options = pyxamopts.PyxamOptions()
+        options.alphabetize = True
+        self.assertEqual(core.index(6, options), 'G')
 
-    def test_process_arg(self):
-        self.assertEqual(_pyxam.process_arg(None, None, CONST_STR),
-                         CONST_STR)
+    def test_check_dependencies(self):
+        core.DEPENDENCIES = [NAF]
+        self.assertRaises(SystemExit, core.check_dependencies)
 
-    # sanitize tests
+    def test_make_solutions(self):
+        self.assertEqual(core.make_solutions('\\documentclass{'), '\\documentclass[answers]{')
 
-    def test_sanitize_1(self):
-        self.assertEqual(_pyxam.sanitize([CONST_STR]), CONST_STR)
 
-    def test_sanitize_2(self):
-        self.assertEqual(_pyxam.sanitize(CONST_STR), CONST_STR)
+class ExporterTester(unittest.TestCase):
 
-    # tex_match tests
+    def test1(self):
+        return
 
-    def test_tex_match_1(self):
-        buffer = '\\' + CONST_PREFIX + '{' + CONST_STR + '}'
-        args = _pyxam.tex_match(buffer, CONST_PREFIX)
-        self.assertEqual(buffer[args[0][0]:args[0][1]], CONST_STR)
 
-    def test_tex_match_2(self):
-        self.assertEqual(_pyxam.tex_match(CONST_STR, CONST_PREFIX), [])
-
-    def test_tex_match_3(self):
-        buffer = '\\' + CONST_PREFIX + '{' + CONST_STR + '1}' + CONST_STR
-        buffer = buffer + '\n\\' + CONST_PREFIX + '{' + CONST_STR + '2}'
-        args = _pyxam.tex_match(buffer, CONST_PREFIX)
-        self.assertEqual(buffer[args[0][0]:args[0][1]], CONST_STR + '1')
-        self.assertEqual(buffer[args[1][0]:args[1][1]], CONST_STR + '2')
-
-    def test_tex_match_4(self):
-        buffer = '\\\\' + CONST_PREFIX + '{' + CONST_STR + '}'
-        self.assertEqual(_pyxam.tex_match(buffer, CONST_PREFIX), [])
-
-    def test_tex_match_5(self):
-        buffer = '\\' + CONST_PREFIX + '{' + CONST_STR + '{}}'
-        args = _pyxam.tex_match(buffer, CONST_PREFIX)
-        self.assertEqual(buffer[args[0][0]:args[0][1]], CONST_STR + '{}')
-
-    # read tests
+class FileutilTester(unittest.TestCase):
 
     def test_read_1(self):
-        self.assertEqual(_pyxam.read('examples/Hello World.tex'),
-                         CONST_STR)
+        fileutil.write(TST, STR)
+        self.assertEqual(fileutil.read(TST), STR)
+
     def test_read_2(self):
-        self.assertRaises(FileNotFoundError, _pyxam.read, '^^^')
-                         
-    def test_read_3(self):
-        self.assertRaises(Exception, _pyxam.read, 'examples')
-        # Check against Exception because depending on OS
-        # IsADirectoryError or PermissionError can occur
+        self.assertRaises(FileNotFoundError, fileutil.read, NAF )
 
-    # write tests
+    def test_write(self):
+        fileutil.write(TST, STR)
+        self.assertEqual(fileutil.read(TST), STR)
 
-    def test_write_1(self):
-        _pyxam.write(CONST_TMP + '.tex', CONST_STR)
-        self.assertEqual(_pyxam.read(CONST_TMP + '.tex'), CONST_STR)
-        _pyxam.remove_file(CONST_TMP + '.tex')
+    def test_remove(self):
+        fileutil.remove(TST)
+        self.assertRaises(FileNotFoundError, fileutil.read, TST )
+        fileutil.write(TST, STR)
 
-    # remove_file tests
+    def test_make_temp(self):
+        fileutil.make_temp('test')
+        self.assertRaises(PermissionError if os.name == 'nt' else FileNotFoundError, fileutil.read, 'test')
+        fileutil.remove(fileutil.TEMP)
+        self.assertRaises(FileNotFoundError, fileutil.read, 'test' )
 
-    def test_remove_file_1(self):
-        _pyxam.write(CONST_TMP + '.tex', CONST_STR)
-        _pyxam.remove_file(CONST_TMP + '.tex')
-        self.assertRaises(FileNotFoundError, _pyxam.read, CONST_TMP + '.tex')
+    def test_make_out(self):
+        fileutil.make_out('test')
+        self.assertRaises(PermissionError if os.name == 'nt' else FileNotFoundError, fileutil.read, 'test')
+        fileutil.remove(fileutil.OUT)
+        self.assertRaises(FileNotFoundError, fileutil.read, 'test' )
 
-    def test_remove_file_2(self):
-        self.assertRaises(FileNotFoundError, _pyxam.remove_file,
-                          '^^^')
-    
-    def test_remove_file_3(self):
-        self.assertRaises(Exception, _pyxam.remove_file,
-                          'examples')
-        # Check against Exception because depending on OS
-        # IsADirectoryError or PermissionError can occur
-        
-    # rmove_dir tests
+    def test_copy_out(self):
+        fileutil.make_temp('test_temp')
+        fileutil.make_out('test_out')
+        fileutil.write_temp('test.txt', STR)
+        fileutil.copy_out('test.txt')
+        self.assertEqual(fileutil.read(fileutil.OUT + '/' + 'test.txt'), STR)
+        fileutil.remove(fileutil.TEMP)
+        fileutil.remove(fileutil.OUT)
 
-    def test_remove_dir_1(self):
-        _pyxam.create_tmp_dir(CONST_TMP)
-        _pyxam.remove_dir(CONST_TMP)
-        self.assertRaises(FileNotFoundError, _pyxam.read, CONST_TMP)
+    def test_remove_temp(self):
+        fileutil.make_temp('test')
+        fileutil.remove_temp()
+        self.assertRaises(FileNotFoundError, fileutil.read, 'test')
 
-    def test_remove_dir_2(self):
-        self.assertRaises(FileNotFoundError, _pyxam.remove_dir, '^^^')
+    def test_read_write_temp(self):
+        fileutil.make_temp('test')
+        fileutil.write_temp('test.txt', STR)
+        self.assertEqual(fileutil.read_temp('test.txt'), STR)
+        fileutil.remove('test')
 
-    def test_remove_dir_3(self):
-        self.assertRaises(NotADirectoryError, _pyxam.remove_dir, 
-                          'examples/Hello World.tex')
 
-    def test_remove_dir_4(self):
-        _pyxam.create_tmp_dir(CONST_TMP)
-        _pyxam.write(CONST_TMP + '/' + CONST_STR + '.tex', CONST_STR)
-        _pyxam.remove_dir(CONST_TMP)
-        self.assertRaises(FileNotFoundError, _pyxam.read, CONST_TMP)
+class LoggerTester(unittest.TestCase):
 
-    # create_tmp_dir tests
-    
-    def test_create_tmp_dir(self):
-        _pyxam.create_tmp_dir(CONST_TMP)
-        self.assertTrue(_os.path.isdir(CONST_TMP))
-        _pyxam.remove_dir(CONST_TMP)
+    def test_log(self):
+        cache = logger.DEBUG
+        logger.DEBUG = logger.LEVEL.INFO
+        logger.OUT = io.StringIO()
+        logger.log('test', STR)
+        self.assertEqual(logger.OUT.getvalue(), 'INFO@test:\n\t' + STR + '\n')
+        logger.DEBUG = cache
 
-#
-# csv_reader unit tests
-#
+    def test_to_file(self):
+        cache = logger.DEBUG
+        logger.DEBUG = logger.LEVEL.INFO
+        logger.OUT = io.StringIO()
+        logger.log('test', STR)
+        logger.to_file('test', 'test')
+        self.assertEqual(fileutil.read('test/test'), 'INFO@test:\n\t' + STR + '\n')
+        fileutil.remove('test')
+        logger.DEBUG = cache
 
-class csv_reader(_unittest.TestCase):
 
-    # student tests
+class PopulationmixerTester(unittest.TestCase):
 
-    def test_student(self):
-        student = _csv_reader.student(CONST_STR, 1) 
-        self.assertEqual(CONST_STR, student.name)
-        self.assertEqual(1, student.number)
-#
-# Examples
-#
+    def test1(self):
+        return
+
+
+class PyxamoptsTester(unittest.TestCase):
+
+    def test_check(self):
+        opts = pyxamopts.PyxamOptions()
+        defaults = pyxamopts.PyxamOptions()
+        opts.template = STR
+        defaults.number = 10
+        opts.number = None
+        pyxamopts.check(opts, defaults)
+        self.assertEqual(defaults.template, STR)
+        self.assertEqual(defaults.number, 10)
+        return
+
+
+class TemplaterTester(unittest.TestCase):
+
+    def test_pre_process(self):
+        options = templater.pre_process('\\Parg{-n 3}')
+        self.assertEqual( options.number, 3)
+        self.assertEqual( options.sample, None)
+
+    def test_pimport(self):
+        fileutil.write(TST, STR)
+        self.assertEqual(templater.pimport('\\Pimport{' + TST + '}', 1), '\n' + STR)
+
+    def test_walk(self):
+        self.assertEqual(templater.walk(TST), [TST])
+
+    def test_parse_constant(self):
+        self.assertEqual(templater.parse_constant('\\Pconst{STR}', 'STR', STR), STR)
+
+    def test_clean(self):
+        self.assertEqual(templater.clean(STR + '\\Parg{}'), STR)
+
+    def test_tex_match(self):
+        buffer = '\\' + STR + '{' + STR + '}'
+        pairs = templater.tex_match(buffer, STR)
+        self.assertEqual(buffer[pairs[0][0]:pairs[0][1]], STR)
+
+
+class WeaverTester(unittest.TestCase):
+
+    def test_weave(self):
+        fileutil.make_temp('examples')
+        fileutil.write(TST, '\Pexpr{4}')
+        weaver.weave('test.txt', False, 'figure', 'python')
+        self.assertEqual(fileutil.read_temp('test.tex'), '4\n')
+        fileutil.remove('figure')
+        fileutil.remove('examples/test.tex')
+        fileutil.write(TST, STR)
+        return
 
 if __name__ == '__main__':
-    start_tests()
+    init()
