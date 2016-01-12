@@ -2,8 +2,10 @@
 # Python Imports
 
 
+import os
 import re
-import shutil
+import random
+import subprocess
 
 
 # Module Imports
@@ -21,51 +23,62 @@ import exporter
 # Global Variables
 
 
-DEPENDENCIES = ['pdflatex', 't4ht']
-SOLUTIONS = '_solutions'
+# List of dependencies
+DEPENDENCIES = [['pdflatex', '--version'], ['ht']]
+# File name extension for solutions
+SOLUTIONS = '-solutions'
+# In order to consistently generate exams
+SEED = 12575220
 
 
 # Utility Methods
 
 
-def pyxam(cmdl_options):
+def pyxam(parameter_options):
     """
     The core pyxam process, will process the provided options and weave, parse, mix, and export exam files.
     This is the hig   hest level view of full pyxam process.
 
-    :param cmdl_options: The process options, this should either be an instance of PyxamOptions or a the namespace of
+    :param parameter_options: The process options, this should either be an instance of PyxamOptions or a the namespace of
     an ArgumentParser initialized by pyxamopts.init_arg_parser
     :return: None
     """
-    pyxamopts.is_opts(cmdl_options)
-    if cmdl_options.logging: logger.DEBUG = logger.LEVEL.INFO
+    # Seed random for all operations
+    random.seed(SEED)
+    # Get valid options
+    parameter_options = pyxamopts.is_opts(parameter_options)
+    # Set logger
+    if parameter_options.logging:
+        logger.DEBUG = logger.LEVEL.INFO
+    # Check dependencies
     print('Checking dependencies...')
     check_dependencies()
+    # Read in template and check for Exceptions
     buffer = ''
     try:
-        buffer = fileutil.read(cmdl_options.template)
-        fileutil.make_cwd(cmdl_options.template)
+        buffer = fileutil.read(parameter_options.template)
+        fileutil.make_cwd(parameter_options.template)
     except FileNotFoundError:
-        exit('Could not find template file: ' + cmdl_options.template)
+        exit('Could not find template file: ' + parameter_options.template)
     except IsADirectoryError:
-        exit('Templa   te file is a directory: ' + cmdl_options.template)
+        exit('Template file is a directory: ' + parameter_options.template)
     except PermissionError:
-        exit('Template file is a directory: ' + cmdl_options.template)
-    # Check Options
+        exit('Template file is a directory: ' + parameter_options.template)
+    except:
+        exit('Unkown error when attempting to read template file: ' + parameter_options.template)
+    # Check Options defaults -> template arguments -> parameter arguments
     print('Checking options...')
-    logger.log('core.pyxam', 'Checking options')
     options = templater.pre_process(buffer)
     options = pyxamopts.check(options)
-    options = pyxamopts.check(cmdl_options, options)
+    options = pyxamopts.check(parameter_options, options)
     # Build Base Files
     print('Building files...')
-    logger.log('core.pyxam', 'Buildinubprocess.check_output(process)g files')
     fileutil.make_temp(options.temp)
     fileutil.write_temp(options.title, buffer)
     # Weave and parse
     print('Parsing files...')
-    logger.log('core.pyxam', 'Weaving and parsing files')
     for n in range(options.number):
+            # Import questions and clean file
             name = options.title + index(n, options)
             buffer = fileutil.read_temp(options.title)
             buffer = templater.pimport(buffer, options.sample)
@@ -74,21 +87,21 @@ def pyxam(cmdl_options):
             buffer = templater.parse_constant(buffer, 'VERSION', index(n, options))
             buffer = templater.parse_constant(buffer, 'TITLE', options.title)
             fileutil.write_temp(name, buffer)
+            # Call Pweave on file
             weaver.weave(name, options.matplotlib, options.figure, options.shell)
+            # Produce solutions file if necessary
             if options.solutions:
                 fileutil.write_temp(name + SOLUTIONS + '.tex', make_solutions(fileutil.read_temp(name + '.tex')))
+            # Finished processing file
             print('\tFinished ', n + 1, '/', options.number)
-            logger.log('core.pyxam', 'Finished ' + str(n + 1) + ' / ' + str(options.number))
     fileutil.remove(fileutil.TEMP + '/' + options.title)
     # Mix and export
     print('Exporting files...')
-    logger.log('core.pyxam', 'Mixing and exporting')
-    populationmixer.mix(options.population)
+    populationmixer.mix(options.population, options.method)
     fileutil.make_out(options.out)
-    exporter.switch(options.format)
+    exporter.switch(options.format, options.interactive)
     # Cleanup
     print('Cleaning up...')
-    logger.log('core.pyxam', 'Cleaning up')
     try: fileutil.remove(options.figure)
     except: pass
     try: fileutil.remove_temp()
@@ -97,7 +110,9 @@ def pyxam(cmdl_options):
     except: pass
     try: fileutil.remove('compile')
     except: pass
+    # Done
     print('Done!')
+
 
 def index(n, options):
     """check if subprocess works
@@ -121,12 +136,13 @@ def check_dependencies():
 
     :return: None
     """
-    logger.log('core.check_dependencies', 'Checking dependencies')
     for process in DEPENDENCIES:
         try:
-            shutil.which(process)
-        except shutil.Error:
-            exit(process + ' could not be found. Please install to continue.')
+            devnull = open(os.devnull)
+            subprocess.call(process, stdout=devnull, stderr=devnull)
+        except OSError as e:
+            if e.errno == os.errno.ENOENT:
+                exit(str(process) + ' could not be found. Please install to continue.')
 
 
 def make_solutions(buffer):

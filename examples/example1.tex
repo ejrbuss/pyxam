@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx}
-\Parg{-s -a -n 3 -f html}
+\Parg{-s -a -n 3 -f pdf -p students2.csv}
 
 \begin{document}
 <<echo=False>>=
@@ -9,7 +9,7 @@ a = random.randint(0, 10)
 @
 
 \title{\Pconst{TITLE} \Pconst{VERSION}}
-\author{Author's Name}
+\author{\Pconst{STUDENT} \Pconst{STUDNUM}}
 
 \maketitle
 

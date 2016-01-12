@@ -6,14 +6,16 @@ import os
 import sys
 import enum
 import time
-import textwrap
 
 
 # Module Imports
+
+
 import fileutil
 
 
 # LEVEL Class
+
 
 class LEVEL(enum.Enum):
     SILENT = 0
@@ -25,7 +27,9 @@ class LEVEL(enum.Enum):
 # Global variables
 
 
+# Current logger level
 DEBUG = LEVEL.SILENT
+# The logger IOString
 OUT = sys.stdout
 
 

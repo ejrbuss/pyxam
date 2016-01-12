@@ -49,7 +49,7 @@ class CoreTester(unittest.TestCase):
         self.assertEqual(core.index(6, options), 'G')
 
     def test_check_dependencies(self):
-        core.DEPENDENCIES = [NAF]
+        core.DEPENDENCIES = [[NAF]]
         self.assertRaises(SystemExit, core.check_dependencies)
 
     def test_make_solutions(self):

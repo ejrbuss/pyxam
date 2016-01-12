@@ -28,6 +28,7 @@ def pre_process(buffer):
     parsed = tex_match(buffer, 'Parg')
     args = ''
     for pair in parsed:
+        # Collect arguments
         args = args + buffer[pair[0]:pair[1]] + ' '
     return pyxamopts.init_arg_parser(args.split(' '))
 
@@ -111,6 +112,7 @@ def parse_constant(buffer, old, new):
     :param new: The replacement value
     :return: The str with the replacements made
     """
+    # Reverse the list so it can be correctly removed back to front
     unparsed = tex_match(buffer, 'Pconst', True)[::-1]
     for pair in unparsed:
         command = buffer[pair[0]:pair[1]]

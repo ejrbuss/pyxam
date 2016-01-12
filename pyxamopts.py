@@ -3,14 +3,14 @@
 
 
 import argparse
-import exporter
-import traceback
 
 
 # Module Imports
 
 
 import logger
+import exporter
+import populationmixer
 
 
 # PyxamOptions Class
@@ -29,20 +29,20 @@ class PyxamOptions:
         self.out = 'out'
         self.temp = 'temp'
         self.figure = 'figures'
-
         # Evaluated
         self.number = 1
         self.sample = 1
         self.title = 'exam'
         self.format = 'pdf'
         self.shell = 'python'
+        self.method = 'sequence'
         self.population = None
-
         # Flags
         self.solutions = False
         self.alphabetize = False
         self.clean = False
         self.matplotlib = False
+        self.interactive = False
         self.logging = False
 
 
@@ -67,11 +67,13 @@ def check(opts, defaults=PyxamOptions()):
     if opts.title is not None: defaults.title = opts.title
     if opts.format is not None: defaults.format = opts.format
     if opts.shell is not None: defaults.shell = opts.shell
+    if opts.method is not None: defaults.method = opts.method
     if opts.population is not None: defaults.population = opts.population
     if opts.solutions is not None: defaults.solutions = opts.solutions
     if opts.alphabetize is not None: defaults.alphabetize = opts.alphabetize
     if opts.clean is not None: defaults.clean = opts.clean
     if opts.matplotlib is not None: defaults.matplotlib = opts.matplotlib
+    if opts.interactive is not None: defaults.interactive = opts.interactive
     if opts.logging is not None: defaults.logging = opts.logging
     return defaults
 
@@ -125,18 +127,18 @@ def init_arg_parser(args):
     add_option('format', '-f', 'Format of the exam: ' + str(exporter.FORMAT_LIST), parser)
     add_option('sample', '-smp', 'Default sample size', parser, int)
     add_option('figure', '-fig', 'Figures directory', parser)
+    add_option('method', '-m', 'Exam selection method: ' + str(populationmixer.METHOD_LIST), parser)
     add_option('population', '-p', 'Population csv file', parser)
-
     # Flags
     add_flag('solutions', '-s', 'Enable solution files', parser)
     add_flag('alphabetize', '-a', 'Alphabetize exam enumeration', parser)
     add_flag('clean', '-c', 'Clean questions and newlines', parser)
-    add_flag('matplotlib', '-m', 'Disable matplotlib', parser)
+    add_flag('matplotlib', '-mpl', 'Disable matplotlib', parser)
+    add_flag('interactive', '-i', 'Enable LaTeX calls interactive', parser)
     add_flag('logging', '-l', 'Enable logging', parser)
-
     #Parse
     options = parser.parse_args(args)
-    # Check for list encapsulated template
+    # Check for list encapsulated template str
     if not isinstance(options.template, str):
         options.template = options.template[0]
     return options
@@ -161,12 +163,20 @@ def is_opts(opts):
         args = args + 'title:\t\t\t' + str(opts.title) + '\n'
         args = args + 'format:\t\t\t' + str(opts.format) + '\n'
         args = args + 'shell:\t\t\t' + str(opts.shell) + '\n'
+        args = args + 'method:\t\t' + str(opts.method) + '\n'
         args = args + 'population:\t\t' + str(opts.population) + '\n'
         args = args + 'solutions:\t\t' + str(opts.solutions) + '\n'
         args = args + 'alphabetize:\t' + str(opts.alphabetize) + '\n'
         args = args + 'clean:\t\t\t' + str(opts.clean) + '\n'
         args = args + 'matplotlib:\t\t' + str(opts.matplotlib) + '\n'
+        args = args + 'interactive:\t' + str(opts.interactive) + '\n'
         args = args + 'logging:\t\t' + str(opts.logging) + '\n'
         logger.log('pyxam.opts', 'Options provided (None will become default):\n' + args)
+        return opts
     except:
-        exit('The options provided to pyxam could not be parsed.')
+        # Exit if the options cannot be parsed and the user does not want to proceed with default options
+        print(' * Warning * The options provided to pyxam could not be parsed')
+        if input('Continue with default options? (y/n) ') == 'y':
+            return PyxamOptions()
+        else:
+            exit('Cancelling operation.')

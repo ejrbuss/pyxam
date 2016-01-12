@@ -27,4 +27,6 @@ def main():
     core.pyxam(pyxamopts.init_arg_parser(sys.argv[1:]))
 
 
-if __name__ == '__main__': main()
+# Run from shell
+if __name__ == '__main__':
+    main()
