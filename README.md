@@ -87,7 +87,20 @@ Hello World!           % This code functions the same as the block above
 For more detailed examples of what is  possible check out the [Pweave website](http://mpastell.com/pweave/) which is what powers this process under the hood. In addition to Python code Pyxam includes a number of exam specific options that are accessible by a combination of exam line options and LaTeX commands. They are outlined below.
 
 **template**  
-Usage: pyxam.py
+Usage: `pyxam.py <template file>`  
+This file specifies the primary LaTeX file for Pyxam to parse. Ways to link other files are outlined below. This is the only required argument.  
+**out**  
+Usage: `pyxam.py -o <output directory>`  
+Specify the path to a directory for Pyxam to use as the final location of exported files. By default this  will be a folder named /out in the same directory as the provided template file.    
+**temp**  
+Usage: `pyxam.py -tmp <temp directory>`  
+Specify the path to a directory for Pyxam to use a temporary location for storing files. This folder will be removed along with its contents when Pyxam finishes. By default this will be a folder named /temp in the same directory as the provided template file.  
+**figure**  
+Usge: `pyxam.py -fig <figure directory>`  
+When exporting to a format that requires a resources directory use this to specify the path to the exported resources. By default this will be a folder named /figures in the same directory as the provided template file.  
+**number**  
+Usage `pyxam.py -n <an integer value>`  
+The number of exams to generate. Assuming your exams make use of random numbers or question rearrangment this will allow you to quickly create different exam versions.
 
 
 ### Todos
