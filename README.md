@@ -26,4 +26,33 @@ Internally Pyxam includes the source for a few other key pieces of software. No 
 - [texfot](https://www.ctan.org/pkg/texfot?lang=en) for managing the output of LaTeX compilers
 
 ### Installation
+Installation is as simple as pulling the files from [GitHub](https://github.com/balancededge/pyxam/tree/master). Either go to the webpage and click Download Zip or use the command line. If you have [git](https://git-scm.com/downloads) installed all you need to do get the source is enter:
+```sh
+$ git clone https://github.com/balancededge/pyxam pyxam
+$ cd pyxam
+```
+Currently Pyxam has no Setup script so after this step you are done.
 
+### Running Pyxam
+If Python 3 is in your PATH as ```python3 ``` Pyxam can be run from the command line like so:
+```sh
+$ pyxam.py [options] <template file>
+```
+Otherwise you need to run Pyxam under Python like so:
+```sh
+$ python pyxam.py [options] <template file>
+```
+Pyxam can also be called by another Python program. There is currently no formal API however pyxam can be run with default options with the following:
+```python
+import pyxam                                # Import pyxam module
+options = pyxam.pyxamopts.PyxamOptions()    # Get a default options object
+options.template = '<template file>'        # Add your template file
+pyxam.core.pyxam(options)                   # Run the options
+```
+### Using Pyxam
+
+### Todos
+
+### Contact
+
+### License
