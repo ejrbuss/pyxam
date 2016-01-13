@@ -6,13 +6,24 @@ Pyxam is a spiritual reacration of the R exam package for python. An open source
 - Make exporting into a variety of formats including PDF and Moodle easier than ever
 
 This document gives a basic overview of the current version of Pyxam and also serves as a light design document for future additions. For more detailed instructions on how to get the most out of Pyxam check out the example files in the /examples directory found in the main github directory.  
+
 ### Version
 0.2.1       
+
 ### Dependencies
-Pyxam requires a set of open source software to be used and run succesfully. Though a central goal of Pyxam is to keep the program simple and lightweight such dependencies are unavoidable. In order to run Pyxam you will need the following software:
+Pyxam requires a set of open source software to be used and run succesfully. Though a central goal of Pyxam is to keep the program simple and lightweight such dependencies are unavoidable. In order to run Pyxam you will need the following:
 
 - A LaTeX compiler and the examclass 
-- Python 3.4 or greater
-- Perl 5 or greater
-- And the Matplotlib library for Python
+    - For windows users try [MikTex](http://miktex.org/)
+    - For unix users try [TeX Live](https://www.tug.org/texlive/) 
+- [Python](https://www.python.org/downloads/) 3.4 or greater
+- [Perl](https://www.perl.org/get.html) 5 or greater
+- [Matplotlib](http://matplotlib.org/users/installing.html) library for Python
+
+Internally Pyxam includes the source for a few other key pieces of software. No special attention is required to make these work. These include:
+
+- [Pweave](http://mpastell.com/pweave/) for parsing Python code and generating images
+- [texfot](https://www.ctan.org/pkg/texfot?lang=en) for managing the output of LaTeX compilers
+
+### Installation
 
