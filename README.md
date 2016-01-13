@@ -34,7 +34,7 @@ $ cd pyxam
 Currently Pyxam has no Setup script so after this step you are done.
 
 ### Running Pyxam
-If Python 3 is in your PATH as ```python3 ``` Pyxam can be run from the command line like so:
+If Python 3 is in your PATH as `python3 ` Pyxam can be run from the command line like so:
 ```sh
 $ pyxam.py [options] <template file>
 ```
@@ -49,8 +49,42 @@ options = pyxam.pyxamopts.PyxamOptions()    # Get a default options object
 options.template = '<template file>'        # Add your template file
 pyxam.core.pyxam(options)                   # Run the options
 ```
-### Using Pyxam
+To change options from the default you can use `options.<option name> = value` to configure pyxam. The option names correspond to the options found below in Using Pyxam. Here is an example configuration:
+```python
+options.solutions = True
+options.number = 3
+options.out = '~/exams/exam2016'
+```
 
+### Using Pyxam
+Pyxam works by parsing a LaTeX template file, configuring a set of options, and then running your file through a Python parser and exporter. In order to add python code to your LaTeX file you need to use the following syntax:
+```LaTeX
+\documentclass{article}
+\begin{document}
+<<>>=
+s = 'Hello World'   # Python code between <<>>= and @ will be run and displayed verbatim
+@
+<<echo=False>>=
+s                   # You can use the echo argument to silence bits of code
+@
+<% s += '!' %>      % This code is silent 
+<%= s %>            % This code is not 
+\Pexpr{s}           % This code functions the same as the block above
+\end{document}
+```
+If you used Pyxam on the above document and exported to .tex you would get:
+```LaTeX
+\documentclass{article}
+\begin{document}
+\begin{verbatim}
+s = 'Hello World'   # Python code between <<>>= and @ will be run and displayed verbatim
+\end{verbatim}
+% This code is silent 
+Hello World!           % This code is not 
+Hello World!           % This code functions the same as the block above
+\end{document}
+```
+For more detailed examples of what is  possible check out the [Pweave website](http://mpastell.com/pweave/) which is what powers this process under the hood. 
 ### Todos
 
 ### Contact
