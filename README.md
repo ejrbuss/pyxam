@@ -38,18 +38,18 @@ If Python 3 is in your PATH as `python3 ` Pyxam can be run from the command line
 ```sh
 $ ./pyxam.py [options] <template file>
 ```
-Otherwise you need to run Pyxam under Python like so:
+Otherwise you need to run Pyxam under Python:
 ```sh
 $ python pyxam.py [options] <template file>
 ```
-Pyxam can also be called by another Python program. There is currently no formal API however pyxam can be run with default options with the following:
+Pyxam can also be called by another Python program. There is currently no formal API however pyxam can be run with default options by the following code:
 ```python
 import pyxam                                # Import pyxam module
 options = pyxam.pyxamopts.PyxamOptions()    # Get a default options object
 options.template = '<template file>'        # Add your template file
 pyxam.core.pyxam(options)                   # Run the options
 ```
-To change options from the default you can use `options.<option name> = value` to configure pyxam. The option names correspond to the options found below in Using Pyxam. Here is an example configuration:
+To change options from the default you can use `options.<option name> = value` to configure pyxam. The option names correspond to the options found in the following sections. Here is an example configuration:
 ```python
 options.solutions = True
 options.number = 3
@@ -108,7 +108,7 @@ Pyxam can take a CSV list of student names or student names and numbers and mix 
 ```
 first_name last_name                or          first_name last_name, student_number
 first_name last_name                            first_name last_name, student_number
-first_anme last_name                            first_name last_name, student_number
+first_name last_name                            first_name last_name, student_number
 ...                                             ...
 ```
 In addtion to producing a set of exams with student names or numbers appended to files importing a student list can also make changes to a template file itself. Using the LaTeX command below student information can be specified:
@@ -125,7 +125,7 @@ Usage: `pyxam.py -p <CSV file>`
 Specify a class list to mix in with the generated exams.   
 **method**  
 Usage: `pyxam.py -m <method>`  
-Specify the methodused when mixing in a class list. The random method will distribute the exams to students completely randomly. The sequence method will loop through the exams dealing them out in an evenly distributed manner. By default exams are sequenced. 
+Specify the method used when mixing in a class list. The random method will distribute the exams to students completely randomly. The sequence method will loop through the exams dealing them out in an evenly distributed manner. By default exams are sequenced. 
 
 ### Versions
 Pyxam can be used to generate different versions of the same exam. Each version will have its Python code parsed independently as well as potentially have different questions imported in different orders. To keep track of exam versions exams are numbered starting at 1. The version number and title can be written to the template itself using the following LaTeX commands:
@@ -151,12 +151,12 @@ Pyxam offers a large range of other configuration options and in order to make u
 % Specify arguments exactly as you would on the command line
 \Parg{-a -t 'Spring Quiz' -n 3}
 ```
-This command would mean anytime you run `pyxam.py <template file>` with the above in your template file your default options would change so that versions are lettered, the exam name is Spring Quiz and the number of exams produced will be 3. These arguments can be overidden at anytime simply by specifying them at the commandline.
+This command would mean anytime you run `pyxam.py <template file>` with the above in your template file your default options would change so that versions are lettered, the exam name is Spring Quiz and the number of exams produced will be 3. These arguments can be overidden at anytime simply by specifying them at the command line.
 
 ***Options***  
 **template**  
 Usage: `pyxam.py <template file>`  
-This file specifies the primary LaTeX file for Pyxam to parse. Ways to link other files are outlined below. This is the only required argument.  
+This file specifies the primary LaTeX file for Pyxam to parse. This is the only required argument.  
 **out**  
 Usage: `pyxam.py -o <output directory>`  
 Specify the path to a directory for Pyxam to use as the final location of exported files. By default this  will be a folder named /out in the same directory as the provided template file.    
@@ -177,7 +177,7 @@ Specify the output format for Pyxam. By default Pyxam will export a .tex file. A
 - **pdf** A pdf version of your original template file
 - **dvi** A dvi version of your original template file  
 
-*This format currently has some problems  
+\*This format currently has some problems  
 **shell**  
 Usage: `pyxam.py -shl <shell>`  
 Specify the shell to run the code through. By default this is Python. The other options include matlab, octave, and julia however they have not been tested.  
@@ -189,7 +189,7 @@ Usage: `pyxam.py -mpl`
 Disable the matplotlib library when parsing python code. This option is simply passed on to Pweave.  
 **interactive**  
 Usage: `pyxam.py -i <shell>`  
-By default LaTeX compilation is run through texfot in order to reduce but not eliminate the amount of console output produced. This is extremely necessary when creating a large number of exams. When attempting to debuga LaTeX document however you may desire the default interactive LaTeX output. This flag disables texfot.  
+By default LaTeX compilation is run through texfot in order to reduce but not eliminate the amount of console output produced. This is extremely necessary when creating a large number of exams. When attempting to debug a LaTeX document however you may desire the default interactive LaTeX output. This flag disables texfot.  
 **logging**  
 Usage: `pyxam.py -l`  
 This command can only be used on the command line. This enables logging messages throughout the Pyxam process. This is useful for debugging.  
@@ -201,12 +201,12 @@ The current planned feature list for the first release in rough order of expecte
 - A full example set to act as tutorials and testing for mathematical exporting and formatting
 - A Moodle XML export option
 - Add a warning if the temp directory already exists
-- A system for updating resource paths in the template prior to changing the CWD
 - First Name and last name specification on class lists along with smarting parsing of CSV files
 - Reordering of multiple choice answers
 - Quiet form of Pexpr{} so that the <%%> syntax can be dropped
 - Adjustment of command matching so that '\\}' will be ignored during matching and replaced with '}' once matching is complete, this will help in an edge case where a } occurs in a python string
 - Improvement to HTML export
+- Testing of Matlab and Octave support
 - Lacheck integration to help debug LaTex
 - Well defined API, methods with clear arguments
 - Well defined plugins, exporters, selectors, constants, etc.
