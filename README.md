@@ -100,7 +100,20 @@ Usge: `pyxam.py -fig <figure directory>`
 When exporting to a format that requires a resources directory use this to specify the path to the exported resources. By default this will be a folder named /figures in the same directory as the provided template file.  
 **number**  
 Usage `pyxam.py -n <an integer value>`  
-The number of exams to generate. Assuming your exams make use of random numbers or question rearrangment this will allow you to quickly create different exam versions.
+The number of exams to generate. Assuming your exams make use of random numbers or question rearrangment this will allow you to quickly create different exam versions.  
+**sample**  
+Usage `pyxam.py -smp <an integer value>`  
+You can import questions into your template file by using the compand \Pimport. Questions can be imported individually or in bulk. Question paths are specified either absolutely or relative to the template file. An example import:
+```LaTeX
+% This will replace this command with the contents of question1.tex
+\Pimport{questions/question1.tex}   
+% This will replace this command with the contents of question2.tex or question3.tex
+\Pimport{questions/question2.tex|questions/question3.tex}
+% This will replace this command with a random .tex file from /questions
+\Primport{questions}
+% This will replace this command with a random selection of 7 questions from /questions
+\Pimport[7]{questions}
+```
 
 
 ### Todos
