@@ -36,7 +36,7 @@ Currently Pyxam has no Setup script so after this step you are done.
 ### Running Pyxam
 If Python 3 is in your PATH as `python3 ` Pyxam can be run from the command line like so:
 ```sh
-$ pyxam.py [options] <template file>
+$ ./pyxam.py [options] <template file>
 ```
 Otherwise you need to run Pyxam under Python like so:
 ```sh
@@ -84,7 +84,12 @@ Hello World!           % This code is not
 Hello World!           % This code functions the same as the block above
 \end{document}
 ```
-For more detailed examples of what is  possible check out the [Pweave website](http://mpastell.com/pweave/) which is what powers this process under the hood. 
+For more detailed examples of what is  possible check out the [Pweave website](http://mpastell.com/pweave/) which is what powers this process under the hood. In addition to Python code Pyxam includes a number of exam specific options that are accessible by a combination of exam line options and LaTeX commands. They are outlined below.
+
+**template**  
+Usage: pyxam.py
+
+
 ### Todos
 
 ### Contact
