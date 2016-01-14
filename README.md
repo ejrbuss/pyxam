@@ -169,6 +169,9 @@ When exporting to a format that requires a resources directory use this to speci
 **number**  
 Usage `pyxam.py -n <an integer value>`  
 The number of exams to generate. Assuming your exams make use of random numbers or question rearrangment this will allow you to quickly create different exam versions.  
+**recompilation**  
+Usage `pyxam.py -r <an integer value>`  
+The number of additional times a latex file will be compiled. Some LaTeX commands require multiple passes to function properly (like \ref). By default Pyxam compiles files twice. This is only relevant to the pdf and dvi formats.  
 **format**  
 Usage: `pyxam.py -f <format>`  
 Specify the output format for Pyxam. By default Pyxam will export a .tex file. Avaialble formats include:
