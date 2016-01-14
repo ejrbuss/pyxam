@@ -201,7 +201,7 @@ The current planned feature list for the first release in rough order of expecte
 - A full example set to act as tutorials and testing for mathematical exporting and formatting
 - A Moodle XML export option
 - Add a warning if the temp directory already exists
-- First Name and last name specification on class lists along with smarting parsing of CSV files
+- First Name and last name specification on class lists along with smarter parsing of CSV files
 - Reordering of multiple choice answers
 - Quiet form of Pexpr{} so that the <%%> syntax can be dropped
 - Adjustment of command matching so that '\\}' will be ignored during matching and replaced with '}' once matching is complete, this will help in an edge case where a } occurs in a python string
@@ -210,7 +210,7 @@ The current planned feature list for the first release in rough order of expecte
 - Lacheck integration to help debug LaTex
 - Well defined API, methods with clear arguments
 - Well defined plugins, exporters, selectors, constants, etc.
-- Aesthetic improvements, icon, custom argparse, ascii art, etc.
+- General cleanup, icon, bug testing, custom argparse, etc.
 - Setup file 
 
 ### Contact
