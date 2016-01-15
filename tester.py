@@ -7,12 +7,6 @@ import os
 import unittest
 
 
-# Global Variables
-
-
-DEBUG = False # Set this to True to see logs from running the tester
-
-
 # Module Imports
 
 
@@ -26,8 +20,16 @@ import templater
 import weaver
 
 
+# Global Variables
+
+
+# Set this to True to see logs from running the tester
+DEBUG = False
+# Test string
 STR = 'Hello World!'
+# Test file
 TST = 'examples/test.txt'
+# Test invalid file
 NAF = '\\\\'
 
 
@@ -58,7 +60,7 @@ class CoreTester(unittest.TestCase):
 
 class ExporterTester(unittest.TestCase):
 
-    def test1(self):
+    def test(self):
         return
 
 
@@ -136,8 +138,20 @@ class LoggerTester(unittest.TestCase):
 
 class PopulationmixerTester(unittest.TestCase):
 
-    def test1(self):
-        return
+    def test_selector(self):
+        selector = populationmixer.Selector([1,2,3,4], populationmixer.METHOD_LIST[1])
+        self.assertEqual(selector.next(), 1)
+        self.assertEqual(selector.next(), 2)
+        self.assertEqual(selector.next(), 3)
+        self.assertEqual(selector.next(), 4)
+        self.assertEqual(selector.next(), 1)
+
+    def test_insert_data(self):
+        fileutil.make_temp('test3')
+        fileutil.write_temp('test.tex', '\Pconst{STUDENT}')
+        populationmixer.insert_data('test.tex', [STR])
+        self.assertEqual(fileutil.read_temp('test-Hello World!.tex'), STR)
+        #fileutil.remove_temp()
 
 
 class PyxamoptsTester(unittest.TestCase):
@@ -179,13 +193,26 @@ class TemplaterTester(unittest.TestCase):
         pairs = templater.tex_match(buffer, STR)
         self.assertEqual(buffer[pairs[0][0]:pairs[0][1]], STR)
 
+    def test_verb_1(self):
+        buffer = '\\verb' + STR
+        self.assertEqual(templater.verb(buffer), ' ' * (len('\\verb') + len('Hello')) + ' World!')
+
+    def test_verb_2(self):
+        buffer = '\\verb! ' + STR
+        self.assertEqual(templater.verb(buffer), ' ' * len('\\verb! Hello') + ' World!')
+
+    def test_verb_3(self):
+        buffer = '\\begin{verbatim}\n' + STR + '\n\\end{verbatim}\\end{verbatim}' + STR
+        self.assertEqual(templater.verb(buffer), ' ' * len('\\begin{verbatim}\n' + STR + '\n\\end{verbatim}') +
+                         '\\end{verbatim}' + STR)
+
 
 class WeaverTester(unittest.TestCase):
 
     def test_weave(self):
         fileutil.make_temp('examples')
         fileutil.write(TST, '\Pexpr{4}')
-        weaver.weave('test.txt', False, 'figure', 'python')
+        weaver.weave('test.txt', 'figure', 'python')
         self.assertEqual(fileutil.read_temp('test.tex'), '4\n')
         fileutil.remove('figure')
         fileutil.remove('examples/test.tex')

@@ -32,6 +32,7 @@ class PyxamOptions:
         # Evaluated
         self.number = 1
         self.sample = 1
+        self.recompilation = 1
         self.title = 'exam'
         self.format = 'pdf'
         self.shell = 'python'
@@ -41,9 +42,9 @@ class PyxamOptions:
         self.solutions = False
         self.alphabetize = False
         self.clean = False
-        self.matplotlib = False
         self.interactive = False
         self.logging = False
+        self.debug = False
 
 
 # Utility Methods
@@ -64,6 +65,7 @@ def check(opts, defaults=PyxamOptions()):
     if opts.figure is not None: defaults.figure = opts.figure
     if opts.number is not None: defaults.number = opts.number
     if opts.sample is not None: defaults.sample = opts.sample
+    if opts.recompilation is not None: defaults.recompilations = opts.recompilation
     if opts.title is not None: defaults.title = opts.title
     if opts.format is not None: defaults.format = opts.format
     if opts.shell is not None: defaults.shell = opts.shell
@@ -72,9 +74,9 @@ def check(opts, defaults=PyxamOptions()):
     if opts.solutions is not None: defaults.solutions = opts.solutions
     if opts.alphabetize is not None: defaults.alphabetize = opts.alphabetize
     if opts.clean is not None: defaults.clean = opts.clean
-    if opts.matplotlib is not None: defaults.matplotlib = opts.matplotlib
     if opts.interactive is not None: defaults.interactive = opts.interactive
     if opts.logging is not None: defaults.logging = opts.logging
+    if opts.debug is not None: defaults.debug = opts.debug
     return defaults
 
 
@@ -126,6 +128,7 @@ def init_arg_parser(args):
     add_option('number', '-n', 'Number of exams to generate', parser, int)
     add_option('format', '-f', 'Format of the exam: ' + str(exporter.FORMAT_LIST), parser)
     add_option('sample', '-smp', 'Default sample size', parser, int)
+    add_option('recompilation', '-r', 'The number of times the LaTeX file will be recompiled', parser, int)
     add_option('figure', '-fig', 'Figures directory', parser)
     add_option('method', '-m', 'Exam selection method: ' + str(populationmixer.METHOD_LIST), parser)
     add_option('population', '-p', 'Population csv file', parser)
@@ -133,9 +136,9 @@ def init_arg_parser(args):
     add_flag('solutions', '-s', 'Enable solution files', parser)
     add_flag('alphabetize', '-a', 'Alphabetize exam enumeration', parser)
     add_flag('clean', '-c', 'Clean questions and newlines', parser)
-    add_flag('matplotlib', '-mpl', 'Disable matplotlib', parser)
     add_flag('interactive', '-i', 'Enable LaTeX calls interactive', parser)
     add_flag('logging', '-l', 'Enable logging', parser)
+    add_flag('debug', '-d', 'Enable debug mode', parser)
     #Parse
     options = parser.parse_args(args)
     # Check for list encapsulated template str
@@ -160,6 +163,7 @@ def is_opts(opts):
         args = args + 'figure:\t\t\t' + str(opts.figure) + '\n'
         args = args + 'number:\t\t\t' + str(opts.number) + '\n'
         args = args + 'sample:\t\t\t' + str(opts.sample) + '\n'
+        args = args + 'recompilation\t' + str(opts.recompilation) + '\n'
         args = args + 'title:\t\t\t' + str(opts.title) + '\n'
         args = args + 'format:\t\t\t' + str(opts.format) + '\n'
         args = args + 'shell:\t\t\t' + str(opts.shell) + '\n'
@@ -168,9 +172,9 @@ def is_opts(opts):
         args = args + 'solutions:\t\t' + str(opts.solutions) + '\n'
         args = args + 'alphabetize:\t' + str(opts.alphabetize) + '\n'
         args = args + 'clean:\t\t\t' + str(opts.clean) + '\n'
-        args = args + 'matplotlib:\t\t' + str(opts.matplotlib) + '\n'
         args = args + 'interactive:\t' + str(opts.interactive) + '\n'
         args = args + 'logging:\t\t' + str(opts.logging) + '\n'
+        args = args + 'debug:\t\t' + str(opts.debug) + '\n'
         logger.log('pyxam.opts', 'Options provided (None will become default):\n' + args)
         return opts
     except:

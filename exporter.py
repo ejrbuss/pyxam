@@ -27,7 +27,7 @@ FORMAT_LIST = ['pdf', 'dvi', 'tex', 'html', 'moodle']
 # Utility Methods
 
 
-def switch(fmt, interactive):
+def switch(fmt, options):
     """
     Pre process export files.
     Send off a call to the correct exporter and export files to the OUT directory.
@@ -46,7 +46,7 @@ def switch(fmt, interactive):
     # Dispatch
     if fmt == 'dvi':
         logger.log('exporter.switch', 'Exporting to dvi')
-        dvi(interactive)
+        dvi(options)
     elif fmt == 'tex':
         logger.log('exporter.switch', 'Exporting to tex')
         tex()
@@ -58,40 +58,48 @@ def switch(fmt, interactive):
         moodle()
     elif fmt == 'pdf':
         logger.log('exporter.switch', 'Exporting to pdf')
-        pdf(interactive)
+        pdf(options)
     else:
         # Invalid format
         logger.log('exporter.switch', 'No format provided', logger.LEVEL.WARNING)
         print(' * Warning * No export format provided')
+        tex()
 
 
-def pdf(interactive):
+def pdf(options):
     """
     Compile LaTeX files to pdf and copy pdf files to OUT directory.
 
     Exits if a file fails to compile
        *This may be changed in the future as this will leave the TEMP directory, which is useful for debugging but not
         pretty on the eyes
-
+elif fmt == 'pdf':
+        logger.log('exporter.switch', 'Exporting to pdf')
+        pdf(interactive)
+    else:
     :param interactive: Flag for LaTex to be interactive
     :return: None
     """
     for name in os.listdir(fileutil.TEMP):
         if os.path.isfile(fileutil.TEMP + '/' + name) and name.endswith('.tex'):
             try:
-                if interactive:
-                    logger.log('exporter.pdf', 'Running pdflatex with interaction enabled')
-                    subprocess.call(['pdflatex', name], cwd=fileutil.TEMP)
+                if options.interactive:
+                    for i in range(options.recompilation):
+                        logger.log('exporter.pdf', 'Running pdflatex with interaction enabled')
+                        subprocess.call(['pdflatex', '-shell-escape', name], cwd=fileutil.TEMP)
                 else:
                     logger.log('exporter.pdf', 'Running pdflatex under texfot')
                     subprocess.call([os.path.dirname(pyxam.__file__) + '/texfot/texfot.pl',
-                                     'pdflatex', name], cwd=fileutil.TEMP)
+                                     'pdflatex', '-shell-escape', name], cwd=fileutil.TEMP)
+                    for i in range(options.recompilation):
+                        subprocess.call([os.path.dirname(pyxam.__file__) + '/texfot/texfot.pl',
+                                     '--quiet', 'pdflatex', '-shell-escape', name], cwd=fileutil.TEMP)
                 export('.pdf')
             except:
                 exit('Failed to compile latex file: ' + fileutil.TEMP + '/' + name)
 
 
-def dvi(interactive):
+def dvi(options):
     """
     Compile LaTeX files to dvi and copy dvi files to OUT directory.
 
@@ -102,7 +110,7 @@ def dvi(interactive):
         if os.path.isfile(fileutil.TEMP + '/' + name) and name.endswith('.tex'):
             # Write %&latex to start of file to force dvi export
             fileutil.write_temp(name, '%&latex\n' + fileutil.read_temp(name))
-    pdf(interactive)
+    pdf(options)
     export('dvi')
 
 

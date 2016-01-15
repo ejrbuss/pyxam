@@ -1,0 +1,27 @@
+\newpage
+\question[9] A unity gain feedback system as depicted in Figure~\ref{fig:CP_unity} in which $C(s)$ is the controller and
+$P(s)$ is the plant has a Bode plot shown in Figure~\ref{bode_q6} on the next page where $C(s)=K$ and $K=1$. The design
+specifications are: a phase margin $PM \ge 45^\circ$ and a  crossover frequency $\omega_c = 100$\,rad/s as it is in Figure~\ref{bode_q6}.
+\begin{parts}
+    \part Estimate the phase margin (PM) and gain margin (GM) on the Bode plot as drawn in Figure \ref{bode_q6} and
+    verify that $\omega_c = 100$ .
+    \part To meet the design specifications, design a lead compensator of form:
+    \[C(s)=C_{lead}(s)= K_{ld}\left(\frac{\frac{s}{z}+1}{\frac{s}{p}+1}\right)\]
+    First determine $z$ and $p$ to get the PM.
+    \part Then plot the compensated frequency response, magnitude and phase of part (b) with $K_{ld}=1$, on
+    Figure~\ref{bode_q6}
+    \part Finally using the Bode plot from part (c) with the lead controller find $K_{ld}$ to obtain the desired
+    crossover frequency. At that gain, verify the PM and determine the value of the GM?
+\end{parts}
+
+\vfill \hfill over
+\newpage
+\begin{figure} [ht!] %{optional}
+    \begin{center}
+        \includegraphics[scale=1,angle=0]{../teaching/final2013q6_bode.eps}
+        \caption{Graph for Bode Plot Question 6}
+        \label{bode_q6}
+    \end{center}
+\end{figure}
+\vfill
+\hfill \fbox{end}

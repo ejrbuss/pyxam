@@ -1,0 +1,19 @@
+\newpage
+\question[8] A unity gain feedback system as depicted in Figure~\ref{fig:CP_unity} in which $C(s)$ is the controller and
+$P(s)$ is the plant with a plant transfer function,
+\[ P(s) = \frac{40}{s(s+2)(s+20)} = \frac{1}{s(\frac{s}{2}+1)(\frac{s}{20}+1)}\]
+It is desired to have a the closed loop overshoot to a step input of $M_p=35$~\%
+\begin{parts}
+    \part With $C(s) = K$ set $K=1$ sketch an accurate frequency response Bode plot showing both the magnitude and phase using the grid below %on the next page (Figure \ref{bode_grid}).
+    \part Estimate the phase margin (PM) and gain margin (GM) using $K=1$ from (a) on the Bode plot.
+    \part Calculate the Phase Margin required using the overshoot requirement of $M_p=35$~\%
+    \part Find the gain $K$ needed to meet the the phase margin requirement in part (c). At this gain what is the Gain Margin (GM) and what is the cross-over frequency ($\omega_c$)?
+\end{parts}
+<<fig = True, caption = 'Frequency response of an 11 point moving average filter'>>=
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,4])
+plt.ylabel('somenumbers')
+plt.show()
+@
+%\includegraphics[angle=0,width=20cm, height=20cm]{../teaching/delay_open_f1a.eps}
+\vfill \hfill over

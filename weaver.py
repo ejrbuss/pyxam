@@ -14,7 +14,7 @@ import fileutil
 import templater
 
 
-def weave(path, matplotlib, figure, shell):
+def weave(path, figure, shell):
     """
     Parse and run Python code using Pweave.
 
@@ -33,18 +33,10 @@ def weave(path, matplotlib, figure, shell):
         command = buffer[pair[0]:pair[1]]
         arg = templater.tex_match(command, 'Pexpr')
         arg = command[arg[0][0]:arg[0][1]]
+        arg = arg.replace('\\}', '}')
         buffer = buffer[:pair[0]] + '<%= ' + arg + ' %>' + buffer[pair[1]:]
     fileutil.write_temp(path, buffer)
-    old_stdout = None
-    if logger.DEBUG != logger.LEVEL.INFO:
-        old_stdout = sys.stdout
-        sys.stdout = open(fileutil.TEMP + '/weave', 'w')
-    try:
-        try:
-            pweave.weave(fileutil.TEMP + '/' + path, doctype='tex', shell=shell, figdir=figure, plot=matplotlib)
-        finally:
-            if logger.DEBUG != logger.LEVEL.INFO:
-                sys.stdout.close()
-                sys.stdout = old_stdout
-    except:
-        exit('Failed to Pweave file: ' + fileutil.TEMP + '/' + path)
+    #try:
+    pweave.weave(fileutil.TEMP + '/' + path, doctype='tex', figdir=figure, shell=shell)
+    #except:
+    #    exit('Failed to Pweave file: ' + fileutil.TEMP + '/' + path)

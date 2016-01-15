@@ -67,8 +67,7 @@ def pimport(buffer, sample):
                 # Check if out of files to sample
                 if len(files) == 0:
                     files = files + removed
-                    logger.log('templater.pimport', 'Sample number: ' + sample + ' too high for ' + len(files) +
-                               'matched files. Questions will be reused', logger.LEVEL.WARNING)
+                    print(' * WARNING * questions repeated:', sample, '>', len(files))
                 file = random.choice(files)
                 files.remove(file)
                 removed.append(file)
@@ -112,6 +111,7 @@ def parse_constant(buffer, old, new):
     :param new: The replacement value
     :return: The str with the replacements made
     """
+    logger.log('templater.parse_constant', 'Replacing ' + old)
     # Reverse the list so it can be correctly removed back to front
     unparsed = tex_match(buffer, 'Pconst', True)[::-1]
     for pair in unparsed:
@@ -144,16 +144,6 @@ def tex_match(buffer, command, unparsed=False):
     If the flag is not set the match is the arguments for the given command.
     If the flag is set the match is the command and argument together.
 
-    Regex:
-    (?:[^\\]|^)(?:\\\\)*\\command{(([^{}]*({[^{}]*})*[^{}}]*)*)}
-    (?:[^\\]|^) Requires not backslash or start of string
-    (?:\\\\)*   Requires even number of backslashes in case of escape
-    (\\prefix{) Requires latex command syntax
-    [^{}]       Requires non curly parentheses
-    [{[^{}]*}]  Allows for dictionaries in Pexpr{}
-
-    This will still have conflicts for str with '{' or '}' in Pexpr, but should parse all other commands fine.
-
     :param buffer: The str to match from
     :param command: The command to match
     :param unparsed: Flag for returning the entire command with its args
@@ -161,11 +151,19 @@ def tex_match(buffer, command, unparsed=False):
     """
     parsed = []
     # Match the first group to skip the look behind checks
-    matched = [(m.start(1), m.end()) for m in
-        re.finditer(r'(?:[^\\]|^)(?:\\\\)*(\\' + command + r'{(([^{}]*({[^{}]*})*[^{}}]*)*)})', buffer)]
+    buffer = verb(buffer)
+    matched = [(m.start(1), m.end(1)) for m in
+        re.finditer(r'(\\' + command + '\{((\\})|([^}]))*?})', buffer)]
     if unparsed:
         return matched
     for pair in matched:
         match = re.search('{', buffer[pair[0]:])
         parsed.append((pair[0] + match.start() + 1, pair[1] - 1))
     return parsed
+
+def verb(buffer):
+    buffer = re.sub(r'%.*', lambda m: ' '*len(m.group()), buffer)
+    buffer = re.sub(r'\\verb[^ ]*]', lambda m: ' '*len(m.group()), buffer)
+    buffer = re.sub(r'\\verb!? *[^ ]*', lambda m: ' '*len(m.group()), buffer)
+    buffer = re.sub(r'\\begin\{verbatim}(.|\n)*?\\end\{verbatim}', lambda m: ' '*len(m.group()), buffer)
+    return buffer

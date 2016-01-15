@@ -3,6 +3,7 @@
 
 
 import os
+import re
 import csv
 import random
 
@@ -66,6 +67,10 @@ def mix(path, method):
     :return: None
     """
     if path is None:
+        files = [name for name in os.listdir(fileutil.TEMP) if os.path.isfile(fileutil.TEMP + '/' + name)
+                 and not name.endswith(core.SOLUTIONS + '.tex') and name.endswith('.tex')]
+        for name in files:
+            insert_data(name, [])
         return
     if not os.path.isfile(path):
         logger.log('populationmixer.mix', 'The path provided does not point to a file', logger.LEVEL.WARNING)
@@ -80,37 +85,43 @@ def mix(path, method):
         for row in reader:
             name = selector.next()
             insert_data(name, row)
+        for name in files:
+            insert_data(name, [])
 
 
 def insert_data(file, row):
     """
-    Insert CSV data into the \Pconst{STUDENT} and \Pconst{STUDNUM} tags of a file.
-    The assumed format is either
-    $STUDENT
-    $STUDENT
-    ...
-        or
-    $STUDENT, $STUDNUM
-    $STUDENT, $STUDNUM
-    ...
-    If no student number is provided the tag will be removed from the file.
-    If no student number is provided the file will be written to a file with a -$STUDENT appended to the filename.
-    If a student number is provided the file will be written to a file with a -#STUDNUM append to the filename.
+    Insert CSV data into the \Pconst{STUDENT}, \Pconst{FIRSTNM}, \Pconst{LASTNM} and \Pconst{NUMBER} commads.
+    Student names and numbers are assumed to be seperated by commas.
 
     :param file: The file to read and insert into
     :param row: The csv data
     :return: None
     """
-    if len(row) < 1:
-        return
-    if row[0] == '':
-        return
+    first = ''
+    last = ''
+    number = ''
+    for item in row:
+        if item == '':
+            continue
+        if re.match(r'.*[0-9].*', item):
+            number = item
+        elif first == '':
+            first = item
+        else:
+            last = item
+    split = first.lstrip().split(' ')
+    if len(split) > 1 and last == '':
+        last = split[len(split) - 1]
+        first = split[0]
     buffer = fileutil.read_temp(file)
-    buffer = templater.parse_constant(buffer, 'STUDENT', row[0])
-    # Check for trailing commas
-    if len(row) > 1 and row[1] != '':
-        buffer = templater.parse_constant(buffer, 'STUDNUM', row[1])
-        fileutil.write_temp(file[:-4] + '-' + row[1] + '.tex', buffer)
+    buffer = templater.parse_constant(buffer, 'STUDENT', first + ' ' + last)
+    buffer = templater.parse_constant(buffer, 'FIRSTNM', first)
+    buffer = templater.parse_constant(buffer, 'LASTNM', last)
+    buffer = templater.parse_constant(buffer, 'NUMBER', number)
+    if first == '':
+        fileutil.write_temp(file, buffer)
+    elif number == '':
+        fileutil.write_temp(file[:-4] + '-' + first + ' ' + last + '.tex', buffer)
     else:
-        buffer = templater.parse_constant(buffer, 'STUDNUM', '')
-        fileutil.write_temp(file[:-4] + '-' + row[0] + '.tex', buffer)
+        fileutil.write_temp(file[:-4] + '-' + number + '.tex', buffer)

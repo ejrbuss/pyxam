@@ -1,0 +1,13 @@
+\documentclass{article}
+\begin{document}
+\Parg{-f tex}
+<<>>=
+s = 'Hello World'   # Python code between <<>>= and @ will be run and displayed verbatim
+@
+<<echo=False>>=
+s                   # You can use the echo argument to silence bits of code
+@
+<% s += '!' %>      % This code is silent %>
+<%= s %>            % This code is not %>
+\Pexpr{s}           % This code functions the same as the block above}
+\end{document}

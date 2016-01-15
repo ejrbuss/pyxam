@@ -88,7 +88,7 @@ def pyxam(parameter_options):
             buffer = templater.parse_constant(buffer, 'TITLE', options.title)
             fileutil.write_temp(name, buffer)
             # Call Pweave on file
-            weaver.weave(name, options.matplotlib, options.figure, options.shell)
+            weaver.weave(name, options.figure, options.shell)
             # Produce solutions file if necessary
             if options.solutions:
                 fileutil.write_temp(name + SOLUTIONS + '.tex', make_solutions(fileutil.read_temp(name + '.tex')))
@@ -99,17 +99,18 @@ def pyxam(parameter_options):
     print('Exporting files...')
     populationmixer.mix(options.population, options.method)
     fileutil.make_out(options.out)
-    exporter.switch(options.format, options.interactive)
+    exporter.switch(options.format, options)
     # Cleanup
     print('Cleaning up...')
-    try: fileutil.remove(options.figure)
-    except: pass
-    try: fileutil.remove_temp()
-    except: pass
-    try: fileutil.remove('weave')
-    except: pass
-    try: fileutil.remove('compile')
-    except: pass
+    if not options.debug:
+        try: fileutil.remove(options.figure)
+        except: pass
+        try: fileutil.remove('weave')
+        except: pass
+        try: fileutil.remove('compile')
+        except: pass
+        try: fileutil.remove_temp()
+        except: pass
     # Done
     print('Done!')
 

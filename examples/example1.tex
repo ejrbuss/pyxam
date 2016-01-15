@@ -1,11 +1,10 @@
-\documentclass[12pt]{article}
+\documentclass[12pt]{exam}
 \usepackage{graphicx}
-\Parg{-s -a -n 3 -f pdf -p students2.csv}
+\Parg{-s -a -n 1 -f pdf -i}
 
 \begin{document}
 <<echo=False>>=
 import random
-a = random.randint(0, 10)
 @
 
 \title{\Pconst{TITLE} \Pconst{VERSION}}
@@ -14,6 +13,7 @@ a = random.randint(0, 10)
 \maketitle
 
 \begin{abstract}
+
 The abstract text goes here.
 \end{abstract}
 
@@ -31,6 +31,8 @@ Write your subsection text here.
 \section{Conclusion}
 Write your conclusion here.
 
+\begin{questions}
 \Pimport[2]{questions}
+\end{questions}
 
 \end{document}
