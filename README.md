@@ -13,9 +13,14 @@ This document gives a basic overview of the current version of Pyxam and also se
 ### Dependencies
 Pyxam requires a set of open source software to be used and run succesfully. Though a central goal of Pyxam is to keep the program simple and lightweight such dependencies are unavoidable. In order to run Pyxam you will need the following:
 
-- A LaTeX compiler and the examclass 
+- A LaTeX compiler 
     - For windows users try [MikTex](http://miktex.org/)
     - For unix users try [TeX Live](https://www.tug.org/texlive/) 
+- The 
+[exam](https://www.ctan.org/tex-archive/macros/latex/contrib/exam?lang=en), 
+[minted](https://www.ctan.org/tex-archive/macros/latex/contrib/minted?lang=en), and 
+[lineo](https://www.ctan.org/tex-archive/macros/latex/contrib/lineno?lang=en) packages for LaTeX
+- [Pygments](http://pygments.org/) for minted
 - [Python](https://www.python.org/downloads/) 3.4 or greater
 - [Perl](https://www.perl.org/get.html) 5 or greater
 - [Matplotlib](http://matplotlib.org/users/installing.html) library for Python
