@@ -187,9 +187,6 @@ Specify the shell to run the code through. By default this is Python. The other 
 **clean**  
 Usage: `pyxam.py -c>`  
 Disable LaTeX cleanup. This is not currently implemented.  
-**matplotlib**  
-Usage: `pyxam.py -mpl`  
-Disable the matplotlib library when parsing python code. This option is simply passed on to Pweave.  
 **interactive**  
 Usage: `pyxam.py -i <shell>`  
 By default LaTeX compilation is run through texfot in order to reduce but not eliminate the amount of console output produced. This is extremely necessary when creating a large number of exams. When attempting to debug a LaTeX document however you may desire the default interactive LaTeX output. This flag disables texfot.  
