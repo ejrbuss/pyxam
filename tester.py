@@ -151,7 +151,7 @@ class PopulationmixerTester(unittest.TestCase):
         fileutil.write_temp('test.tex', '\Pconst{STUDENT}')
         populationmixer.insert_data('test.tex', [STR])
         self.assertEqual(fileutil.read_temp('test-Hello World!.tex'), STR)
-        #fileutil.remove_temp()
+        fileutil.remove_temp()
 
 
 class PyxamoptsTester(unittest.TestCase):
@@ -169,6 +169,28 @@ class PyxamoptsTester(unittest.TestCase):
 
 
 class TemplaterTester(unittest.TestCase):
+
+    def test_request(self):
+        request = templater.Request('\\command[arg]{content}', 0, 22)
+        self.assertEqual(request.block, '\\command[arg]{content}')
+        self.assertEqual(request.arg, 'arg')
+        self.assertEqual(request.command, 'command')
+        self.assertEqual(request.content, 'content')
+
+    def test_request_clear(self):
+        buffer = STR + '\\command[arg]{content}' + STR
+        request = templater.Request(buffer, len(STR) + 0, len(STR) + 22)
+        self.assertEqual(request.clear(buffer), STR + STR)
+
+    def test_request_rewrap(self):
+        buffer = STR + '\\command[arg]{content}' + STR
+        request = templater.Request(buffer, len(STR) + 0, len(STR) + 22)
+        self.assertEqual(request.rewrap(buffer, '1', '2'), STR + '1content2' + STR)
+
+    def test_request_replace(self):
+        buffer = STR + '\\command[arg]{content}' + STR
+        request = templater.Request(buffer, len(STR) + 0, len(STR) + 22)
+        self.assertEqual(request.replace(buffer, STR), STR + STR + STR)
 
     def test_pre_process(self):
         options = templater.pre_process('\\Parg{-n 3}')
@@ -188,22 +210,27 @@ class TemplaterTester(unittest.TestCase):
     def test_clean(self):
         self.assertEqual(templater.clean(STR + '\\Parg{}'), STR)
 
-    def test_tex_match(self):
-        buffer = '\\' + STR + '{' + STR + '}'
-        pairs = templater.tex_match(buffer, STR)
-        self.assertEqual(buffer[pairs[0][0]:pairs[0][1]], STR)
+    def test_tex_match2(self):
+        buffer = STR + '\\command[arg]{content}' + STR + '\n%' + '\\command[arg]{content}' + STR + '\n' + '\\command[arg]{content}'
+        requests = templater.tex_match(buffer, 'command')
+        self.assertEqual(len(requests), 2)
+        for request in requests:
+            self.assertEqual(request.block, '\\command[arg]{content}')
+            self.assertEqual(request.arg, 'arg')
+            self.assertEqual(request.command, 'command')
+            self.assertEqual(request.content, 'content')
 
     def test_verb_1(self):
         buffer = '\\verb' + STR
-        self.assertEqual(templater.verb(buffer), ' ' * (len('\\verb') + len('Hello')) + ' World!')
+        self.assertEqual(templater.protect(buffer), ' ' * (len('\\verb') + len('Hello')) + ' World!')
 
     def test_verb_2(self):
         buffer = '\\verb! ' + STR
-        self.assertEqual(templater.verb(buffer), ' ' * len('\\verb! Hello') + ' World!')
+        self.assertEqual(templater.protect(buffer), ' ' * len('\\verb! Hello') + ' World!')
 
     def test_verb_3(self):
         buffer = '\\begin{verbatim}\n' + STR + '\n\\end{verbatim}\\end{verbatim}' + STR
-        self.assertEqual(templater.verb(buffer), ' ' * len('\\begin{verbatim}\n' + STR + '\n\\end{verbatim}') +
+        self.assertEqual(templater.protect(buffer), ' ' * len('\\begin{verbatim}\n' + STR + '\n\\end{verbatim}') +
                          '\\end{verbatim}' + STR)
 
 

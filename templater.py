@@ -15,6 +15,64 @@ import fileutil
 import pyxamopts
 
 
+# Request Class
+
+class Request:
+
+    def __init__(self, buffer, initial, final):
+        """
+        Initialize request fields including the initial and final indices, the entire block str, the command,
+        any provided arguments and any content of the command.
+
+        :param buffer: The string to read the request from
+        :param initial: The starting block index
+        :param final: The ending block index
+        :return: A new Request object
+        """
+        self.initial = initial
+        self.final = final
+        self.block = buffer[initial:final]
+        self.command = re.search(r'.(.*?)(\[.*?\])?\{.*\}', self.block, re.DOTALL).group(1)
+        try:
+            self.arg = re.search(r'.*?\[(.*?)\]', self.block, re.DOTALL).group(1)
+        except:
+            self.arg = ''
+        self.content = re.search(r'.*?\{(.*)\}', self.block, re.DOTALL).group(1)
+
+    def clear(self, buffer):
+        """
+        Remove this request str from the given buffer.
+        This should only be called on the buffer that this Request was created from.
+
+        :param buffer: The buffer to remove the request from
+        :return: The new buffer
+        """
+        return buffer[:self.initial] + buffer[self.final:]
+
+    def rewrap(self, buffer, pre, post):
+        """
+        Rewrap the content of this Request with the given prefix and postfix.
+        This should only be called on the buffer that this Request was created from.
+
+        :param buffer: The buffer to remove the request from
+        :param pre: The prefix for the content
+        :param post: The postfix for the content
+        :return: The new buffer
+        """
+        return buffer[:self.initial] + pre + self.content + post + buffer[self.final:]
+
+    def replace(self, buffer, new):
+        """
+        Replace the conetent of this Request with a new str.
+        This should only be called on the buffer that this Request was created from.
+
+        :param buffer: The buffer to remove the request from
+        :param new: The replacement str
+        :return: The new buffer
+        """
+        return buffer[:self.initial] + new + buffer[self.final:]
+
+
 # Utility Methods
 
 
@@ -25,11 +83,11 @@ def pre_process(buffer):
     :param buffer: The str to check
     :return: A PyxamOptions compatible instance
     """
-    parsed = tex_match(buffer, 'Parg')
+    requests = tex_match(buffer, 'Parg')
     args = ''
-    for pair in parsed:
+    for request in requests:
         # Collect arguments
-        args = args + buffer[pair[0]:pair[1]] + ' '
+        args = request.content + ' '
     return pyxamopts.init_arg_parser(args.split(' '))
 
 
@@ -41,24 +99,18 @@ def pimport(buffer, sample):
     :param sample: The default number of samples for any \Pimport statement without a specified sample number
     :return:
     """
-    # Get the full matched str, reverse the list so it can be correctly inserted into
-    unparsed = tex_match(buffer, r'Pimport(\[[0-9]+\])?', True)[::-1]
+    requests = tex_match(buffer, 'Pimport')
     # Loop through imports
-    for pair in unparsed:
-        # Get just the argument str
-        command = buffer[pair[0]:pair[1]]
-        logger.log('templater.pimport', 'Importing: ' + command)
-        arg = tex_match(command, r'Pimport(\[[0-9]+\])?')
-        arg = command[arg[0][0]:arg[0][1]]
+    for request in requests:
         # Check if sample number is specified
-        if '[' in command:
+        if len(request.arg) > 0:
             try:
-                sample = int(re.search('\[([0-9]+)\]', command).group(1))
+                sample = int(request.arg)
                 logger.log('templater.pimport', 'Changed sample size to: ' + str(sample))
             except:
-                logger.log('templater.pimport', 'Failed to parse argument from: ' + command, logger.LEVEL.WARNING)
+                logger.log('templater.pimport', 'Failed to parse argument from: ' + request.block, logger.LEVEL.WARNING)
         # Get import files
-        files = walk(arg.split(',')[0])
+        files = walk(request.content.split(',')[0])
         logger.log('templater.pimport', 'Matched files: ' + str(files))
         removed = []
         # Insert files
@@ -71,9 +123,9 @@ def pimport(buffer, sample):
                 file = random.choice(files)
                 files.remove(file)
                 removed.append(file)
-                buffer = buffer[:pair[0]] + '\n' + fileutil.read(file) + buffer[pair[1]:]
+                buffer = request.replace(buffer, '\n' + fileutil.read(file))
                 # Prevent the next file from writing over the first
-                pair = (pair[0], pair[0])
+                request.final = request.initial
     return buffer
 
 
@@ -113,13 +165,10 @@ def parse_constant(buffer, old, new):
     """
     logger.log('templater.parse_constant', 'Replacing ' + old)
     # Reverse the list so it can be correctly removed back to front
-    unparsed = tex_match(buffer, 'Pconst', True)[::-1]
-    for pair in unparsed:
-        command = buffer[pair[0]:pair[1]]
-        arg = tex_match(command, 'Pconst')
-        arg = command[arg[0][0]:arg[0][1]]
-        if arg == old:
-            buffer = buffer[:pair[0]] + new + buffer[pair[1]:]
+    requests = tex_match(buffer, 'Pconst')
+    for request in requests:
+        if request.content == old:
+            buffer = request.replace(buffer, new)
     return buffer
 
 
@@ -132,36 +181,36 @@ def clean(buffer):  # !!!!!!!!!! to be exteneded !!!!!!!!!!!
     :return: The cleaned str
     """
     # Reverse the list so it can be correctly removed back to front
-    unparsed = tex_match(buffer, 'Parg', True)[::-1]
-    for pair in unparsed:
-        buffer = buffer[:pair[0]] + buffer[pair[1]:]
+    requests = tex_match(buffer, 'Parg')
+    for request in requests:
+        buffer = request.clear(buffer)
     return buffer
 
 
-def tex_match(buffer, command, unparsed=False):
+def tex_match(buffer, command):
     """
-    Returns a list of tuples which indicate the starting and ending indices for matches.
-    If the flag is not set the match is the arguments for the given command.
-    If the flag is set the match is the command and argument together.
+    Returns a list of Request objects that match the command.
+    The list is reversed so that matched objects can be easily deleted.
 
     :param buffer: The str to match from
     :param command: The command to match
-    :param unparsed: Flag for returning the entire command with its args
-    :return: A list of starting and ending indices
+    :return: A list of requests
     """
-    parsed = []
-    # Match the first group to skip the look behind checks
-    buffer = verb(buffer)
+    requests = []
     matched = [(m.start(1), m.end(1)) for m in
-        re.finditer(r'(\\' + command + '\{((\\})|([^}]))*?})', buffer)]
-    if unparsed:
-        return matched
+        re.finditer(r'(\\' + command + '(\[.*?\])?\{((\\})|([^}]))*?})', protect(buffer))]
     for pair in matched:
-        match = re.search('{', buffer[pair[0]:])
-        parsed.append((pair[0] + match.start() + 1, pair[1] - 1))
-    return parsed
+        requests.append(Request(buffer, pair[0], pair[1]))
+    return requests[::-1]
 
-def verb(buffer):
+
+def protect(buffer):
+    """
+    Replace parseable code with whitespace if that code is in a verbatim block or comment.
+
+    :param buffer: The buffer to protect
+    :return: The protected buffer
+    """
     buffer = re.sub(r'%.*', lambda m: ' '*len(m.group()), buffer)
     buffer = re.sub(r'\\verb[^ ]*]', lambda m: ' '*len(m.group()), buffer)
     buffer = re.sub(r'\\verb!? *[^ ]*', lambda m: ' '*len(m.group()), buffer)

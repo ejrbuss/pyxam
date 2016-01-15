@@ -65,28 +65,35 @@ options.out = '~/exams/exam2016'
 Pyxam works by parsing a LaTeX template file, configuring a set of options, and then running your file through a Python parser and exporter. In order to add python code to your LaTeX file you need to use the following syntax:
 ```LaTeX
 \documentclass{article}
+\usepackage{graphicx}
 \begin{document}
-<<>>=
-s = 'Hello World'   # Python code between <<>>= and @ will be run and displayed verbatim
-@
-<<echo=False>>=
-s                   # You can use the echo argument to silence bits of code
-@
-<% s += '!' %>      % This code is silent 
-<%= s %>            % This code is not 
-\Pexpr{s}           % This code functions the same as the block above
+\Pverb{
+s = 'Hello World'   # You can use the verb command to run and get display the verbatim code
+}
+\Pblock{
+s                   # You can use the block command to run bits of code silently
+}
+\Pexprs{s}          % This code is silent
+\Pexpr{s}           % This code is not
+\Pfig[A graph]{
+from matplotlib.pyplot import *
+plot([1,2,3])
+show()                    # This displays a figure
+}
 \end{document}
 ```
-If you used Pyxam on the above document and exported to .tex you would get:
+If you used Pyxam on the above document and exported to tex you would get:
 ```LaTeX
 \documentclass{article}
+\usepackage{graphicx}
 \begin{document}
 \begin{verbatim}
-s = 'Hello World'   # Python code between <<>>= and @ will be run and displayed verbatim
-\end{verbatim}
-% This code is silent 
-Hello World!           % This code is not 
-Hello World!           % This code functions the same as the block above
+s = 'Hello World'   # You can use the verb command to run and get display the verbatim code
+\end{verbatim}         
+% This code is silent
+Hello World           % This code is not
+\includegraphics[width= \linewidth]{figures/exam1_figure3_1.pdf}
+\caption{A graph}
 \end{document}
 ```
 For more detailed examples of what is  possible check out the [Pweave website](http://mpastell.com/pweave/) which is what powers this process under the hood. In addition to Python code Pyxam includes a number of exam specific options that are accessible by a combination of exam line options and LaTeX commands. 
@@ -206,10 +213,7 @@ The current planned feature list for the first release in rough order of expecte
 - A full example set to act as tutorials and testing for mathematical exporting and formatting
 - A Moodle XML export option
 - Add a warning if the temp directory already exists
-- First Name and last name specification on class lists along with smarter parsing of CSV files
 - Reordering of multiple choice answers
-- Quiet form of Pexpr{} so that the <%%> syntax can be dropped
-- Adjustment of command matching so that '\\}' will be ignored during matching and replaced with '}' once matching is complete, this will help in an edge case where a } occurs in a python string
 - Improvement to HTML export
 - Testing of Matlab and Octave support
 - Lacheck integration to help debug LaTex

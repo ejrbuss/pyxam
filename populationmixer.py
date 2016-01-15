@@ -105,12 +105,12 @@ def insert_data(file, row):
         if item == '':
             continue
         if re.match(r'.*[0-9].*', item):
-            number = item
+            number = item.strip()
         elif first == '':
-            first = item
+            first = item.strip()
         else:
-            last = item
-    split = first.lstrip().split(' ')
+            last = item.strip()
+    split = first.strip().split(' ')
     if len(split) > 1 and last == '':
         last = split[len(split) - 1]
         first = split[0]
