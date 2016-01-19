@@ -44,7 +44,7 @@ def weave(path, figure, shell):
 
 
 def tofigure(buffer):
-    requests = templater.tex_match(buffer, 'Pfig')
+    requests = templater.command_match(buffer, 'Pfig')
     for request in requests:
         caption = request.arg
         buffer = request.rewrap(buffer, '<<fig=True,caption=\'' + caption + '\',echo=False>>=', '\n@')
@@ -61,7 +61,7 @@ def tonoweb(buffer, command, pre, post):
     :param post: The postfix noweb expression
     :return: The new buffer
     """
-    requests = templater.tex_match(buffer, command)
+    requests = templater.command_match(buffer, command)
     for request in requests:
         buffer = request.rewrap(buffer, pre, post)
     return buffer

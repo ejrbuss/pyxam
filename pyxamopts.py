@@ -41,6 +41,7 @@ class PyxamOptions:
         # Flags
         self.solutions = False
         self.alphabetize = False
+        self.rearrange = False
         self.clean = False
         self.interactive = False
         self.logging = False
@@ -73,6 +74,7 @@ def check(opts, defaults=PyxamOptions()):
     if opts.population is not None: defaults.population = opts.population
     if opts.solutions is not None: defaults.solutions = opts.solutions
     if opts.alphabetize is not None: defaults.alphabetize = opts.alphabetize
+    if opts.rearrange is not None: defaults.rearrange = opts.rearrange
     if opts.clean is not None: defaults.clean = opts.clean
     if opts.interactive is not None: defaults.interactive = opts.interactive
     if opts.logging is not None: defaults.logging = opts.logging
@@ -122,19 +124,20 @@ def init_arg_parser(args):
     parser.add_argument('template', nargs=1, help='Template file location')
     # Optional args
     add_option('out', '-o', 'Output directory', parser)
-    add_option('temp', '-tmp', 'Temporary file directory', parser)
-    add_option('shell', '-shl', 'Code parsing shell', parser)
+    add_option('temp', '-T', 'Temporary file directory', parser)
+    add_option('shell', '-S', 'Code parsing shell', parser)
     add_option('title', '-t', 'Title of the exam', parser)
     add_option('number', '-n', 'Number of exams to generate', parser, int)
     add_option('format', '-f', 'Format of the exam: ' + str(exporter.FORMAT_LIST), parser)
-    add_option('sample', '-smp', 'Default sample size', parser, int)
+    add_option('sample', '-N', 'Default sample size', parser, int)
     add_option('recompilation', '-r', 'The number of times the LaTeX file will be recompiled', parser, int)
-    add_option('figure', '-fig', 'Figures directory', parser)
+    add_option('figure', '-F', 'Figures directory', parser)
     add_option('method', '-m', 'Exam selection method: ' + str(populationmixer.METHOD_LIST), parser)
     add_option('population', '-p', 'Population csv file', parser)
     # Flags
     add_flag('solutions', '-s', 'Enable solution files', parser)
     add_flag('alphabetize', '-a', 'Alphabetize exam enumeration', parser)
+    add_flag('rearrange', '-R', 'Enable multiple choice shuffling', parser)
     add_flag('clean', '-c', 'Clean questions and newlines', parser)
     add_flag('interactive', '-i', 'Enable LaTeX calls interactive', parser)
     add_flag('logging', '-l', 'Enable logging', parser)
@@ -171,6 +174,7 @@ def is_opts(opts):
         args = args + 'population:\t\t' + str(opts.population) + '\n'
         args = args + 'solutions:\t\t' + str(opts.solutions) + '\n'
         args = args + 'alphabetize:\t' + str(opts.alphabetize) + '\n'
+        args = args + 'rearrange:\t\t' + str(opts.rearrange) + '\n'
         args = args + 'clean:\t\t\t' + str(opts.clean) + '\n'
         args = args + 'interactive:\t' + str(opts.interactive) + '\n'
         args = args + 'logging:\t\t' + str(opts.logging) + '\n'

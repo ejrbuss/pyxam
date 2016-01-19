@@ -1,6 +1,11 @@
 \documentclass[12pt]{exam}
 \usepackage{graphicx}
-\Parg{-s -a -n 1 -f pdf -i}
+\Parg{-s -a -n 1 -f moodle -R -n 3}
+
+\newcommand{\tf}[1][{}]{%
+    \fillin[#1][0.25in]%
+}
+
 
 \begin{document}
 <<echo=False>>=
@@ -32,7 +37,7 @@ Write your subsection text here.
 Write your conclusion here.
 
 \begin{questions}
-\Pimport[2]{questions}
+\Pimport[2]{questions/q1.tex|questions/q2.tex}
 \end{questions}
 
 \end{document}

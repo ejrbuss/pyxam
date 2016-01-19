@@ -82,10 +82,11 @@ def pyxam(parameter_options):
             name = options.title + index(n, options)
             buffer = fileutil.read_temp(options.title)
             buffer = templater.pimport(buffer, options.sample)
-            buffer = templater.clean(buffer)
+            buffer = templater.shuffle(buffer, options.rearrange)
             # Replace constants
             buffer = templater.parse_constant(buffer, 'VERSION', index(n, options))
             buffer = templater.parse_constant(buffer, 'TITLE', options.title)
+            buffer = templater.clean(buffer)
             fileutil.write_temp(name, buffer)
             # Call Pweave on file
             weaver.weave(name, options.figure, options.shell)
@@ -99,7 +100,7 @@ def pyxam(parameter_options):
     print('Exporting files...')
     populationmixer.mix(options.population, options.method)
     fileutil.make_out(options.out)
-    exporter.switch(options.format, options)
+    exporter.switch(options)
     # Cleanup
     print('Cleaning up...')
     if not options.debug:
@@ -156,6 +157,6 @@ def make_solutions(buffer):
     :return: The new solution str
     """
     # regex with look behind for escaped commands, see templater.tex_match for more details
-    solution_buffer = re.sub(r'(?:^|[^\\])(?:\\\\)*\\documentclass\[', r'\documentclass[answers,', buffer)
-    solution_buffer = re.sub(r'(?:^|[^\\])(?:\\\\)*\\documentclass{', r'\documentclass[answers]{', solution_buffer)
+    solution_buffer = re.sub(r'(?:^|[^\\])\\documentclass\[', r'\documentclass[answers,', buffer)
+    solution_buffer = re.sub(r'(?:^|[^\\])\\documentclass{', r'\documentclass[answers]{', solution_buffer)
     return solution_buffer

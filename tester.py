@@ -14,6 +14,7 @@ import core
 import exporter
 import fileutil
 import logger
+import parser
 import populationmixer
 import pyxamopts
 import templater
@@ -136,6 +137,19 @@ class LoggerTester(unittest.TestCase):
         logger.DEBUG = cache
 
 
+class ParserTester(unittest.TestCase):
+
+    def test_Question(self):
+        question = parser.Question(
+                '\\titledquestion{name}\ntext\\begin{choices}\n\\CorrectChoice A\n\\choice B\n'
+                '\\choice C\n\\end{choices}')
+        self.assertEqual(question.name, 'name')
+        self.assertEqual(question.text, 'text')
+        self.assertEqual(question.choices, ['B', 'C'])
+        self.assertEqual(question.solution, 'A')
+        self.assertEqual(question.type, 'multichoice')
+
+
 class PopulationmixerTester(unittest.TestCase):
 
     def test_selector(self):
@@ -170,27 +184,49 @@ class PyxamoptsTester(unittest.TestCase):
 
 class TemplaterTester(unittest.TestCase):
 
-    def test_request(self):
-        request = templater.Request('\\command[arg]{content}', 0, 22)
-        self.assertEqual(request.block, '\\command[arg]{content}')
-        self.assertEqual(request.arg, 'arg')
-        self.assertEqual(request.command, 'command')
-        self.assertEqual(request.content, 'content')
+    def test_command(self):
+        command = templater.Command('\\command[arg]{content}', 0, 22)
+        self.assertEqual(command.block, '\\command[arg]{content}')
+        self.assertEqual(command.arg, 'arg')
+        self.assertEqual(command.name, 'command')
+        self.assertEqual(command.content, 'content')
 
-    def test_request_clear(self):
+    def test_command_clear(self):
         buffer = STR + '\\command[arg]{content}' + STR
-        request = templater.Request(buffer, len(STR) + 0, len(STR) + 22)
-        self.assertEqual(request.clear(buffer), STR + STR)
+        command = templater.Command(buffer, len(STR) + 0, len(STR) + 22)
+        self.assertEqual(command.clear(buffer), STR + STR)
 
-    def test_request_rewrap(self):
+    def test_command_rewrap(self):
         buffer = STR + '\\command[arg]{content}' + STR
-        request = templater.Request(buffer, len(STR) + 0, len(STR) + 22)
-        self.assertEqual(request.rewrap(buffer, '1', '2'), STR + '1content2' + STR)
+        command = templater.Command(buffer, len(STR) + 0, len(STR) + 22)
+        self.assertEqual(command.rewrap(buffer, '1', '2'), STR + '1content2' + STR)
 
-    def test_request_replace(self):
+    def test_command_replace(self):
         buffer = STR + '\\command[arg]{content}' + STR
-        request = templater.Request(buffer, len(STR) + 0, len(STR) + 22)
-        self.assertEqual(request.replace(buffer, STR), STR + STR + STR)
+        command = templater.Command(buffer, len(STR) + 0, len(STR) + 22)
+        self.assertEqual(command.replace(buffer, STR), STR + STR + STR)
+
+    def test_section(self):
+        section = templater.Section('\\begin[arg]{section}content\\end{section}', 0, 40)
+        self.assertEqual(section.block, '\\begin[arg]{section}content\\end{section}')
+        self.assertEqual(section.arg, 'arg')
+        self.assertEqual(section.name, 'section')
+        self.assertEqual(section.content, 'content')
+
+    def test_section_clear(self):
+        buffer = STR + '\\begin[arg]{section}content\\end{section}' + STR
+        section = templater.Section(buffer, len(STR) + 0, len(STR) + 40)
+        self.assertEqual(section.clear(buffer), STR + STR)
+
+    def test_section_insert(self):
+        buffer = STR + '\\begin{section}content\\end{section}' + STR
+        section = templater.Section(buffer, len(STR) + 0, len(STR) + 35)
+        self.assertEqual(section.insert(buffer, STR), STR + '\\begin{section}\n' + STR + '\n\\end{section}' + STR)
+
+    def test_section_replace(self):
+        buffer = STR + '\\begin[arg]{section}content\\end{section}' + STR
+        section = templater.Section(buffer, len(STR) + 0, len(STR) + 40)
+        self.assertEqual(section.replace(buffer, STR), STR + STR + STR)
 
     def test_pre_process(self):
         options = templater.pre_process('\\Parg{-n 3}')
@@ -204,21 +240,39 @@ class TemplaterTester(unittest.TestCase):
     def test_walk(self):
         self.assertEqual(templater.walk(TST), [TST])
 
+    def test_rearrange(self):
+        self.assertEqual(templater.shuffle(
+                '\\begin{choices}\n\\CorrectChoice A\n\\choice B\n\\end{choices}', True),
+        '\\begin{choices}\n\\choice B\n\\CorrectChoice A\n\\end{choices}')
+
     def test_parse_constant(self):
         self.assertEqual(templater.parse_constant('\\Pconst{STR}', 'STR', STR), STR)
 
     def test_clean(self):
         self.assertEqual(templater.clean(STR + '\\Parg{}'), STR)
 
-    def test_tex_match2(self):
-        buffer = STR + '\\command[arg]{content}' + STR + '\n%' + '\\command[arg]{content}' + STR + '\n' + '\\command[arg]{content}'
-        requests = templater.tex_match(buffer, 'command')
+    def test_cmmand_match(self):
+        buffer = STR + '\\command[arg]{content}' + STR + '\n%' + '\\command[arg]{content}' + STR + '\n' + \
+                 '\\command[arg]{content}'
+        requests = templater.command_match(buffer, 'command')
         self.assertEqual(len(requests), 2)
         for request in requests:
             self.assertEqual(request.block, '\\command[arg]{content}')
             self.assertEqual(request.arg, 'arg')
-            self.assertEqual(request.command, 'command')
+            self.assertEqual(request.name, 'command')
             self.assertEqual(request.content, 'content')
+
+    def test_section_match(self):
+        buffer = STR + '\\begin[arg]{section}content\ncontent\\end{section}' + STR + '\n%' + \
+                 '\\begin[arg]{section}content\ncontent\\end{section}' + STR + '\n' + \
+                 '\\begin[arg]{section}content\ncontent\\end{section}'
+        requests = templater.section_match(buffer, 'section')
+        self.assertEqual(len(requests), 2)
+        for request in requests:
+            self.assertEqual(request.block, '\\begin[arg]{section}content\ncontent\\end{section}')
+            self.assertEqual(request.arg, 'arg')
+            self.assertEqual(request.name, 'section')
+            self.assertEqual(request.content, 'content\ncontent')
 
     def test_verb_1(self):
         buffer = '\\verb' + STR
@@ -237,7 +291,7 @@ class TemplaterTester(unittest.TestCase):
 class WeaverTester(unittest.TestCase):
 
     def test_weave(self):
-        fileutil.make_temp('examples')
+        fileutil.make_temp('examples', True)
         fileutil.write(TST, '\Pexpr{4}')
         weaver.weave('test.txt', 'figure', 'python')
         self.assertEqual(fileutil.read_temp('test.tex'), '4\n')

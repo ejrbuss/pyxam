@@ -15,24 +15,24 @@ import fileutil
 import pyxamopts
 
 
-# Request Class
+# Command Class
 
-class Request:
+class Command:
 
     def __init__(self, buffer, initial, final):
         """
-        Initialize request fields including the initial and final indices, the entire block str, the command,
+        Initialize Command fields including the initial and final indices, the entire block str, the name,
         any provided arguments and any content of the command.
 
-        :param buffer: The string to read the request from
+        :param buffer: The string to read the Command from
         :param initial: The starting block index
         :param final: The ending block index
-        :return: A new Request object
+        :return: A new Command objectrequest
         """
         self.initial = initial
         self.final = final
         self.block = buffer[initial:final]
-        self.command = re.search(r'.(.*?)(\[.*?\])?\{.*\}', self.block, re.DOTALL).group(1)
+        self.name = re.search(r'.(.*?)(\[.*?\])?\{.*\}', self.block, re.DOTALL).group(1)
         try:
             self.arg = re.search(r'.*?\[(.*?)\]', self.block, re.DOTALL).group(1)
         except:
@@ -41,8 +41,8 @@ class Request:
 
     def clear(self, buffer):
         """
-        Remove this request str from the given buffer.
-        This should only be called on the buffer that this Request was created from.
+        Remove this Command from the given buffer.
+        This should only be called on the buffer that this Command was created from.
 
         :param buffer: The buffer to remove the request from
         :return: The new buffer
@@ -51,8 +51,8 @@ class Request:
 
     def rewrap(self, buffer, pre, post):
         """
-        Rewrap the content of this Request with the given prefix and postfix.
-        This should only be called on the buffer that this Request was created from.
+        Rewrap the content of this Command with the given prefix and postfix.
+        This should only be called on the buffer that this Command was created from.
 
         :param buffer: The buffer to remove the request from
         :param pre: The prefix for the content
@@ -63,8 +63,8 @@ class Request:
 
     def replace(self, buffer, new):
         """
-        Replace the conetent of this Request with a new str.
-        This should only be called on the buffer that this Request was created from.
+        Replace the conetent of this Command with a new str.
+        This should only be called on the buffer that this Command was created from.
 
         :param buffer: The buffer to remove the request from
         :param new: The replacement str
@@ -72,6 +72,55 @@ class Request:
         """
         return buffer[:self.initial] + new + buffer[self.final:]
 
+
+# Section Class
+
+class Section:
+
+    def __init__(self, buffer, initial, final):
+        """
+        Initialize Section fields including the initial and final indices, the entire block str, the name,
+        any provided arguments and any content of the section.
+
+        :param buffer: The string to read the Section from
+        :param initial: The starting block index
+        :param final: The ending block index
+        :return: A new Section object
+        """
+        self.initial = initial
+        self.final = final
+        self.block = buffer[initial:final]
+        self.name = re.search(r'.*?\{(.*?)\}.*', self.block, re.DOTALL).group(1)
+        try:
+            self.arg = re.search(r'.*?\[(.*?)\]', self.block, re.DOTALL).group(1)
+        except:
+            self.arg = ''
+        self.content = re.search(r'/*?\}(.*?)\\end\{' + self.name + r'\}', self.block, re.DOTALL).group(1)
+
+    def clear(self, buffer):
+        """
+        Remove this Section from the given buffer.
+        This should only be called on the buffer that this Section was created from.
+
+        :param buffer: The buffer to remove the request from
+        :return: The new buffer
+        """
+        return buffer[:self.initial] + buffer[self.final:]
+
+    def insert(self, buffer, new):
+        return buffer[:self.initial] + '\\begin{' + self.name + '}\n' + new + '\n\\end{' + self.name + '}' + \
+               buffer[self.final:]
+
+    def replace(self, buffer, new):
+        """
+        Replace the conetent of this Section with a new str.
+        This should only be called on the buffer that this Section was created from.
+
+        :param buffer: The buffer to remove the request from
+        :param new: The replacement str
+        :return: The new buffer
+        """
+        return buffer[:self.initial] + new + buffer[self.final:]
 
 # Utility Methods
 
@@ -83,7 +132,7 @@ def pre_process(buffer):
     :param buffer: The str to check
     :return: A PyxamOptions compatible instance
     """
-    requests = tex_match(buffer, 'Parg')
+    requests = command_match(buffer, 'Parg')
     args = ''
     for request in requests:
         # Collect arguments
@@ -99,7 +148,7 @@ def pimport(buffer, sample):
     :param sample: The default number of samples for any \Pimport statement without a specified sample number
     :return:
     """
-    requests = tex_match(buffer, 'Pimport')
+    requests = command_match(buffer, 'Pimport')
     # Loop through imports
     for request in requests:
         # Check if sample number is specified
@@ -154,6 +203,27 @@ def walk(arg):
     return paths
 
 
+def shuffle(buffer, rearrange):
+    """
+    Rearrange multiple choice questions.
+
+    :param buffer: The str to rearrange the questions in
+    :param rearrange: a flag for disabling rearrangement
+    :return: The rearranged buffer
+    """
+    if not buffer:
+        return buffer
+    for section in section_match(buffer, 'choices'):
+        choices = section.content.split('\n')
+        while '' in choices:
+            choices.remove('')
+        tmp = choices[:]
+        while tmp == choices:
+            random.shuffle(choices)
+        buffer = section.insert(buffer, '\n'.join(choices))
+    return buffer
+
+
 def parse_constant(buffer, old, new):
     """
     Replace a \Pconst command with a new value.
@@ -165,7 +235,7 @@ def parse_constant(buffer, old, new):
     """
     logger.log('templater.parse_constant', 'Replacing ' + old)
     # Reverse the list so it can be correctly removed back to front
-    requests = tex_match(buffer, 'Pconst')
+    requests = command_match(buffer, 'Pconst')
     for request in requests:
         if request.content == old:
             buffer = request.replace(buffer, new)
@@ -181,15 +251,15 @@ def clean(buffer):  # !!!!!!!!!! to be exteneded !!!!!!!!!!!
     :return: The cleaned str
     """
     # Reverse the list so it can be correctly removed back to front
-    requests = tex_match(buffer, 'Parg')
+    requests = command_match(buffer, 'Parg')
     for request in requests:
         buffer = request.clear(buffer)
     return buffer
 
 
-def tex_match(buffer, command):
+def command_match(buffer, command):
     """
-    Returns a list of Request objects that match the command.
+    Returns a list of Command objects that match the command.
     The list is reversed so that matched objects can be easily deleted.
 
     :param buffer: The str to match from
@@ -200,7 +270,24 @@ def tex_match(buffer, command):
     matched = [(m.start(1), m.end(1)) for m in
         re.finditer(r'(\\' + command + '(\[.*?\])?\{((\\})|([^}]))*?})', protect(buffer))]
     for pair in matched:
-        requests.append(Request(buffer, pair[0], pair[1]))
+        requests.append(Command(buffer, pair[0], pair[1]))
+    return requests[::-1]
+
+
+def section_match(buffer, name):
+    """
+    Returns a list of Section objects that match the name.
+    The list is reversed so that matched objects can be easily deleted.
+
+    :param buffer: The str to match from
+    :param name: The section to match
+    :return: A list of requests
+    """
+    requests = []
+    matched = [(m.start(1), m.end(1)) for m in
+               re.finditer(r'(\\begin(\[.*?\])?\{' + name + r'\}(.|\n)*?\\end\{' + name + r'\})', protect(buffer))]
+    for pair in matched:
+        requests.append(Section(buffer, pair[0], pair[1]))
     return requests[::-1]
 
 

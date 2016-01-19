@@ -8,7 +8,7 @@ Pyxam is a spiritual reacration of the R exam package for python. An open source
 This document gives a basic overview of the current version of Pyxam and also serves as a light design document for future additions. For more detailed instructions on how to get the most out of Pyxam check out the example files in the /examples directory found in the main github directory.  
 
 ### Version
-0.2.1       
+0.2.3       
 
 ### Dependencies
 Pyxam requires a set of open source software to be used and run succesfully. Though a central goal of Pyxam is to keep the program simple and lightweight such dependencies are unavoidable. In order to run Pyxam you will need the following:
@@ -22,13 +22,11 @@ Pyxam requires a set of open source software to be used and run succesfully. Tho
 [lineo](https://www.ctan.org/tex-archive/macros/latex/contrib/lineno?lang=en) packages for LaTeX
 - [Pygments](http://pygments.org/) for minted
 - [Python](https://www.python.org/downloads/) 3.4 or greater
-- [Perl](https://www.perl.org/get.html) 5 or greater
 - [Matplotlib](http://matplotlib.org/users/installing.html) library for Python
 
 Internally Pyxam includes the source for a few other key pieces of software. No special attention is required to make these work. These include:
 
 - [Pweave](http://mpastell.com/pweave/) for parsing Python code and generating images
-- [texfot](https://www.ctan.org/pkg/texfot?lang=en) for managing the output of LaTeX compilers
 
 ### Installation
 Installation is as simple as pulling the files from [GitHub](https://github.com/balancededge/pyxam/tree/master). Either go to the webpage and click Download Zip or use the command line. If you have [git](https://git-scm.com/downloads) installed all you need to do get the source is enter:
@@ -112,7 +110,7 @@ You can import questions into your template file by using the compand \Pimport. 
 ```
 ***Option***  
 **sample**  
-Usage `pyxam.py -smp <an integer value>`  
+Usage `pyxam.py -N <an integer value>`  
 By default import commands only import a single question file. This default behavior can be changed with the sample option. The value specified will become the new default. Any questions imported with a speficied number of imports will still prefer their argument over the new default. 
 
 ### Mix Class List
@@ -173,10 +171,10 @@ This file specifies the primary LaTeX file for Pyxam to parse. This is the only 
 Usage: `pyxam.py -o <output directory>`  
 Specify the path to a directory for Pyxam to use as the final location of exported files. By default this  will be a folder named /out in the same directory as the provided template file.    
 **temp**  
-Usage: `pyxam.py -tmp <temp directory>`  
+Usage: `pyxam.py -T <temp directory>`  
 Specify the path to a directory for Pyxam to use a temporary location for storing files. This folder will be removed along with its contents when Pyxam finishes. By default this will be a folder named /temp in the same directory as the provided template file.  
 **figure**  
-Usge: `pyxam.py -fig <figure directory>`  
+Usge: `pyxam.py -F <figure directory>`  
 When exporting to a format that requires a resources directory use this to specify the path to the exported resources. By default this will be a folder named /figures in the same directory as the provided template file.  
 **number**  
 Usage `pyxam.py -n <an integer value>`  
@@ -194,8 +192,11 @@ Specify the output format for Pyxam. By default Pyxam will export a .tex file. A
 
 \*This format currently has some problems  
 **shell**  
-Usage: `pyxam.py -shl <shell>`  
+Usage: `pyxam.py -S <shell>`  
 Specify the shell to run the code through. By default this is Python. The other options include matlab, octave, and julia however they have not been tested.  
+**rearrangle**
+Usage: `pyxam.py -R`
+Enable multiple choice shuffling.
 **clean**  
 Usage: `pyxam.py -c>`  
 Disable LaTeX cleanup. This is not currently implemented.  
@@ -212,15 +213,14 @@ By default the temporary directory is immediately deleted when Pyxam finishes, e
 The current planned feature list for the first release in rough order of expected completion:
 - A full example set to act as tutorials and testing for mathematical exporting and formatting
 - A Moodle XML export option
-- Add a warning if the temp directory already exists
-- Reordering of multiple choice answers
 - Improvement to HTML export
 - Testing of Matlab and Octave support
-- Lacheck integration to help debug LaTex
 - Well defined API, methods with clear arguments
 - Well defined plugins, exporters, selectors, constants, etc.
+- Automatically update figure paths
 - General cleanup, icon, bug testing, custom argparse, etc.
 - Setup file 
+- Interactive mode?
 
 ### Contact
 Pyxam is currently maintained by Eric Buss at the University of Alberta.  
@@ -229,4 +229,4 @@ You can reach him at ebuss@ualberta.ca
 ### License
 Pyxam is not currently licensed. It is planned as open source software.  
 Pweave is offered under its own licence provided in /pweave/LICENSE.TXT  
-Texfot is offered under its own license provided in /texfot/texfot.pdf
+Ascii art from http://patorjk.com/software/taag/#p=display&f=Slant&t=Type%20Something

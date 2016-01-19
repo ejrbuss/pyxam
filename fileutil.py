@@ -85,14 +85,18 @@ def remove(path):
         shutil.rmtree(path)
 
 
-def make_temp(path):
+def make_temp(path, force=False):
     """
     Create a TEMP directory.
 
     :param path: The relative or absolute path for the directory
+    :param force: Ignore warnings and continue
     :return: None
     """
     logger.log('fileutil.make_tmp', 'Creating temporary directory: ' + path)
+    if not force and os.path.isdir(path) and input(
+            'Temporary directory already exsists. Continue anyways? (y/n)') != 'y':
+        exit('Cancelling operation.')
     global TEMP
     TEMP = path
     if not os.path.exists(path):
