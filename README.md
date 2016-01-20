@@ -212,7 +212,6 @@ By default the temporary directory is immediately deleted when Pyxam finishes, e
 ### Todos
 The current planned feature list for the first release in rough order of expected completion:
 - A full example set to act as tutorials and testing for mathematical exporting and formatting
-- A Moodle XML export option
 - Improvement to HTML export
 - Testing of Matlab and Octave support
 - Well defined API, methods with clear arguments

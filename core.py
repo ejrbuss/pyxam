@@ -24,7 +24,7 @@ import exporter
 
 
 # List of dependencies
-DEPENDENCIES = [['pdflatex', '--version'], ['ht']]
+DEPENDENCIES = [['pdflatex', '--version'], ['ht'], ['gs', '-h']]
 # File name extension for solutions
 SOLUTIONS = '-solutions'
 # In order to consistently generate exams
@@ -102,8 +102,8 @@ def pyxam(parameter_options):
     fileutil.make_out(options.out)
     exporter.switch(options)
     # Cleanup
-    print('Cleaning up...')
     if not options.debug:
+        print('Cleaning up...')
         try: fileutil.remove(options.figure)
         except: pass
         try: fileutil.remove('weave')

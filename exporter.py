@@ -2,7 +2,6 @@
 # Python Imports
 
 import os
-import re
 import shutil
 import subprocess
 
@@ -13,7 +12,9 @@ import subprocess
 import parser
 import logger
 import fileutil
+import formatter
 import templater
+import xmlformatter
 
 
 # Global Variables
@@ -159,12 +160,19 @@ def moodle():
     """
     for name in os.listdir(fileutil.TEMP):
         if os.path.isfile(fileutil.TEMP + '/' + name) and name.endswith('.tex'):
-            buffer = '<?xml version="1.0"\n<quiz>\n'
-            for question in parser.parse(fileutil.TEMP + '/' + name):
-                buffer += question.to_xml()
-            buffer += '<\quiz>'
+            buffer = '<?xml version="1.0" ?>\n<quiz>\n'
+            buffer += formatter.format(xmlformatter.xml, formatter.parse(fileutil.read_temp(name)))
+            buffer += '</quiz>'
             fileutil.write_temp(name[:-3] + 'xml', buffer)
     export('xml')
+
+
+def ghost_script(name):
+    try:
+        with open(os.devnull, 'r') as stdin:
+            subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + name[:-3] + 'png', name], cwd=fileutil.TEMP, stdin=stdin)
+    except:
+        exit('Ghostscript call failed')
 
 
 def export(extension):
