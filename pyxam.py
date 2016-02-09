@@ -1,57 +1,75 @@
 #!/usr/bin/env python3
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 # Python Imports
+from sys import argv
+from process_list import ready
+from process_list import append
+from process_list import consume
+from options import state
+from options import add_option
+from options import load_options
+from options import load_template
+from plugin_loader import load_plugins
+from plugin_loader import unload_plugins
+from fileutil import cleanup
+from fileutil import build_files
+from lib_loader import weave
+from formatter import parse
+from formatter import compose
+from exporter import export
 
 
-import sys
+# Pyxam Version Number
+VERSION = 'v0.3.0'
+# Pyxam Title String
+TITLE = '    ____                           \n' \
+        '   / __ \__  ___  ______ _____ ___ \n' \
+        '  / /_/ / / / / |/_/ __ `/ __ `__ \\ \n' \
+        ' / ____/ /_/ />  </ /_/ / / / / / /\n' \
+        '/_/    \__, /_/|_|\__,_/_/ /_/ /_/ \n' \
+        '      /____/'
+
+# TODO arguments and constants in template file
+# TODO question importing and shuffling
+# TODO Check dependencies
+# TODO Cleanup function to remove any Pyxam specific Tokens
+# TODO New readme and automatic documentation
 
 
-# Module Imports
-
-
-import core
-import pyxamopts
-
-# Global Variables
-
-
-# Version number
-VERSION = 'v0.2.3'
-
-
-# Utility Methods
-
-
-def print_title():
+def welcome():
     """
-    Title created with http://patorjk.com/software/taag/#p=display&f=Slant&t=Type%20Something
-
+    Prints the Pyxam title and version number when not in api mode.
     :return: None
     """
-    print('    ____                           ')
-    print('   / __ \__  ___  ______ _____ ___ ')
-    print('  / /_/ / / / / |/_/ __ `/ __ `__ \\')
-    print(' / ____/ /_/ />  </ /_/ / / / / / /')
-    print('/_/    \__, /_/|_|\__,_/_/ /_/ /_/ ')
-    print('      /____/                       ')
-    print('\n\tLatex Exam Generation.', VERSION, '\n\n')
+    if not state.api():
+        print(TITLE, '\n\n\tLatex Exam Generation.', VERSION, '\n\n')
 
 
-# Main
-
-
-def main():
+def goodbye():
     """
-    Pyxam shell entry point. Makes API call to core.pyxam with command line arguments as parameters.
-
+    Prints a goodbye message when not in api mode.
     :return: None
     """
-    print_title()
-    if len(sys.argv) == 1: exit("This is Pyxam, enter Pyxam -h for help")
-    # Remove the first index of sys.arv as ArgumentParser expects a list of arguments not including the program name
-    core.pyxam(pyxamopts.init_arg_parser(sys.argv[1:]))
+    if not state.api():
+        print('Thanks for using Pyxam, have a nice day!')
 
 
-# Run from shell
+def start(options, api=True):
+    """
+    Start Pyxam with a set of options.
+    :param options: A list of options provided in command line syntax
+    :param api: A flag indicating if Pyxm is being called as an api, defaults to True
+    :return: None
+    """
+    add_option('api', '-api', 'Run Pyxam in api mode', True, bool, value=api)
+    append([load_options, welcome, load_plugins, load_template, build_files, weave, parse, compose, export, cleanup, unload_plugins, goodbye])
+    while ready():
+        options = consume(options)
+
+
 if __name__ == '__main__':
-    main()
+    # If main start Pyxam with argv and API mode False
+    # Slice argv so as not to pass ./Pyxam.py
+    start(argv[1:], api=False)
+
+

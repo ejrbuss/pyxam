@@ -1,170 +1,134 @@
-# Author: Eric Buss <ebuss@ualberta.ca> 2016
-# Python Imports
-
-
+import logging
 import re
-import os
-import base64
+from libs.map import Map
+from options import state
+from fileutil import read
+from fileutil import write
+from fileutil import with_extension
+
+# TODO cleanup
 
 
-# Module Imports
+class FormatError(Exception):
+    pass
 
 
-import fileutil
-import exporter
-import templater
+class Token:
 
-# Global Variables
+    def __init__(self, name, definition, fmt, regex=None):
+        self.name = name
+        self.definition = definition
+        self.regex = unpack(definition, fmt) if regex is None else regex
 
+    @classmethod
+    def instance(cls, token, src, fmt):
+        source = token.remove(src, fmt)
+        definition = []
+        while source:
+            child, source = match(fmt, source)
+            definition.append(child)
+        return Token(token.name, definition, fmt, '')
 
-# Lazy Enum for Tokens
-Name, Text, Type, Solution, Choice, Answer, Answers, Truefalse, Fraction, Feedback, Figure, Image = range(12)
+    def remove(self, source, format_):
+        for symbol in self.definition:
+            if isinstance(symbol, str):
+                source = source.replace(symbol, '')
+        return source
 
-# Choice counter
-choice_index = 0
-
-
-# Question Class
-
-
-class Question:
-
-    def __init__(self, buffer):
-        """
-        Takes a string and parses out the relevant information for a question including the name of the question, any
-        multiple choice choices, true false values, the text of the question itself, and the type of the question.
-
-        :param buffer: The string to parsed
-        :return: The Question object
-        """
-        self.type = 'essay'
-        self.choices = []
-        self.name = find(r'\\titledquestion\{(.*?)\}', buffer)
-        self.solution = find(r'\\begin\{solution\}(.*?)\\end\{solution\}', buffer)
-        self.solution = find(r'\\CorrectChoice(.*?)\\', buffer, str(self.solution))
-        choice = find(r'\\tf(.*?)\\', buffer)
-        if choice != '':
-            self.type = 'truefalse'
-            self.solution = choice.startswith('\\tf[T]')
-            self.text = re.sub(r'(\[[TF]\])', '', choice)
-            self.choices = ['True', 'False']
-        choice = find(r'\\choice(.*?)\\', buffer)
-        while choice != '':
-            buffer = buffer.replace('\\choice', '\\_choice', 1)
-            self.type = 'multichoice'
-            self.choices.append(choice)
-            choice = find(r'\\choice(.*?)\\', buffer)
-        self.figure = find(r'\\includegraphics\[.*?\]\{(.*?)\}', buffer)
-        if os.path.isfile(fileutil.TEMP + '/' + self.figure):
-            exporter.ghost_script(self.figure)
-            self.figure = self.figure[:-3] + 'png'
-            with open(fileutil.TEMP + '/' + self.figure, 'rb') as data:
-                self.image = base64.b64encode(data.read()).decode()
-        else:
-            self.image = ''
-        if self.type == 'essay' and self.solution != '':
-            self.type = 'shortanswer'
-        if self.type == 'multichoice':
-            self.choices.append(self.solution)
-        self.text = re.sub(r'(\\begin\{.*?\}.*\\end\{.*?\})|(\\.*?\{.*?\})|(\\[^\\]*)', '', buffer, flags=re.DOTALL).strip()
+    def __repr__(self):
+        return self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition) + '\n'
 
 
-def find(regex, buffer, default=''):
-    """
+_formats = {}
 
-    :param regex:
-    :param buffer:
-    :param default:
-    :return:
-    """
-    m = re.search(regex, buffer, re.DOTALL)
-    if m is not None:
-        m = m.group(1).strip()
+
+def replace(file):
+    try:
+        parser = _formats[state.format()]
+    except:
+        raise FormatError('Unknown format')
+
+
+def get_extension():
+    return _formats[state.format()]['extensions'][1]
+
+
+def parse():
+    global _formats
+    intermediates = []
+    try:
+        parser = _formats[state.template().split('.')[-1]]
+    except:
+        raise FormatError('Unknown format')
+    for file in with_extension('.tex'):
+        logging.info('Using ' + parser['extensions'][0] + ' format to parse ' + state.template())
+        intermediate = Map({'ast': [], 'src': parser['parser_preprocessor'](read(file)), 'fmt': parser})
+        stack = intermediate.src
+        while stack:
+            token, stack = match(parser, stack)
+            intermediate.ast.append(token)
+        write('ast', str(intermediate.ast))
+        intermediates.append(parser['parser_postprocessor'](intermediate))
+    return intermediates
+
+
+def match(parser, src):
+    for token in parser['format'].values():
+        if re.match(token.regex, src, re.DOTALL):
+            token_src = re.match(token.regex, src, re.DOTALL).group(0)
+            return Token.instance(token, token_src, parser), src.replace(token_src, '', 1).strip()
+    return src[0], src[1:]
+
+
+def compose(intermediates):
+    try:
+        composer = _formats[state.format()]
+    except:
+        raise FormatError('Unknown format')
+    for n, intermediate in enumerate(intermediates):
+        composed = intermediate.src
+        if intermediate.fmt != composer:
+            intermediate = composer['composer_preprocessor'](intermediate)
+            composed = '\n'.join([pack(token, composer) for token in intermediate.ast])
+            composed = composer['composer_postprocessor'](composed)
+        write('composed_' + str(n) + '.cmp', composed)
+    logging.info('compose')
+
+
+def pack(token, fmt):
+    if isinstance(token, str):
+        return token
+    content = ''
+    if token.name in fmt['format']:
+        for symbol in fmt['format'][token.name].definition[:-1]:
+            if isinstance(symbol, str):
+                content += symbol
+            if isinstance(symbol, tuple) or isinstance(symbol, list):
+                content += ''.join(pack(child, fmt) for child in token.definition)
+        return content
     else:
-        m = default
-    return m
+        return ''.join(pack(child, fmt) for child in token.definition)
 
 
-def parse(buffer):
-    """
-    Parse the questions from a string and return them as a list.
-
-    :param buffer: The string to aprse
-    :return: The list of questions
-    """
-    questions = []
-    question_sections = templater.section_match(buffer, 'questions')
-    for section in question_sections:
-        buffers = [m.group(1) for m in re.finditer(
-                r'(((\\question)|(\\titledquestion)).*?)(?=(\\question)|(\\titledquestion)|($))',
-                section.content, re.DOTALL)]
-        for buffer in buffers:
-            questions.append(Question(buffer))
-    return questions
+def add_format(fmt):
+    try:
+            _formats.update(dict((extension, fmt) for extension in fmt['extensions']))
+            fmt['format'] = {name: Token(name, defn, fmt['format']) for name, defn in fmt['format'].items()}
+    except:
+        raise FormatError('Invalid signature for format')
 
 
-def format(format, questions):
-    """
-    Checks that formats have all been initialized and then builds the questions.
-
-    Raises FormatterError if any format has not been initialized
-
-    :param format: A dictionary with all the necessary formats
-    :param questions: The questions to format
-    :return: A string representation of the questions
-    """
-    global choice_index
-    choice_index = 0
-    buffer = ''
-    for question in questions:
-        buffer += format['processor'](fill(format, question, question.type))
-    return buffer
-
-
-def fill(format, question, type, correct=False):
-    """
-    Fill a given form based off a question.
-
-    :param form: The form to fill
-    :param question: The question to use
-    :param correct: Whether Fraction and Feedback tokens should be considered correct
-    :return: The filled form as a string
-    """
-    global choice_index
-    buffer = ''
-    for token in format[type]:
-        if isinstance(token, str):
-            buffer += token
-        elif token is Name:
-            buffer += str(question.name)
-        elif token is Text:
-            buffer += str(question.text)
-        elif token is Type:
-            buffer += str(question.type)
-        elif token is Solution:
-            buffer += str(question.solution)
-        elif token is Figure:
-            buffer += str(question.figure)
-        elif token is Image:
-            buffer += str(question.image)
-        elif token is Answer:
-            buffer += fill(format, question, 'answer', False)
-        elif token is Fraction:
-            buffer += '100' if correct else '0'
-        elif token is Feedback:
-            buffer += 'Correct' if correct else 'Incorrect'
-        elif token is Choice:
-            buffer += str(question.choices[choice_index])
-            choice_index += 1
-        elif token is  Answers:
-            for _ in range(len(question.choices) - 1):
-                buffer += fill(format, question, 'answer', False)
-            buffer += fill(format, question, 'answer', True)
-        elif token is  Truefalse:
-            if question.solution:
-                buffer += fill(format, question, 'answer', True)
-                buffer += fill(format, question, 'answer', False)
-            else:
-                buffer += fill(format, question, 'answer', False)
-                buffer += fill(format, question, 'answer', True)
-    return buffer
+def unpack(token, fmt, tail=False):
+    regex = r''
+    for symbol in token[:-1]:
+        if isinstance(symbol, tuple):
+            regex += r'(.*?)'
+        elif isinstance(symbol, str):
+            regex += re.escape(symbol)
+        elif isinstance(symbol, list):
+            regex += unpack(fmt[symbol[0]], fmt, tail=True)
+        elif isinstance(symbol, dict):
+            regex += '(' + unpack(fmt[symbol['+']], fmt, tail=True) + ')+'
+        else:
+            raise FormatError('Cannot unpack token: ' + token)
+    return regex if tail else (r'(^\s*' + regex + ')(?=\s*(' + token[-1] + ')|$)').replace('\ ', '\s*')

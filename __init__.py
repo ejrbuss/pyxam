@@ -3,6 +3,4 @@
 
 # Package List
 
-
-__all__ = ['core', 'exporter', 'fileutil', 'logger', 'populationmixer',
-           'pyxam', 'pyxamopts', 'templater', 'tester', 'weaver']
+__all__ = ['exporter', 'fileutil', 'formatter', 'lib_loader', 'options', 'plugin_loader', 'pyxam']
