@@ -1,0 +1,9 @@
+<quiz>
+<!--This is a comment!-->
+<question type="
+    essay"><name> <text>Question 1</text> </name><questiontext format="html"> <text> <![CDATA[I'm an essay question!]]> </text> </questiontext></question>
+<question type="
+    multichoice"><name> <text>Question 2</text> </name><questiontext format="html"> <text> <![CDATA[I'm a multiple choice question!]]> </text> </questiontext><answer fraction="0"> <text>A</text> <feedback> <text> Incorrect </text> </feedback> </answer><answer fraction="0"> <text>B</text> <feedback> <text> Incorrect </text> </feedback> </answer><answer fraction="0"> <text>C</text> <feedback> <text> Incorrect </text> </feedback> </answer><answer fraction="100"> <text> D</text> <feedback> <text> Correct </text> </feedback> </answer><shuffleanswers>1</shuffleanswers> <single>true</single>1</question>
+<question type="
+    shortanswer"><name> <text>Question 3</text> </name><questiontext format="html"> <text> <![CDATA[I'm a short answer question!]]> </text> </questiontext><answer fraction="100"> <text>The Answer</text> <feedback> <text> Correct </text> </feedback> </answer></question>
+</quiz>

@@ -1,0 +1,7 @@
+%This is a comment!
+\question 
+    essay\title{Question 1}I'm an essay question!
+\question 
+    multichoice\title{Question 2}I'm a multiple choice question!\choice A\choice B\choice C\CorrectChoice  D1
+\question 
+    shortanswer\title{Question 3}I'm a short answer question!\begin{solution}The Answer\end{solution}
