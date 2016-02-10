@@ -31,7 +31,6 @@ def run_before(process, hook):
     :param hook: A function to run
     :return: None
     """
-    print([proc.__name__ for proc in _process_list])
     _process_list.insert([proc.__name__ for proc in _process_list].index(process), hook)
 
 

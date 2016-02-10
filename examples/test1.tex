@@ -1,0 +1,193 @@
+\documentclass{exam}
+% from MECE615_2014_hmwrk1.tex
+\usepackage{amsmath}
+\printanswers
+%\noprintanswers
+
+\newcommand{\semyear}{2015}
+
+%\documentclass[10pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   ASSIGNMENT #1 FOR MECE 615 (Fall 2012)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\textheight22cm \textwidth18.5cm \topmargin-0.5cm
+\oddsidemargin-1cm \evensidemargin-1mm
+\parindent0mm
+\parskip2.ex plus1ex minus1ex
+%\pagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%
+% SPECIAL SYMBOLS
+%%%%%%%%%%%%%%%%%%%%
+%\newcommand{\celsius}{\mbox{}\ensuremath{^{\circ}}\mbox{C}}
+%\newcommand{\fahrenheit}{\mbox{}\ensuremath{^{\circ}}\mbox{F}}
+%\newcommand{\WmmK}{\mbox{W/(m$^2$ K)}}
+%\newcommand{\WmK}{\mbox{W/(m K)}}
+
+%%%%%%%%%%%%%%%%%%%%
+% EQUATION SPECIALS
+%%%%%%%%%%%%%%%%%%%%
+%\newcommand{\pdif}[2]{\frac{\partial #1}{\partial #2}}
+%\newcommand{\psecdif}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+%\newcommand{\ddif}[2]{\frac{d #1}{d #2}}
+%\newcommand{\gdif}[2]{\frac{D #1}{D #2}}
+%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+\lfoot{}
+\cfoot{}
+\rfoot[]{Page \thepage\ of \numpages}
+\firstpageheader{}{}{}
+
+\runningheader{MEC E 615}{Assignment Continued}{Winter \semyear}
+
+
+%\runningfooter{}{Page \thepage\ of \numpages}{}
+%\pagenumbering{arabic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   HEADER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{tabular}{p{10.8cm}|l}
+  & \large\bfseries\sffamily PDE Control\\
+ \huge\bfseries\sffamily\centering ASSIGNMENT \#1 &
+                      \large\bfseries\sffamily MEC E 615\\
+  & \large\mdseries\rmfamily Winter \semyear\\
+ \large\mdseries\rmfamily\centering  &
+                      \large\mdseries\rmfamily Instructor: Dr. Bob Koch\\
+\end{tabular}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   INSTRUCTIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{footnotesize}
+\begin{tabular}{rp{13cm}}
+ \textbf{Instructions:} --- & Do not hand in, solutions will be posted
+% --- & .\\
+% --- & Late assignments (after 13:00 on due date) will not be accepted.\\
+% --- & All questions carry the same weight for the final mark.\\
+% --- & For all questions, draw a schematic and list values and equations used.
+%       Looked up properties should be listed with the respective source (table,
+%       graph, etc) and temperature.\\
+\end{tabular}
+\end{footnotesize}
+
+\hrulefill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   QUESTIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{questions}
+
+\fullwidth{\Large \textbf{Simple Questions}}
+
+% Multiple Choice question with Latex and one exact solution
+\question
+For a solution The solution of $Ax=b$ to exist $b$ must be perpendicular to:
+\begin{choices}
+    \choice Row space
+    \choice Null Space
+    \choice Column Space - also called range
+    \CorrectChoice Left Null Space
+\end{choices}
+
+% Multiple Choice question with Latex and multiple exact solutions
+\question
+Which methods can be used to solve linear Ordinary Differential Equation (ODE) of nth order with constant coefficients:
+\begin{choices}
+    \choice Integrating factor
+    \CorrectChoice Method of Undetermined Coefficients
+    \CorrectChoice Variation in Parameters
+    \CorrectChoice Laplace Transform
+\end{choices}
+
+% Question with Latex and  integer solution
+\question Find the solution of $y=\int_0^2 \frac{x^3}{2} dx$
+
+\fullwidth{\begin{solution}
+$y=2$ \end{solution}}
+
+% Question with Latex and numerical solution
+\question Find the solution of $y=\sqrt{2}$
+
+\fullwidth{\begin{solution}
+$y=1.414214$\\
+Can we make the correct answer between $1.413 \leq y \geq 1.415$ for moodle?
+ \end{solution}}
+
+\fullwidth{\Large \textbf{Questions with variables}}
+
+% Question with Latex a numerical solution but the question has a variable
+\question Find the solution of $y=\sqrt{2}$\\
+- I would like the 2 to be a variable from a list in Moodle.\\
+- ie let x = [ 2 3 4 5]\\
+- the solution calculated and a tolerance of say $y = \sqrt{x} \pm 0.001$
+
+\fullwidth{\begin{solution}
+$y=1.414214$\\
+Can we make the correct answer between $1.413 \leq y \geq 1.415$ for moodle?
+ \end{solution}}
+
+\end{questions}
+\end{document}
+
+% Question with symbolic solution - use sympy?
+\question
+Show that the solution of $ \frac{d^2y}{dx^2} + \frac{dy}{dx} - 2y = 2x+40\cos(2x)$  is:
+$y(x) = c_1e^x +c_2e^{-2x} -\frac{1}{2} - x + 6\cos(2x) - 2\sin(2x)$
+
+\fullwidth{\begin{solution}
+Can use method of undetermined coefficients.\\
+Can also use symbolic - take Laplace transform and invert:\\
+a) In Matlab \\
+ syms s x, f= ilaplace$(( (2/s^2)- (40*s)/(s^2+4) )/(s^2+s-2),x)$\\
+b) In Maple\\
+with(inttrans): , f=invlaplace$((2/s^2-40*s/(s^2+4))/(s^2+s-2), s, x)$\\
+both have the solution:
+\[f=-x-7/2\,{{\rm e}^{-2\,x}}+6\,\cos \left( 2\,x \right) -2\,\sin
+ \left( 2\,x \right) -2\,{{\rm e}^{x}}-1/2\]
+\end{solution}}
+
+% Another Question with symbolic solution - use sympy?
+\question
+Show that the particular solution of $ \frac{d^2y}{dx^2} + y = \sec(x)\tan(x)$  is:
+$y(x) = x\cos(x) - \sin(x) + \sin(x)\ln|\sec(x)|$
+
+\fullwidth{\begin{solution}
+Can use method of undetermined coefficients.\\
+Can also use symbolic. In Maple\\
+ode1 := diff(y(x), x, x)+y(x) = sec(x)*tan(x)\\
+dsolve(ode1)\\
+both have the solution -- equation below from Maple command latex(dsolve(ode1)):
+\[y \left( x \right) =\sin \left( x \right) {\it \_C2}+\cos \left( x
+ \right) {\it \_C1}-\ln  \left( \cos \left( x \right)  \right) \sin
+ \left( x \right) -\sin \left( x \right) +\cos \left( x \right) x \]
+
+\end{solution}}
+
+% Another Question with symbolic solution and variables - use sympy?
+\question
+Show that the  solution of $ \left( \frac{dy}{dx}\right)^2 -4y+ 4 = 0$  is:
+$ \pm \sqrt{y-1} = x$ when $y\neq1$\\
+\\ I would like to choose the coefficients  of the first equation from a list and symbolically solve
+
+\fullwidth{\begin{solution}
+Equation is non-linear but separable \\
+Can also use symbolic. In Maple\\
+ode2 := $ \left( \frac{dy}{dx}\right)^2 -4y+ 4 = 0$\\
+dsolve(ode2)\\
+\end{solution}}
+
+
+
+\end{questions}
+%
+
+\end{document}

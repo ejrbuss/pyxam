@@ -1,5 +1,6 @@
 import logging
 import re
+from collections import OrderedDict
 from libs.map import Map
 from options import state
 from fileutil import read
@@ -35,8 +36,14 @@ class Token:
                 source = source.replace(symbol, '')
         return source
 
+    def package(self, fmt):
+        try:
+            return ''.join(pack(child, fmt) for child in self.definition)
+        finally:
+            self.definition = []
+
     def __repr__(self):
-        return self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition) + '\n'
+        return '\n' + self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition)
 
 
 _formats = {}
@@ -67,7 +74,7 @@ def parse():
         while stack:
             token, stack = match(parser, stack)
             intermediate.ast.append(token)
-        write('ast', str(intermediate.ast))
+        write('parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
         intermediates.append(parser['parser_postprocessor'](intermediate))
     return intermediates
 
@@ -89,7 +96,8 @@ def compose(intermediates):
         composed = intermediate.src
         if intermediate.fmt != composer:
             intermediate = composer['composer_preprocessor'](intermediate)
-            composed = '\n'.join([pack(token, composer) for token in intermediate.ast])
+            write('composed-ast', str(intermediate.ast))
+            composed = ''.join([pack(token, composer) for token in intermediate.ast])
             composed = composer['composer_postprocessor'](composed)
         write('composed_' + str(n) + '.cmp', composed)
     logging.info('compose')
@@ -98,22 +106,21 @@ def compose(intermediates):
 def pack(token, fmt):
     if isinstance(token, str):
         return token
+    if token.name == 'comment' or token.name.startswith('unknown'):
+        return ''
     content = ''
-    if token.name in fmt['format']:
-        for symbol in fmt['format'][token.name].definition[:-1]:
-            if isinstance(symbol, str):
-                content += symbol
-            if isinstance(symbol, tuple) or isinstance(symbol, list):
-                content += ''.join(pack(child, fmt) for child in token.definition)
-        return content
-    else:
-        return ''.join(pack(child, fmt) for child in token.definition)
+    for symbol in (fmt['format'][token.name].definition[:-1] if token.name in fmt['format'] else [()]):
+        if isinstance(symbol, str):
+            content += symbol
+        if isinstance(symbol, tuple) or isinstance(symbol, list):
+            content += token.package(fmt)
+    return content
 
 
 def add_format(fmt):
     try:
             _formats.update(dict((extension, fmt) for extension in fmt['extensions']))
-            fmt['format'] = {name: Token(name, defn, fmt['format']) for name, defn in fmt['format'].items()}
+            fmt['format'] = OrderedDict([(name, Token(name, defn, fmt['format'])) for name, defn in fmt['format'].items()])
     except:
         raise FormatError('Invalid signature for format')
 
