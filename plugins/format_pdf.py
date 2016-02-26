@@ -1,5 +1,4 @@
-from os import path
-from os import devnull
+import os
 from subprocess import call
 from subprocess import check_output
 from process_list import run_before
@@ -51,13 +50,19 @@ def pdf_compile():
         state.format('pdf')
         for file in with_extension('.cmp'):
             for i in range(state.recomps()):
-                with open(devnull, 'r') as stdin:
-                    check_output(['pdflatex', '-shell-escape', file], stdin=stdin)
-                check_compiled(['pdf', 'dvi'], file)
+                try:
+                    with open(os.devnull, 'r') as stdin:
+                        check_output(['pdflatex', '-shell-escape', file], stdin=stdin)
+                    check_compiled(['pdf', 'dvi'], file)
+                except:
+                    print('Failed to compile latex file: ' + file)
+                    print('Running pdflatex in interactive mode...')
+                    call(['pdflatex', '-shell-escape', file])
+        for file in with_extension('.cmp'):
             remove(file)
         for file in with_extension('.pdf'):
-            write(file[:-3] + '.cmp', read(file))
-            remove(file)
+            pre, ext = os.path.splitext(file)
+            os.rename(file, pre + '.cmp')
     return
 
 
@@ -72,8 +77,7 @@ def check_compiled(extensions, name):
     """
     compiled = False
     for extension in extensions:
-        compiled = compiled or \
-                   path.isfile(name[:-3] + extension)
+        compiled = compiled or path.isfile(name[:-3] + extension)
     if not compiled:
         print('Failed to compile latex file: ' + name)
         print('Running pdflatex in interactive mode...')

@@ -89,7 +89,7 @@ def get_help():
     return '\n'.join((' {0:<{name}}{1:<{flag}} {2:<{arg}}{3} '.format(
         option.name,
         option.flag,
-  '[' + option.name + ']' if option.type_ is not None else '',
+  '[' + option.name + ']' if option.type_ is not bool else '',
         option.description.replace('\n', '\n' + ' ' * (2 * name + flag + 7)),
         name=name, flag=flag, arg=name + 2
     ) for key, option in _compiled.items() if key.startswith('--')))

@@ -1,8 +1,11 @@
 import logging
 import re
+import filters
+import shlex
 from collections import OrderedDict
 from libs.map import Map
 from options import state
+from options import load_options
 from fileutil import read
 from fileutil import write
 from fileutil import with_extension
@@ -25,6 +28,8 @@ class Token:
     def instance(cls, token, src, fmt):
         source = token.remove(src, fmt)
         definition = []
+        if token.name == '$':
+            return Token(token.name, [source], fmt, '')
         while source:
             child, source = match(fmt, source)
             definition.append(child)
@@ -43,17 +48,26 @@ class Token:
             self.definition = []
 
     def __repr__(self):
-        return '\n' + self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition)
+        return '\n' + self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition) + '\n'
 
 
 _formats = {}
 
 
-def replace(file):
+def pyxam_bang():
     try:
-        parser = _formats[state.format()]
+        parser = _formats[state.template().split('.')[-1]]
     except:
         raise FormatError('Unknown format')
+    logging.info('Using ' + parser['extensions'][0] + ' format to parse pyxam! in ' + state.template())
+    for comment in re.findall(parser['format']['comment'].regex.replace('^', ''), read(state.template()), re.DOTALL):
+        bang = comment[1].strip()
+        if bang.startswith('pyxam!arg'):
+            load_options(shlex.split(bang.replace('pyxam!arg', '')))
+        elif bang.startswith('pyxam!def'):
+            pass
+        elif bang.startswith('pyxam!'):
+            pass
 
 
 def get_extension():
@@ -74,8 +88,11 @@ def parse():
         while stack:
             token, stack = match(parser, stack)
             intermediate.ast.append(token)
+        intermediate.ast = filters.remove_name(intermediate.ast, 'comment')
+        intermediate.ast = filters.remove_name(intermediate.ast, 'unknown')
+        intermediate = parser['parser_postprocessor'](intermediate)
+        intermediates.append(intermediate)
         write('parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
-        intermediates.append(parser['parser_postprocessor'](intermediate))
     return intermediates
 
 
@@ -92,6 +109,7 @@ def compose(intermediates):
         composer = _formats[state.format()]
     except:
         raise FormatError('Unknown format')
+    logging.info('Using ' + composer['extensions'][0] + ' format to compose ' + state.template())
     for n, intermediate in enumerate(intermediates):
         composed = intermediate.src
         if intermediate.fmt != composer:
@@ -129,7 +147,7 @@ def unpack(token, fmt, tail=False):
     regex = r''
     for symbol in token[:-1]:
         if isinstance(symbol, tuple):
-            regex += r'(.*?)'
+            regex += r'(.*?)' if len(symbol) < 1 else symbol[0]
         elif isinstance(symbol, str):
             regex += re.escape(symbol)
         elif isinstance(symbol, list):

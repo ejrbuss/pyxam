@@ -14,6 +14,7 @@ from plugin_loader import unload_plugins
 from fileutil import cleanup
 from fileutil import build_files
 from lib_loader import weave
+from formatter import pyxam_bang
 from formatter import parse
 from formatter import compose
 from exporter import export
@@ -29,10 +30,8 @@ TITLE = '    ____                           \n' \
         '/_/    \__, /_/|_|\__,_/_/ /_/ /_/ \n' \
         '      /____/'
 
-# TODO arguments and constants in template file
+# TODO constants in template file
 # TODO question importing and shuffling
-# TODO Check dependencies
-# TODO Cleanup function to remove any Pyxam specific Tokens
 # TODO New readme and automatic documentation
 
 
@@ -62,7 +61,7 @@ def start(options, api=True):
     :return: None
     """
     add_option('api', '-api', 'Run Pyxam in api mode', True, bool, value=api)
-    append([load_options, welcome, load_plugins, load_template, build_files, weave, parse, compose, export, cleanup, unload_plugins, goodbye])
+    append([load_options, welcome, load_plugins, load_template, pyxam_bang, build_files, weave, parse, compose, export, cleanup, unload_plugins, goodbye])
     while ready():
         options = consume(options)
 

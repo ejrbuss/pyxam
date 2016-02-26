@@ -23,7 +23,7 @@ def load():
     add_option('method',      '-m',   'The selection method for CSVs',       'sequence', str)
     add_option('population',  '-p',   'The class list CSV',                  None,       str)
     add_option('solutions',   '-s',   'Enable soultions',                    False,      bool)
-    add_option('alphabetize', '-a',   'Enabled lettered versioning',         False,      bool)
+    add_option('alphabetize', '-a',   'Enable lettered versioning',          False,      bool)
     add_option('debug',       '-d',   'Disable file cleanup',                False,      bool)
 
     if add_option('help',     '-h',   'Show a help message',                 False,      bool):

@@ -3,8 +3,7 @@ import csv
 import re
 from os import listdir
 from options import state
-from fileutil import read
-from fileutil import write
+import os
 from fileutil import copy_figure
 from fileutil import with_extension
 from formatter import get_extension
@@ -20,7 +19,7 @@ _selectors = {}
 def export():
     selector = _selectors[state.method()]['mix'](with_extension('.cmp'), csv_read(state.population()))
     for file in with_extension('.mix'):
-        write(state.out() + '/' + state.title() + '_' + file[:-3] + get_extension(), read(file))
+        os.rename(file, state.out() + '/' + state.title() + '_' + file[:-3] + get_extension())
     if listdir(state.figure()):
         copy_figure()
 
