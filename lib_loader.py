@@ -15,7 +15,7 @@ def weave():
         src, path = fileutil.read(options.state.template()), 'template_' + str(n)
         fileutil.write(path, src)
         try:
-            logging.info('Weaved ' + str(n + 1) + ' of ' + str(options.state.number()))
             libs.pweave.weave(path, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
+            logging.info('Weaved ' + str(n + 1) + ' of ' + str(options.state.number()))
         except:
             raise LibError('Failed to Pweave file: ' + options.state.tmp() + '/' + str(n))

@@ -2,11 +2,7 @@
 import formatter
 import filters
 import collections
-import options
-import re
 
-
-# TODO find a solution for nested functions
 
 # Plugin signature
 plugin = {
@@ -23,13 +19,10 @@ end = r'(\\question)|(\\titledquestion)|(\\end{questions})'
 def parser_preprocessor(src):
     """
     Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
-    Temporary fix for nested commands. Need a better long term solution.
-    Currently only handles \fullwidth.
     :param src: The template source
     :return: The modified source
     """
     src = src.replace('\\question', '\\titledquestion{question}')
-    src = filters.promote_nested(src, '\\fullwidth', '{', '}')
     return src
 
 
@@ -50,17 +43,14 @@ def parser_postprocessor(intermediate):
             definition.insert(0, title)
         # Recurse through all tokens
         for token in [token for token in definition if hasattr(token, 'definition')]:
-            def_prompt(token.definition, token.name in ['essay', 'shortanswer', 'multichoice'])
+            def_prompt(token.definition, token.name in ['essay', 'shortanswer', 'multichoice', 'numerical'])
     # Run inner function recursively on the ast
     def_prompt(intermediate.ast, False)
     return intermediate
 
 
 def composer_postprocessor(composed):
-    if options.state.solutions():
-        composed = re.sub(r'(?:^|[^\\])\\documentclass\[', r'\documentclass[answers,', composed)
-        composed = re.sub(r'(?:^|[^\\])\\documentclass{', r'\documentclass[answers]{', composed)
-    return composed
+    return '\\documentclass[]' + composed
 
 
 def load():
@@ -72,7 +62,6 @@ def load():
         'parser_postprocessor': parser_postprocessor,
         'composer_preprocessor': filters.pass_through,
         'composer_postprocessor': filters.pass_through,
-        'seperator': '\n',
         # Use an OrderedDict to preserve token order
         'format': collections.OrderedDict([
             ('comment', ['%', (), '\n']),
@@ -89,8 +78,8 @@ def load():
             ('multichoice', ['\\titled', ['title'], (), ['choices'], (), end]),
             ('shortanswer', ['\\titled', ['title'], (), ['solution'], (), end]),
             ('essay', ['\\titled', ['title'], (), end]),
-            ('unknownarg', ['{', (), '}', '\\s+']),
-            ('unknown', ['\\', (), '\\s+|\{'])
+            ('unknownarg', ['{', (), '}', '.']),
+            ('unknown', ['\\', (), '(\\s+)|(\{)']),
         ])
     })
     # Return signature

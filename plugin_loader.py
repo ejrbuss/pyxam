@@ -32,6 +32,8 @@ def load_plugins():
             raise PluginError('Failed to load ' + plugin + ': plugin has no load function')
         except PluginError:
             raise PluginError('Failed to load ' + plugin + ': plugin returned an invalid plugin signature')
+        except TypeError:
+            raise PluginError('Faield to laod ' + plugin + ': plugin returned None')
     # Display plugin list and exit
     if options.state.plugins():
         print('Currently loaded plugins:')

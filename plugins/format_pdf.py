@@ -4,11 +4,10 @@ import process_list
 import filters
 from subprocess import call
 from subprocess import check_output
-from options import state
-from options import add_option
-from formatter import add_format
-from fileutil import remove
-from fileutil import with_extension
+import formatter
+import fileutil
+import options
+import plugin_loader
 
 # TODO move functions to lib_loader
 # TODO cleanup
@@ -22,50 +21,78 @@ plugin = {
 }
 
 
-pdf_compile_flag = False
+def error():
+    raise plugin_loader.PluginError('This format is only for output!')
+
+
+compile_format = ''
 
 
 def load():
-    add_option('recomps',     '-r',   'The number of LaTeX recompilations',  1,          int)
+    # Add dummy pdf format
+    formatter.add_format({
+        'extensions': ['pdf', 'pdf'],
+        'description': 'pdf export support',
+        'parser_preprocessor': error,
+        'parser_postprocessor': error,
+        'composer_preprocessor': error,
+        'composer_postprocessor': error,
+        'format': {}
+    })
+    # Add dummy dvi format
+    formatter.add_format({
+        'extensions': ['dvi', 'dvi'],
+        'description': 'dvi export support',
+        'parser_preprocessor': error,
+        'parser_postprocessor': error,
+        'composer_preprocessor': error,
+        'composer_postprocessor': error,
+        'format': {}
+    })
+    # Add bypass
     process_list.run_before('weave', pdf_bypass)
-    process_list.run_before('export', pdf_compile)
+    # Add recompilation option
+    options.add_option('recomps', '-r', 'The number of LaTeX recompilations',  1, int)
     return plugin
 
 
 def pdf_bypass():
-    add_format({
-        'name': 'pdf',
-        'extensions': ['pdf', 'pdf'],
-        'description': plugin['description'],
-        'parser_preprocessor': filters.pass_through,
-        'parser_postprocessor': filters.pass_through,
-        'composer_preprocessor': filters.pass_through,
-        'composer_postprocessor': filters.pass_through,
-        'seperator': '',
-        'format': {}
-    })
-    global pdf_compile_flag
-    if state.format() == 'pdf':
-        pdf_compile_flag = True
-        state.format('tex')
+    """
+    Bypass formatter steps
+    :return:
+    """
+    global compile_format
+    if options.state.format() == 'pdf':
+        compile_format = 'pdf'
+        options.state.format('tex')
+        process_list.run_before('export', pdf_compile)
+    if options.state.format() == 'dvi':
+        compile_format = 'dvi'
+        options.state.format('tex')
+        process_list.run_before('export', pdf_compile)
 
 
 def pdf_compile():
-    if pdf_compile_flag:
-        state.format('pdf')
-        for file in with_extension('.cmp'):
-            for i in range(state.recomps()):
-                try:
-                    with open(os.devnull, 'r') as stdin:
-                        check_output(['pdflatex', '-shell-escape', file], stdin=stdin)
-                    check_compiled(['pdf', 'dvi'], file)
-                except:
-                    print('Failed to compile latex file: ' + file)
-                    print('Running pdflatex in interactive mode...')
-                    call(['pdflatex', '-shell-escape', file])
-        for file in with_extension('.cmp'):
-            remove(file)
-        for file in with_extension('.pdf'):
+    """
+    Compile to pdf or dvi
+    :return:
+    """
+    options.state.format(compile_format)
+    for file in fileutil.with_extension('.cmp'):
+        if compile_format == 'dvi':
+            fileutil.write(file, '%&latex\n' + fileutil.read(file))
+        for i in range(options.state.recomps()):
+            try:
+                with open(os.devnull, 'r') as stdin:
+                    check_output(['pdflatex', '-shell-escape', file], stdin=stdin)
+                check_compiled(['pdf', 'dvi'], file)
+            except:
+                print('Failed to compile latex file: ' + file)
+                print('Running pdflatex in interactive mode...')
+                call(['pdflatex', '-shell-escape', file])
+        for file in fileutil.with_extension('.cmp'):
+            fileutil.remove(file)
+        for file in fileutil.with_extension('.' + compile_format):
             pre, ext = os.path.splitext(file)
             os.rename(file, pre + '.cmp')
     return
@@ -73,9 +100,8 @@ def pdf_compile():
 
 def check_compiled(extensions, name):
     """
-    Check that a file with name compiled to one of the specified extensions. If the file does not compile
-    lacheck is is run on the original file.
-
+    Check that a file with name compiled to one of the specified extensions. If the file does not compile it is
+    recompiled in interactive mode
     :param extensions: The extensions to look for
     :param name: The name of the original file
     :return: None
