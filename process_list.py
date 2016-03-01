@@ -1,17 +1,28 @@
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
+
+
 # Core Process List
 _process_list = []
 
 
 def ready():
+    """
+    :return: True as long as there are items in the process list
+    """
     return bool(_process_list)
 
 
 def append(process):
-    if isinstance(_process_list, list):
-        for proc in process:
-            _process_list.append(proc)
-    else:
-        _process_list.append(process)
+    """
+    Append a process to the end of the process list, or if the provided argument is a list, append all the items to
+    the process list.
+    :param process:
+    :return: None
+    """
+    global _process_list
+    if not isinstance(_process_list, list):
+        process = [process]
+    _process_list += process
 
 
 def run_after(process, hook):

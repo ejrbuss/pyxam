@@ -1,4 +1,14 @@
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
+import process_list
 import options
+import bang
+import pyxam
+import fileutil
+
+# TODO cleanup
+# TODO automate more of the docs
+# TODO README generation
+# TODO copy finished file to main directory
 
 
 template = """
@@ -21,27 +31,7 @@ For more details see README.md \\\\
 \\subsection*{Pyxam Bang Commands}
 
 \\begin{tabular}{l l}
-{\\bf Python:} & \\\\
-\\verb \\ \\verb Pexpr{...} & Run Python code snippet and print the result \\\\
-\\verb \\ \\verb Pexprs{...} & Run Python code snippet silently \\\\
-\\verb \\ \\verb Pverb{...} & Run Python code and print the code in a verbatim block \\\\ 
-\\verb \\ \\verb Pblock{...} & Run Python code silently \\\\
-\\verb \\ \\verb Pfig[caption]{...} & Display a figure with the specified caption \\\\
-{\\bf Importing Questions:} & \\\\
-\\verb \\ \\verb Pimport{file} & Import a single question file \\\\
-\\verb \\ \\verb Pimport{file1|file2} & Import either file1 or file2 \\\\
-\\verb \\ \\verb Pimport[n]{file} & Import a single question file n times \\\\
-\\verb \\ \\verb Pimport{dir} & 
-Import a single question from directory dir \\\\ 
-\\verb \\ \\verb Pimport[n]{dir1|dir2|dir3} &
-Import n questions from dir1, dir2, or dir3 \\\\ \\\\
-{\\bf Constants:} & \\\\
-\\verb \\ \\verb Pconst{VERSION} & Get the exam version number or letter \\\\
-\\verb \\ \\verb Pconst{TITLE} & Get the exam title \\\\
-\\verb \\ \\verb Pconst{STUDENT} & Get a student's name \\\\
-\\verb \\ \\verb Pconst{STUDNUM} & Get a student's number \\\\ \\\\
-{\\bf Options:} & \\\\
-\\verb \\ \\verb Parg{args} & Equivalent to running pyxam.py [args] template
+pyxam!commands
 \\end{tabular}
 \\subsection*{Examples}
 \\begin{description}
@@ -99,31 +89,38 @@ plugin = {
 
 
 def load():
-    if options.add_option('cheetsheat', '-cht',   'Write a cheatsheet to the cwd', False, bool):
-        import process_list
+    if options.add_option('cheatsheat', '-cht', 'Generate a new cheatsheet', False, bool):
         process_list.run_before('load_template', cheatsheet)
+    if options.add_option('readme', '-rd', 'Generate a new README.md file', False, bool):
+        process_list.run_before('load_template', readme)
     return plugin
 
 
 def cheatsheet():
-    import options
-    import pyxam
-    import fileutil
     global template
     template = template.replace('pyxam!version', pyxam.VERSION)
-    formatted = ''
-    for key, option in options._compiled.items():
-        if key.startswith('--'):
-            formatted += '{} & {} & {} & {} \\\\\n'.format(
-                option.name,
-                option.flag,
-                '[' + option.name + ']' if option.type_ is not bool else '',
-                option.description.replace('\n', '\\\\ & & & \n')
-            )
-    template = template.replace('pyxam!options', formatted)
+    template = template.replace('pyxam!commands', '\\\\\n'.join([
+        'pyxam! {} & {}'.format(
+            name, command.__doc__
+        ) for name, command in bang.commands.items()
+    ]))
+    template = template.replace('pyxam!options', '\\\\\n'.join([
+        '{} & {} & {} & {}'.format(
+            option.name,
+            option.flag,
+            '[' + option.name + ']' if option.type_ is not bool else '',
+            option.description.replace('\n', '\\\\\n & & & ')
+        ) for key, option in options._compiled.items() if key.startswith('--')
+    ]))
+
     fileutil.write('examples/cheatsheet.tex', template)
     options.load_options(['examples/cheatsheet.tex', '-f', 'pdf', '-t', 'cheatsheet'])
 
 
+def readme():
+    exit('README generation not implemented')
+
+
 def unload():
+    # TODO use unload function for copying out files to primary folder
     pass

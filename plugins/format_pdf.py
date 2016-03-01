@@ -1,12 +1,12 @@
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
 import os
+import process_list
+import filters
 from subprocess import call
 from subprocess import check_output
-from process_list import run_before
 from options import state
 from options import add_option
 from formatter import add_format
-from fileutil import read
-from fileutil import write
 from fileutil import remove
 from fileutil import with_extension
 
@@ -27,8 +27,8 @@ pdf_compile_flag = False
 
 def load():
     add_option('recomps',     '-r',   'The number of LaTeX recompilations',  1,          int)
-    run_before('load_template', pdf_bypass)
-    run_before('export', pdf_compile)
+    process_list.run_before('weave', pdf_bypass)
+    process_list.run_before('export', pdf_compile)
     return plugin
 
 
@@ -37,6 +37,11 @@ def pdf_bypass():
         'name': 'pdf',
         'extensions': ['pdf', 'pdf'],
         'description': plugin['description'],
+        'parser_preprocessor': filters.pass_through,
+        'parser_postprocessor': filters.pass_through,
+        'composer_preprocessor': filters.pass_through,
+        'composer_postprocessor': filters.pass_through,
+        'seperator': '',
         'format': {}
     })
     global pdf_compile_flag
@@ -77,7 +82,7 @@ def check_compiled(extensions, name):
     """
     compiled = False
     for extension in extensions:
-        compiled = compiled or path.isfile(name[:-3] + extension)
+        compiled = compiled or os.path.isfile(name[:-3] + extension)
     if not compiled:
         print('Failed to compile latex file: ' + name)
         print('Running pdflatex in interactive mode...')

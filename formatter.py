@@ -1,3 +1,4 @@
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
 import logging
 import re
 import filters
@@ -11,6 +12,8 @@ from fileutil import write
 from fileutil import with_extension
 
 # TODO cleanup
+# TODO custom match to deal with nested brackets
+# TODO replace seperator with a better scheme
 
 
 class FormatError(Exception):
@@ -36,7 +39,7 @@ class Token:
         return Token(token.name, definition, fmt, '')
 
     def remove(self, source, format_):
-        for symbol in self.definition:
+        for symbol in self.definition[:-1]:
             if isinstance(symbol, str):
                 source = source.replace(symbol, '')
         return source
@@ -51,34 +54,18 @@ class Token:
         return '\n' + self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition) + '\n'
 
 
-_formats = {}
-
-
-def pyxam_bang():
-    try:
-        parser = _formats[state.template().split('.')[-1]]
-    except:
-        raise FormatError('Unknown format')
-    logging.info('Using ' + parser['extensions'][0] + ' format to parse pyxam! in ' + state.template())
-    for comment in re.findall(parser['format']['comment'].regex.replace('^', ''), read(state.template()), re.DOTALL):
-        bang = comment[1].strip()
-        if bang.startswith('pyxam!arg'):
-            load_options(shlex.split(bang.replace('pyxam!arg', '')))
-        elif bang.startswith('pyxam!def'):
-            pass
-        elif bang.startswith('pyxam!'):
-            pass
+formats = {}
 
 
 def get_extension():
-    return _formats[state.format()]['extensions'][1]
+    return formats[state.format()]['extensions'][1]
 
 
 def parse():
-    global _formats
+    global formats
     intermediates = []
     try:
-        parser = _formats[state.template().split('.')[-1]]
+        parser = formats[state.template().split('.')[-1]]
     except:
         raise FormatError('Unknown format')
     for file in with_extension('.tex'):
@@ -106,7 +93,7 @@ def match(parser, src):
 
 def compose(intermediates):
     try:
-        composer = _formats[state.format()]
+        composer = formats[state.format()]
     except:
         raise FormatError('Unknown format')
     logging.info('Using ' + composer['extensions'][0] + ' format to compose ' + state.template())
@@ -115,7 +102,7 @@ def compose(intermediates):
         if intermediate.fmt != composer:
             intermediate = composer['composer_preprocessor'](intermediate)
             write('composed-ast', str(intermediate.ast))
-            composed = ''.join([pack(token, composer) for token in intermediate.ast])
+            composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
             composed = composer['composer_postprocessor'](composed)
         write('composed_' + str(n) + '.cmp', composed)
     logging.info('compose')
@@ -132,14 +119,18 @@ def pack(token, fmt):
             content += symbol
         if isinstance(symbol, tuple) or isinstance(symbol, list):
             content += token.package(fmt)
-    return content
+    return fmt['seperator'] + content
 
 
 def add_format(fmt):
-    try:
-            _formats.update(dict((extension, fmt) for extension in fmt['extensions']))
-            fmt['format'] = OrderedDict([(name, Token(name, defn, fmt['format'])) for name, defn in fmt['format'].items()])
-    except:
+    if (
+            'extensions' and 'description' and 'format' and 'seperator' and
+            'parser_preprocessor' and 'parser_postprocessor' and
+            'composer_preprocessor' and 'composer_postprocessor'
+    ) in fmt:
+        formats.update(dict((extension, fmt) for extension in fmt['extensions']))
+        fmt['format'] = OrderedDict([(name, Token(name, defn, fmt['format'])) for name, defn in fmt['format'].items()])
+    else:
         raise FormatError('Invalid signature for format')
 
 

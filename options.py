@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
-# Python Imports
-from functools import partial
-from libs.map import Map
+import functools
+import libs.map
 
 
 class OptionError(Exception):
     pass
 
 # A Map of all current compile functions
-state = Map()
+state = libs.map.Map()
 # A Map of all current options
 _compiled = {}
 # A list of not compiled options
@@ -21,7 +20,7 @@ def compile_(option, value=None):
     Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
     The compiled value is the default if no value hs been provided by the current or past callers.
     :param option: The option to compile
-    :param value: The value to try and set, defaults to None in which case the compiled value is returned
+    :param value: The value to try and set, when None the value is not set
     :return: The compiled value
     """
     if value is not None:
@@ -44,8 +43,8 @@ def add_option(name, flag, description, default, type_, value=None):
     :param value: A value, defaults to None
     :return: The value of the option after parsing any hanging options
     """
-    option = Map({'name': name, 'flag': flag, 'description': description, 'default': default, 'type_':type_, 'value': value})
-    state.update({name: partial(compile_, option)})
+    option = libs.map.Map({'name': name, 'flag': flag, 'description': description, 'default': default, 'type_':type_, 'value': value})
+    state.update({name: functools.partial(compile_, option)})
     _compiled.update({flag: option, '-' + name: option, '--' + name: option})
     # Load any hanging options
     load_options([])
@@ -75,6 +74,8 @@ def load_template():
     :return: None
     """
     if len(_hanging) != 1:
+        if not state.api():
+            exit('No template file, type -h for help')
         raise OptionError('No template file')
     add_option('template', '', 'template file', _hanging.pop(0), str)
 

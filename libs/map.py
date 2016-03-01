@@ -1,5 +1,7 @@
 class Map(dict):
     """
+    A custom dictionary which can be accessed with index notation and function notation.
+
     http://stackoverflow.com/questions/2352181/how-to-use-a-dot-to-access-members-of-dictionary
     Example:
     m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
@@ -10,10 +12,11 @@ class Map(dict):
             if isinstance(arg, dict):
                 for k, v in arg.items():
                     self[k] = v
-
         if kwargs:
             for k, v in kwargs.items():
                 self[k] = v
+
+    # Magic
 
     def __getattr__(self, attr):
         return self.get(attr)

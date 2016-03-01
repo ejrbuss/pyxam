@@ -3,4 +3,14 @@
 
 # Package List
 
-__all__ = ['exporter', 'fileutil', 'formatter', 'lib_loader', 'options', 'plugin_loader', 'pyxam']
+__all__ = ['bang',
+           'exporter',
+           'fileutil',
+           'filters',
+           'formatter',
+           'libloader',
+           'options',
+           'plugin_loader',
+           'process_list',
+           'pyxam'
+          ]
