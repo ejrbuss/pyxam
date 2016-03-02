@@ -83,6 +83,8 @@ def parse():
         intermediate.ast = filters.pop_unknowns(intermediate.ast)
         # Transform questions
         intermediate.ast = filters.transform_questions(intermediate.ast)
+        # Homogenize strings
+        intermediate.ast = filters.homogenize_strings(intermediate.ast)
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
         fileutil.write('parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
@@ -147,8 +149,8 @@ def pack(token, fmt):
         if isinstance(symbol, str):
             content += symbol
         if isinstance(symbol, tuple) or isinstance(symbol, list):
-            content += token.package(fmt)
-    return content
+            content += token.package(fmt).replace('\n', '\n\t')
+    return '\n' + content
 
 
 def add_format(fmt):

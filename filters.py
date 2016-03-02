@@ -1,10 +1,12 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 import logging
 import formatter
+import lib_loader
+import base64
 import re
 
 
-MAX_NESTED = 16
+MAX_NESTED = 2
 
 
 def remove_name(ast, name):
@@ -45,7 +47,7 @@ def pass_through(intermediate):
 def pop_unknowns(ast):
     """
     Replace every unknown token with the its definition tokens.
-    These tokens to are processed.
+    These tokens too are processed.
     :param ast: The ast whose unknowns are being popped
     :return: The modified ast
     """
@@ -62,6 +64,42 @@ def pop_unknowns(ast):
         return pop_unknowns(new_ast)
     return new_ast
 
+
+def img64(ast):
+    """
+    Convert pdf file paths to base64 representations of those images.
+    :param ast: The ast whose images will be modifed
+    :return: The modified ast
+    """
+    for token in ast:
+        if hasattr(token, 'definition'):
+            img64(token.definition)
+        if hasattr(token, 'name') and 'img' in token.name:
+            with open(lib_loader.gs(token.definition[0]), 'rb') as data:
+                token.definition = [base64.b64encode(data.read()).decode()]
+    return ast
+
+
+def homogenize_strings(ast):
+    """
+    Combine consecutive string tokens into a single string.
+    :param ast: The ast whose strings tokens are combined
+    :return: The modified ast
+    """
+    new_ast = []
+    buffer = ''
+    for token in ast:
+        if hasattr(token, 'definition'):
+            if buffer != '':
+                new_ast.append(buffer.strip())
+                buffer = ''
+            new_ast.append(token)
+            token.definition = homogenize_strings(token.definition)
+        else:
+            buffer += token
+    if buffer != '':
+        new_ast.append(buffer.strip())
+    return new_ast
 
 def promote(ast, name):
     """
@@ -146,7 +184,7 @@ def to_multiselect(question):
                 if hasattr(choice, 'name') and 'correctchoice' in choice.name:
                     count += 1
         if count > 1:
-            question.type = 'multiselect'
+            question.name = 'multiselect'
             logging.info('Converted multichoice question to multiselect')
 
 
@@ -174,10 +212,12 @@ def make_nested(regex, src):
         regex = regex.replace('\((.*?)\)', '\((([^()]*)|($))*\)')
         for i in range(min(src.count(')'), MAX_NESTED)):
             regex = regex.replace('($)', '\((([^()]*)|($))*\)')
-    elif '\[(.*?)\]' in regex:
-        regex = regex.replace('\[(.*?)\]', '\[(([^[]]*)|($))*\]')
-        for i in range(min(src.count(']'), MAX_NESTED)):
-            regex = regex.replace('($)', '\[(([^[\]]*)|($))*\]')
+    # Python re crash on cache hit
+    # TODO figure out what the hell happened
+    #elif '\[(.*?)\]' in regex:
+    #    regex = regex.replace('\[(.*?)\]', '\[(([^[]]*)|($))*\]')
+    #    for i in range(min(src.count(']'), MAX_NESTED)):
+    #        regex = regex.replace('($)', '\[(([^[\]]*)|($))*\]')
     else:
         return regex
     return regex

@@ -22,6 +22,11 @@ def export():
     the appropriate names. If any files are in the figure directory they are copied out as well.
     :return: None
     """
+    files = fileutil.with_extension('.cmp')
+    # Name file versions
+    for n, file in enumerate(files):
+        os.rename(file, (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
+    # Mix files
     _selectors[options.state.method()]['mix'](
         fileutil.with_extension('.cmp'),
         csv_read(options.state.population())
@@ -29,7 +34,7 @@ def export():
     for file in fileutil.with_extension('.mix'):
         os.rename(file, options.state.out() + '/' + options.state.title() + '_' + file[:-3] + formatter.get_extension())
     if os.listdir(options.state.figure()):
-        file.copy_figure()
+        fileutil.copy_figure()
 
 
 def csv_read(file):
@@ -38,6 +43,8 @@ def csv_read(file):
     :param file: The CSV file
     :return: All the data in the file that matches as either student name or number
     """
+    # TODO Fix name weaving
+    file = os.path.curdir + file if os.path.exists(os.path.curdir + file) else file
     try:
         with open(file) as file:
             return [{

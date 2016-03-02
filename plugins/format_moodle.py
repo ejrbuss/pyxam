@@ -12,7 +12,7 @@ plugin = {
 }
 
 
-shuffle = '<shuffleanswers>1</shuffleanswers> <single>true</single>'
+shuffle = '<shuffleanswers>1</shuffleanswers>'
 
 
 def composer_preprocessor(intermediate):
@@ -22,7 +22,19 @@ def composer_preprocessor(intermediate):
     :return: A modified intermediate
     """
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
+    intermediate.ast = filters.img64(intermediate.ast)
     return intermediate
+
+
+def composer_postprocessor(composed):
+    """
+
+    :param composed:
+    :return:
+    """
+    composed = composed.replace('<tolerance>', '</text><tolerance>')
+    composed = composed.replace('</tolerancetype></text>', '</tolerancetype>')
+    return composed
 
 
 def load():
@@ -33,7 +45,7 @@ def load():
         'parser_preprocessor': filters.pass_through,
         'parser_postprocessor': filters.pass_through,
         'composer_preprocessor': composer_preprocessor,
-        'composer_postprocessor': filters.pass_through,
+        'composer_postprocessor': composer_postprocessor,
         # Use an OrderedDict to preserve token order
         'format': collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
@@ -47,11 +59,11 @@ def load():
             ('correctchoice', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text> Correct </text> </feedback> </answer>', '.']),
             ('essay', ['<question type="essay">', (), '</question>', '']),
             ('tolerance', ['<tolerance>', (), '</tolerance>\n<tolerancetype>1</tolerancetype>', '.']),
-            ('shortanswer', ['<question type="shortanswer">', ['title'], (), '</question>', '']),
-            ('truefalse', ['<question type="truefalse">', ['title'], (), '</question>', '']),
-            ('multichoice', ['<question type="multichoice">', ['title'], (), shuffle, '</question>', '']),
-            ('multiselect', ['question type="multichoice"><single>false</single>', ['title'], (), shuffle, '</question']),
-            ('numerical', ['<question type="numerical">', ['title'], (), '</question>', '']),
+            ('shortanswer', ['<question type="shortanswer">', ['title'], (), '</question>', '.']),
+            ('truefalse', ['<question type="truefalse">', ['title'], (), '</question>', '.']),
+            ('multichoice', ['<question type="multichoice">', ['title'], (), shuffle, '</question>', '.']),
+            ('multiselect', ['<question type="multichoice"><single>false</single>', ['title'], (), shuffle, '</question>', '.']),
+            ('numerical', ['<question type="numerical">', ['title'], (), '</question>', '.']),
         ])
     })
     # Return signature

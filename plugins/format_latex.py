@@ -1,4 +1,6 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
+import re
+import options
 import formatter
 import filters
 import collections
@@ -43,14 +45,17 @@ def parser_postprocessor(intermediate):
             definition.insert(0, title)
         # Recurse through all tokens
         for token in [token for token in definition if hasattr(token, 'definition')]:
-            def_prompt(token.definition, token.name in ['essay', 'shortanswer', 'multichoice', 'numerical'])
+            def_prompt(token.definition, token.name in ['essay', 'shortanswer', 'multichoice', 'numerical', 'multiselect'])
     # Run inner function recursively on the ast
     def_prompt(intermediate.ast, False)
     return intermediate
 
 
 def composer_postprocessor(composed):
-    return '\\documentclass[]' + composed
+    if options.state.solutions():
+        composed = re.sub(r'(?:^|[^\\])\\documentclass\[', r'\documentclass[answers,', composed)
+        composed = re.sub(r'(?:^|[^\\])\\documentclass{', r'\documentclass[answers]{', composed)
+    return composed
 
 
 def load():
@@ -68,10 +73,9 @@ def load():
             ('commentblock', ['begin{comment}', (), 'end{comment}', '.']),
             ('$', ['$', (), '$', '.']),
             ('questions', ['\\begin{questions}', (), '\\end{questions}', '.']),
-            ('points', ['[', (), ']', '.']),
             ('title', ['question{', (), '}', '.']),
             ('solution', ['\\begin{solution}', (), '\\end{solution}', '.']),
-            ('img', ['\\includegraphics{', (), '}' '.']),
+            ('img', ['\\includegraphics[width= \linewidth]{', (), '}' '.']),
             ('choices', ['\\begin{choices}', (), '\\end{choices}', '.']),
             ('choice', ['\\choice ', (), r'(\\choice)|(\\CorrectChoice)']),
             ('correctchoice', ['\\CorrectChoice ', (), r'(\\choice)|(\\CorrectChoice)']),

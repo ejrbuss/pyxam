@@ -1,7 +1,11 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
+import logging
+import random
+import fileutil
 import options
 import bang
 import shlex
+import os
 
 
 # Plugin signature
@@ -59,7 +63,22 @@ def question_import(args):
     """
     Insert a question
     """
-    return ''
+    n, imports, import_string = int(args.split(' ')[0]), [], ''
+    os.chdir(os.path.dirname(options.state.template()))
+    for file in args.split('|'):
+        if os.path.isfile(file):
+            imports.append(fileutil.read(file))
+        if os.path.isdir(file):
+            for name in os.listdir():
+                imports.append(fileutil.read(file + '/' + name))
+    os.chdir(options.state.tmp())
+    random.shuffle(imports)
+    while n > 0 and imports:
+        import_string += imports.pop(0)
+        n -= 1
+    if n > 0:
+        logging.warning('Tried to import ' + str(n) + ' more questions than were available')
+    return import_string
 
 
 def define(args):
@@ -67,7 +86,9 @@ def define(args):
     Define a constant
     """
     name = args.split(' ')[0]
-    bang.add_command(name, lambda x : eval(args.replace(name, '', 1)))
+    value = args.replace(name, '', 1)
+    logging.info('Defined ' + name + ' as ' + value)
+    bang.add_command(name, lambda x : eval(value))
     return ''
 
 
@@ -81,6 +102,8 @@ def load():
     bang.add_command('fig', figure)
     bang.add_command('import', question_import)
     bang.add_command('def', define)
+    define('student_name $tudent__name')
+    define('student_number $tudent__number')
     # Return signature
     return plugin
 

@@ -2,6 +2,7 @@
 import logging
 import exporter
 import options
+import fileutil
 import shutil
 import os
 
@@ -19,13 +20,17 @@ def mix(files, data):
     Selects exams in round robin sequence
     """
     logging.info('Performing sequence mixing')
-    # Name file versions
-    for n, file in enumerate(files):
-        os.rename(file, (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
+
     # Mix data
     for n, row in enumerate(data):
         n = str(chr(n % len(files) + ord('A')) if options.state.alphabetize() else n % len(files) + 1)
-        shutil.copy(n + '.mix', n + '_' + (row['number'] if row['number'] != '' else row['name']) + '.mix')
+        fileutil.write(
+            n + '_' + row['name'] + row['number'] + '.mix',
+            fileutil.read(n + '.mix').
+                replace('$tudent__name', row['name']).
+                replace('$tudent__number', row['number'])
+        )
+
 
 
 def load():

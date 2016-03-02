@@ -103,3 +103,16 @@ def remove(file):
     else:
         shutil.rmtree(file)
 
+
+def isbin(file):
+    """
+    Check if a file is a binary file.
+    :param file: The file to check
+    :return: True if the file is a binary file
+    """
+    try:
+        read(file)
+        return False
+    except UnicodeDecodeError:
+       return True
+
