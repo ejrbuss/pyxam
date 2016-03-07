@@ -44,6 +44,8 @@ def csv_read(file):
     :return: All the data in the file that matches as either student name or number
     """
     # TODO Fix name weaving
+    if file is None:
+        return []
     file = os.path.curdir + file if os.path.exists(os.path.curdir + file) else file
     try:
         with open(file) as file:

@@ -42,21 +42,21 @@ def verbatim(args):
     """
     Run a python block and return a verbatim copy of the code
     """
-    return '<<echo=True>>=\n' + args + '\n@'
+    return '\n<<echo=True>>=\n' + args + '\n@'
 
 
 def block(args):
     """
     Run a python block silently
     """
-    return '<<echo=False>>=\n' + args + '\n@'
+    return '\n<<echo=False>>=\n' + args + '\n@'
 
 
 def figure(args):
     """
     Insert a python figure
     """
-    return '<<fig=True,echo=False>>=' + args + '\n@'
+    return '\n<<fig=True,echo=False>>=' + args + '\n@'
 
 
 def question_import(args):

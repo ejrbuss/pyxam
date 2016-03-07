@@ -22,22 +22,6 @@ class Token:
         self.definition = definition
         self.regex = unpack(definition, fmt) if regex is None else regex
 
-    @classmethod
-    def instance(cls, token, src, fmt):
-        source = token.remove(src, fmt)
-        definition = []
-        if token.name == '$':
-            return Token(token.name, [source], fmt, '')
-        while source:
-            child, source = match(fmt, source)
-            definition.append(child)
-        return Token(token.name, definition, fmt, '')
-
-    def remove(self, source, format_):
-        for symbol in self.definition[:-1]:
-            source = filters.token_replace(symbol, source)
-        return source
-
     def package(self, fmt):
         try:
             return ''.join(pack(child, fmt) for child in self.definition)
@@ -73,38 +57,23 @@ def parse():
     for file in fileutil.with_extension('.tex'):
         logging.info('Using ' + parser['extensions'][0] + ' format to parse ' + options.state.template())
         intermediate = libs.map.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
-        stack = intermediate.src
-        while stack:
-            token, stack = match(parser, stack)
-            intermediate.ast.append(token)
+        intermediate.ast = resolve(intermediate.src, parser)
+        #stack = intermediate.src
+        #while stack:
+        #    token, stack = match(parser, stack)
+        #    intermediate.ast.append(token)
         # Remove comments
         intermediate.ast = filters.remove_name(intermediate.ast, 'comment')
         # Pop unknowns
         intermediate.ast = filters.pop_unknowns(intermediate.ast)
-        # Transform questions
-        intermediate.ast = filters.transform_questions(intermediate.ast)
         # Homogenize strings
         intermediate.ast = filters.homogenize_strings(intermediate.ast)
+        # Transform questions
+        intermediate.ast = filters.transform_questions(intermediate.ast)
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
         fileutil.write('parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
     return intermediates
-
-
-def match(parser, src):
-    """
-    Match a string to the Tokens in a parser.
-    If no Token is matched one character is returned as a pure string
-    :param parser: The parser containing matchable tokens
-    :param src: The string to match
-    :return: The Token or pure string, The remaining unmatched string
-    """
-    for token in parser['format'].values():
-        regex = filters.make_nested(token.regex, src)
-        if re.match(regex, src, re.DOTALL):
-            token_src = re.match(regex, src, re.DOTALL).group(0)
-            return Token.instance(token, token_src, parser), src.replace(token_src, '', 1).strip()
-    return src[0], src[1:]
 
 
 def compose(intermediates):
@@ -125,7 +94,7 @@ def compose(intermediates):
             intermediate = composer['composer_preprocessor'](intermediate)
             fileutil.write('composed-ast', str(intermediate.ast))
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
-            composed = composer['composer_postprocessor'](composed)
+        composed = composer['composer_postprocessor'](composed)
         fileutil.write('composed_' + str(n) + '.cmp', composed)
     logging.info('compose')
 
@@ -197,3 +166,175 @@ def unpack(token, fmt, tail=False):
         else:
             raise FormatError('Cannot unpack token: ' + token)
     return regex if tail else (r'(^\s*' + regex + ')(?=\s*(' + token[-1] + ')|$)').replace('\ ', '\s*')
+
+
+def resolve(src, fmt):
+    """
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+    :param src: The source to convert into an ast
+    :param fmt: The format providing the tokens
+    :return: The ast
+    """
+    ast, unmatched = [], src
+    while unmatched:
+        token, unmatched = determine(unmatched, fmt)
+        ast.append(token)
+    return ast
+
+
+def determine(src, fmt):
+    """
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+    :param src: The string sequence
+    :param fmt: The format providing the tokens
+    :return: The matched token, The unmatched sequence
+    """
+    for token in fmt['format'].values():
+        matched, unmatched = check(token, src, fmt)
+        if matched is not None:
+            return matched, unmatched
+    return src[0], src[1:]
+
+
+def check(token, src, fmt, debug=False):
+    """
+
+    :param token:
+    :param src:
+    :param fmt:
+    :param debug:
+    :return:
+    """
+    definition, unmatched, post = [], src, False
+    if debug: print('SRC:\n',src)
+    for symbol in token.definition[:-1]:
+        if debug: print('\tPROCESSING SYMBOL:',symbol)
+        # If post
+        if post:
+            # Nested parentheses counter
+            parens = 0
+            # Matched content
+            matched = ''
+            # While there are unmatched characters
+            while post:
+                # No match
+                if len(unmatched) == 0:
+                    return None, src
+                # Move down a parentheses level
+                elif unmatched.startswith(fmt['left paren']):
+                    if debug: print('\t\t\tCONSUMED:', unmatched[0])
+                    parens += 1
+                    matched += unmatched[0]
+                    unmatched = unmatched[1:]
+                # If nested move back up a parentheses level
+                elif parens != 0 and unmatched.startswith(fmt['right paren']):
+                    if debug: print('\t\t\tCONSUMED:', unmatched[0])
+                    parens -= 1
+                    matched += unmatched[0]
+                    unmatched = unmatched[1:]
+                # If parentheses are not balanced consume character
+                elif parens != 0:
+                    matched += unmatched[0]
+                    unmatched = unmatched[1:]
+                # If at the end of content
+                elif isinstance(symbol, str) and unmatched.startswith(symbol):
+                    if debug: print('\t\tEND OF POST:',symbol)
+                    definition += [matched] if \
+                        '$' in token.name or \
+                        'verbatim' in token.name or \
+                        'comment' in token.name in token.name \
+                        else resolve(matched, fmt)
+                    unmatched = unmatched[len(symbol):]
+                    post = False
+                # If not at the end of content
+                elif isinstance(symbol, str):
+                    if debug: print('\t\t\tCONSUMED:', unmatched[0])
+                    matched += unmatched[0]
+                    unmatched = unmatched[1:]
+                # If token
+                elif isinstance(symbol, list):
+                    if debug: print('\t\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
+                    child, unmatched = check(fmt['format'][symbol[0]], unmatched, fmt)
+                    if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t\t'))
+                    if child is None:
+                        matched += unmatched[0]
+                        unmatched = unmatched[1:]
+                    else:
+                        if debug: print('\t\tEND OF POST',child)
+                        definition += resolve(matched, fmt)
+                        definition.append(child)
+                        post = False
+                # No match
+                else:
+                    return None, src
+
+        # If str
+        elif isinstance(symbol, str) and unmatched.startswith(symbol):
+            if debug: print('\t\tREMOVEING:',symbol)
+            #print('Removing symbol:', symbol.replace('\n', '\\n'))
+            unmatched = unmatched[len(symbol):]
+        # If token
+        elif isinstance(symbol, list):
+            if debug: print('\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
+            child, unmatched = check(fmt['format'][symbol[0]], unmatched, fmt)
+            if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t'))
+            if child is None:
+                return None, src
+            definition.append(child)
+        # If content
+        elif isinstance(symbol, tuple):
+            if debug: print('\t\tENTERING POST')
+            post = True
+        # No match
+        else:
+            return None, src
+
+    # If exited on post
+    if post:
+        # Nested parentheses counter
+        parens = 0
+        # Matched content
+        matched = ''
+        # While there are unmatched characters
+        while post:
+            # Move down a parentheses lvel
+            if unmatched.startswith(fmt['left paren']):
+                parens += 1
+                matched += unmatched[0]
+                unmatched = unmatched[1:]
+            # If nested move back up a parentheses level
+            elif parens != 0 and unmatched.startswith(fmt['right paren']):
+                parens -= 1
+                matched += unmatched[0]
+                unmatched = unmatched[1:]
+            # If parentheses are not balanced consume character
+            elif parens != 0:
+                matched += unmatched[0]
+                unmatched = unmatched[1:]
+            # If at the end of content
+            elif re.match(r'^\s*(({})|$).*'.format(token.definition[-1]), unmatched, re.DOTALL):
+                definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else resolve(matched, fmt)
+                post = False
+            # If not at the end of content
+            else:
+                matched += unmatched[0]
+                unmatched = unmatched[1:]
+
+    # Check if ending regex matches
+    if unmatched == '' or re.match(r'^\s*(({})|$).*'.format(token.definition[-1]), unmatched, re.DOTALL):
+        return Token(token.name, definition, fmt, ''), unmatched
+    return None, src
+
+
+
+
+
+
+
+
+
+
+

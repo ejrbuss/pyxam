@@ -91,10 +91,10 @@ def pdf_compile():
                 print('Failed to compile latex file: ' + file)
                 print('Running pdflatex in interactive mode...')
                 call(['pdflatex', '-shell-escape', file], cwd=options.state.out())
-    for file in fileutil.with_extension('.aux'):
-        fileutil.remove(file)
-    for file in fileutil.with_extension('.log'):
-        fileutil.remove(file)
+    #for file in fileutil.with_extension('.aux'):
+    #    fileutil.remove(file)
+    #for file in fileutil.with_extension('.log'):
+    #    fileutil.remove(file)
     return
 
 

@@ -6,9 +6,6 @@ import base64
 import re
 
 
-MAX_NESTED = 2
-
-
 def remove_name(ast, name):
     """
     Remove all tokens with a given name along with all their sub tokens
@@ -33,6 +30,21 @@ def recursive_filter(fn, node):
         node.definition = list(filter(fn, [recursive_filter(fn, n) for n in node.definition]))
     return node
 
+
+def apply_function(ast, fn, name):
+    """
+
+    :param ast:
+    :param fn:
+    :param name:
+    :return:
+    """
+    for token in ast:
+        if hasattr(token, 'name') and token.name == name:
+            token.definition[0] = fn(token.definition[0])
+        if hasattr(token, 'definition'):
+            apply_function(token.definition, fn, name)
+    return ast
 
 def pass_through(intermediate):
     """
@@ -90,7 +102,7 @@ def homogenize_strings(ast):
     buffer = ''
     for token in ast:
         if hasattr(token, 'definition'):
-            if buffer != '':
+            if buffer.strip() != '':
                 new_ast.append(buffer.strip())
                 buffer = ''
             new_ast.append(token)
@@ -100,6 +112,7 @@ def homogenize_strings(ast):
     if buffer != '':
         new_ast.append(buffer.strip())
     return new_ast
+
 
 def promote(ast, name):
     """
@@ -186,41 +199,6 @@ def to_multiselect(question):
         if count > 1:
             question.name = 'multiselect'
             logging.info('Converted multichoice question to multiselect')
-
-
-def make_nested(regex, src):
-    """
-    Transform a regex to deal with nested brackets. Handles {}, (), and [].
-    Has a maximum depth of MAX_NESTED which can be specified at the top of the file.
-    Warning depths past 100 are not supported by the python regex module.
-
-    Minimum nesting is calculated by a heuristic approach, nesting equal to the number of brackets in the source
-    string is assumed safe.
-
-    Regex patterns that are modified are: \{(.*?)\} - \((.*?)\) - \[(.*?)\]
-
-
-    :param regex: The regex to modify if necesary
-    :param src: The source string
-    :return: The modified regex
-    """
-    if '\{(.*?)\}' in regex:
-        regex = regex.replace('\{(.*?)\}', '\{(([^{}]*)|($))*\}')
-        for i in range(min(src.count('}'), MAX_NESTED)):
-            regex = regex.replace('($)', '\{(([^{}]*)|($))*\}')
-    elif '\((.*?)\)' in regex:
-        regex = regex.replace('\((.*?)\)', '\((([^()]*)|($))*\)')
-        for i in range(min(src.count(')'), MAX_NESTED)):
-            regex = regex.replace('($)', '\((([^()]*)|($))*\)')
-    # Python re crash on cache hit
-    # TODO figure out what the hell happened
-    #elif '\[(.*?)\]' in regex:
-    #    regex = regex.replace('\[(.*?)\]', '\[(([^[]]*)|($))*\]')
-    #    for i in range(min(src.count(']'), MAX_NESTED)):
-    #        regex = regex.replace('($)', '\[(([^[\]]*)|($))*\]')
-    else:
-        return regex
-    return regex
 
 
 def reverse_replace(src, old, new, count):

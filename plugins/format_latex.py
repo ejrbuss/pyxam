@@ -39,7 +39,7 @@ def parser_postprocessor(intermediate):
         # If a prompt needs to be found
         if question:
             title, prompt = definition.pop(0), []
-            while len(definition) > 0 and (not hasattr(definition[0], 'name') or definition[0].name in ['$', 'img']):
+            while len(definition) > 0 and (not hasattr(definition[0], 'name') or definition[0].name in ['$', 'img', 'verbatim']):
                 prompt.append(definition.pop(0))
             definition.insert(0, formatter.Token('prompt', prompt, None, ''))
             definition.insert(0, title)
@@ -66,24 +66,29 @@ def load():
         'parser_preprocessor': parser_preprocessor,
         'parser_postprocessor': parser_postprocessor,
         'composer_preprocessor': filters.pass_through,
-        'composer_postprocessor': filters.pass_through,
+        'composer_postprocessor': composer_postprocessor,
+        # Left & right parentheses
+        'left paren': '{',
+        'right paren': '}',
         # Use an OrderedDict to preserve token order
         'format': collections.OrderedDict([
+            ('question', ['\\titled', (), end]),
+            ('multichoice', [['title'], (), ['choices'], '.']),
+            ('shortanswer', [['title'], (), ['solution'], '$']),
+            ('essay', [['title'], (), '$']),
+            ('title', ['question{', (), '}', '.']),
             ('comment', ['%', (), '\n']),
-            ('commentblock', ['begin{comment}', (), 'end{comment}', '.']),
+            ('commentblock', ['\\begin{comment}', (), '\\end{comment}', '.']),
             ('$', ['$', (), '$', '.']),
             ('questions', ['\\begin{questions}', (), '\\end{questions}', '.']),
-            ('title', ['question{', (), '}', '.']),
             ('solution', ['\\begin{solution}', (), '\\end{solution}', '.']),
             ('img', ['\\includegraphics[width= \linewidth]{', (), '}' '.']),
             ('choices', ['\\begin{choices}', (), '\\end{choices}', '.']),
             ('choice', ['\\choice ', (), r'(\\choice)|(\\CorrectChoice)']),
             ('correctchoice', ['\\CorrectChoice ', (), r'(\\choice)|(\\CorrectChoice)']),
-            ('multichoice', ['\\titled', ['title'], (), ['choices'], (), end]),
-            ('shortanswer', ['\\titled', ['title'], (), ['solution'], (), end]),
-            ('essay', ['\\titled', ['title'], (), end]),
+            ('verbatim', ['\\begin{verbatim}', (), '\\end{verbatim}', '.']),
             ('unknownarg', ['{', (), '}', '.']),
-            ('unknown', ['\\', (), '(\\s+)|(\{)']),
+            ('unknown', ['\\', (), '\\s+']),
         ])
     })
     # Return signature

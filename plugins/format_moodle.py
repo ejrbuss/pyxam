@@ -23,6 +23,11 @@ def composer_preprocessor(intermediate):
     """
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
     intermediate.ast = filters.img64(intermediate.ast)
+    intermediate.ast = filters.apply_function(
+        intermediate.ast,
+        lambda s: s.replace('<', '&#60;').replace('\n', '<br />\n').replace('    ', '&emsp;'),
+        'verbatim'
+    )
     return intermediate
 
 
@@ -57,6 +62,7 @@ def load():
             ('img', ['<img alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
             ('choice', ['<answer fraction="0"> <text>', (), '</text> <feedback> <text> Incorrect </text> </feedback> </answer>', '.']),
             ('correctchoice', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text> Correct </text> </feedback> </answer>', '.']),
+            ('verbatim', ['<p style="font-family:monospace;padding:1em"><b>', (), '</b></p>', '.']),
             ('essay', ['<question type="essay">', (), '</question>', '']),
             ('tolerance', ['<tolerance>', (), '</tolerance>\n<tolerancetype>1</tolerancetype>', '.']),
             ('shortanswer', ['<question type="shortanswer">', ['title'], (), '</question>', '.']),

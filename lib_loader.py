@@ -22,6 +22,7 @@ def weave():
             libs.pweave.weave(path, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
             logging.info('Weaved ' + str(n + 1) + ' of ' + str(options.state.number()))
         except:
+            raise
             raise LibError('Failed to Pweave file: ' + options.state.tmp() + '/' + str(n))
 
 
@@ -35,7 +36,6 @@ def gs(path):
         with open(os.devnull, 'r') as stdin:
             subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + path[:-3] + 'png', path], stdin=stdin)
     except:
-        raise
         exit('Ghostscript call failed')
     logging.info('Used ghostscript to convert ' + path + ' to png')
     return path[:-3] + 'png'
