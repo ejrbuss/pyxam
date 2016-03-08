@@ -1,0 +1,119 @@
+* QUESTIONS 
+	 ** QUESTION 
+		
+			 *** TITLE 1. Simple Essay Question
+			 *** PROMPT This is the simplest question possible. It is just a prompt and has no solution.
+	 ** QUESTION 
+		
+			 *** TITLE 2. Simple Shortanswer Question
+			 *** PROMPT The simplest shortanswer questions are simply a prompt followed by a solution. When translating to moodle
+				                it is important to remember that the answer the student provides will have to match exactly in order to
+				                get the answer right. As an example, what is the capital of Alberta?
+			 *** SOLUTION Edmonton
+	 ** QUESTION 
+		
+			 *** TITLE 3. Simple Numerical Question
+			 *** PROMPT Numerical questions work just like shortanswer questions only the answer should be in the form var = answer
+				                For example for the question what is
+				$f(2)$when
+				$f(x) = x^2$?
+			 *** SOLUTION 4
+	 ** QUESTION 
+		
+			 *** TITLE 4. Numerical Question with Tolerance
+			 *** PROMPT Numerical questions can be given a tolerance using the pm command. When translating to moodle this
+				                will allow mark answers that fall within that range correct. For example the
+				$y=\sqrt{2}$would be?
+			 *** SOLUTION 1.414214
+				 **** TOLERANCE 0.001
+	 ** QUESTION 
+		
+			 *** TITLE 5. Simple Multiple Choice Question
+			 *** PROMPT Multiple choice questions are denoted by a the choices command. Any question that features choices
+				                will be converted to a multiple choice question. For example, who how old is Python?
+			 *** CHOICES 
+				 - [ ]20 years
+				 - [ ]32 years
+				 - [X] 25 years
+				 - [ ]17 years
+	 ** QUESTION 
+		
+			 *** TITLE 6. Multi Select Question
+			 *** PROMPT When you want to have a multiple choice question with multiple answers that need to be selected in moodle
+				                simply add multiple correctchoice commands to the list of choices. For example which of the following
+				                are equivalent to 0?
+			 *** CHOICES 
+				 - [X] 
+					$x + x*-1$
+				 - [X] 
+					$|\emptyset|$
+				 - [ ]
+					$\tau / \sqrt{\pi}$
+				 - [X] 
+					$e^i\pi + 1$
+	 ** QUESTION 
+		
+			 *** TITLE 7. Simple True False Question
+			 *** PROMPT This is a simple True or False question. It requires a new command be specified at the top of the
+				                document. In order to translate to moodle this format must be used. This True or False question is True.
+			 *** TRUE 
+	 ** QUESTION 
+		
+			 *** TITLE 8. Verbatim Python Code
+			 *** PROMPT You can display a snippet of python code verbatim by using the command pyxam!verb within a comment. Even
+				                though this code is being displayed it is still run. Here a python program that determines whether it is
+				                light out is shown.
+				 **** VERB from time import localtime
+					# Is it dark outside?
+					dark = {
+					    1:16,2:17,3:18,4:19,5:19,6:20,7:20,8:19,9:18,10:17,11:16,12:16
+					}
+					
+					light = {
+					    1:8,2:7,3:6,4:5,5:4,6:4,7:4,8:5,9:6,10:6,11:7,12:8
+					}
+					if localtime().tm_hour >=dark[localtime().tm_mon] or
+					localtime().tm_hour < light[localtime().tm_mon]:
+					    answer = 'Yes'
+					else:
+					    answer = 'No'The answer to this question is the value of the variable answer. This is specified using the pyxam!expr
+				                command.
+			 *** SOLUTION No
+	 ** QUESTION 
+		
+			 *** TITLE 9 Using Python to Randomly Generate a Question
+			 *** PROMPT You can use python code to randomly generate a question. Python code in the block command will be run but not
+				                shown. 
+				
+				
+				                You can then use those variables in your question. For example what is 28
+				                + 7
+				                ?
+			 *** SOLUTION 35
+	 ** QUESTION 
+		
+			 *** TITLE 10 Other Pyxam commands
+			 *** PROMPT There are other default commands available with pyxam. For instance the def command can be used to define constants. 
+				                Now everytime you use the command date you will get the result of the python code to the right of it. For example
+				                this standard was written on Tuesday, March 8, 2016
+				                . Def commands also support simple python expressions, for example you can find 2024 / 17 
+				                simply by defining the constant and than calling it as a command: 119.05882352941177
+				                . The args command can be used to set command line arguments from a template file. The import  and fig commands
+				                are explored in later questions. The sexpr command can be used to run a python expression silently. The
+				                final two commands are the student and student commands. These will be replaced with blanks in
+				                if no csv file is provided but will otherwise be replaced with student information if available.
+	 ** QUESTION 
+		
+			 *** TITLE 11 Question With a Figure
+			 *** PROMPT You can generate figures and use images in your questions using the fig command.
+				 **** IMG /home/ebuss/pyxam/examples/tmp/fig/template_0_figure3_1.pdf}
+				
+				                Your image will be displayed inline with the text and appear regardless of what output format you choose. examples/questions/import example.tex
+	 ** QUESTION 
+		
+			 *** TITLE 12 Imported Question
+			 *** PROMPT Pyxam questions can come from external files. The number after the command specifies the number of questions to import.
+				    The path can either be a file, in which case only that file will import, or a directory in which case a random selection
+				    of files from that directory will be selected. Multiple files or directories can be specified by using the | character.
+				    This true or false question is false.
+			 *** FALSE
