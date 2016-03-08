@@ -41,10 +41,11 @@ def apply_function(ast, fn, name):
     """
     for token in ast:
         if hasattr(token, 'name') and token.name == name:
-            token.definition[0] = fn(token.definition[0])
+            fn(token)
         if hasattr(token, 'definition'):
             apply_function(token.definition, fn, name)
     return ast
+
 
 def pass_through(intermediate):
     """
@@ -160,7 +161,7 @@ def to_numerical(question):
         if hasattr(token, 'name') and 'solution' in token.name:
             for solution_token in token.definition:
                 try:
-                    parsed = re.match(r'(\w|\.)*\s*=\s*([\d.]*)\s*(\\pm\s*([\d.]*))?', solution_token.definition[0].strip())
+                    parsed = re.match(r'(.)*?\s*=\s*([\d.]*)\s*(\\pm\s*([\d.]*))?', solution_token.definition[0].strip())
                     token.definition = [parsed.group(2)]
                     question.name = 'numerical'
                     logging.info('Converted shortanswer question to numerical')
@@ -211,18 +212,3 @@ def reverse_replace(src, old, new, count):
     :return: The replaced string
     """
     return new.join(src.rsplit(old, count))
-
-
-def token_replace(symbol, src):
-    """
-    Performs the correct replace for a given token symbol on a string.
-    :param symbol: The symbol to remove
-    :param src: The token source
-    :return: The replaced source
-    """
-    if isinstance(symbol, str):
-        if ('}' or ']' or ')') == symbol:
-            src = reverse_replace(src, symbol, '', 1)
-        else:
-            src = src.replace(symbol, '', 1)
-    return src

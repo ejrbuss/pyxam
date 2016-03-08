@@ -11,7 +11,8 @@ plugin = {
     'description': 'Format for viewing files in moodle'
 }
 
-
+fmt_truefalse =  '<answer fraction="{}"><text>true</text><feedback><text>Correct</text></feedback></answer>\n \
+                    <answer fraction="{}"><text>false</text><feedback><text>Incorrect</text></feedback></answer>'
 shuffle = '<shuffleanswers>1</shuffleanswers>'
 
 
@@ -21,13 +22,12 @@ def composer_preprocessor(intermediate):
     :param intermediate: An intermediate parse object
     :return: A modified intermediate
     """
+    def fix_html(token):
+        token.definition[0] = token.definition[0].replace('<', '&#60;').replace('\n', '<br />\n').replace(' '*4, '&emsp;'*2)
+        return token
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
     intermediate.ast = filters.img64(intermediate.ast)
-    intermediate.ast = filters.apply_function(
-        intermediate.ast,
-        lambda s: s.replace('<', '&#60;').replace('\n', '<br />\n').replace('    ', '&emsp;'),
-        'verbatim'
-    )
+    intermediate.ast = filters.apply_function(intermediate.ast, fix_html, 'verbatim')
     return intermediate
 
 
@@ -60,9 +60,11 @@ def load():
             ('prompt', ['<questiontext format="html"> <text> <![CDATA[', (), ']]> </text> </questiontext>', '.']),
             ('solution', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text> Correct </text> </feedback> </answer>', '.']),
             ('img', ['<img alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
-            ('choice', ['<answer fraction="0"> <text>', (), '</text> <feedback> <text> Incorrect </text> </feedback> </answer>', '.']),
-            ('correctchoice', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text> Correct </text> </feedback> </answer>', '.']),
+            ('choice', ['<answer fraction="0"> <text>', (), '</text> <feedback> <text>Incorrect</text> </feedback> </answer>', '.']),
+            ('correctchoice', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text>Correct</text> </feedback> </answer>', '.']),
             ('verbatim', ['<p style="font-family:monospace;padding:1em"><b>', (), '</b></p>', '.']),
+            ('true', [fmt_truefalse.format('100', '0'), '.']),
+            ('false', [fmt_truefalse.format('0', '100'), '.']),
             ('essay', ['<question type="essay">', (), '</question>', '']),
             ('tolerance', ['<tolerance>', (), '</tolerance>\n<tolerancetype>1</tolerancetype>', '.']),
             ('shortanswer', ['<question type="shortanswer">', ['title'], (), '</question>', '.']),

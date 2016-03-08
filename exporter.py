@@ -28,7 +28,7 @@ def export():
         os.rename(file, (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
     # Mix files
     _selectors[options.state.method()]['mix'](
-        fileutil.with_extension('.cmp'),
+        fileutil.with_extension('.mix'),
         csv_read(options.state.population())
     )
     for file in fileutil.with_extension('.mix'):
@@ -43,10 +43,9 @@ def csv_read(file):
     :param file: The CSV file
     :return: All the data in the file that matches as either student name or number
     """
-    # TODO Fix name weaving
     if file is None:
         return []
-    file = os.path.curdir + file if os.path.exists(os.path.curdir + file) else file
+    file = options.state.cwd() + '/' + file if os.path.exists(options.state.cwd() + '/' + file) else file
     try:
         with open(file) as file:
             return [{
@@ -55,6 +54,7 @@ def csv_read(file):
             } for row in csv.reader(file)]
     except Exception as e:
         logging.warning('Unable to parse csv file')
+        raise
         return []
 
 

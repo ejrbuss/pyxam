@@ -80,6 +80,7 @@ def pdf_compile():
     options.state.format(compile_format)
     os.path.curdir = options.state.out()
     for file in fileutil.with_extension('.tex'):
+        file = os.path.curdir + '/' + file
         if compile_format == 'dvi':
             fileutil.write(file, '%&latex\n' + fileutil.read(file))
         for i in range(options.state.recomps()):
@@ -91,10 +92,9 @@ def pdf_compile():
                 print('Failed to compile latex file: ' + file)
                 print('Running pdflatex in interactive mode...')
                 call(['pdflatex', '-shell-escape', file], cwd=options.state.out())
-    #for file in fileutil.with_extension('.aux'):
-    #    fileutil.remove(file)
-    #for file in fileutil.with_extension('.log'):
-    #    fileutil.remove(file)
+    for extension in ['.aux', '.log']:
+        for file in fileutil.with_extension(extension):
+            fileutil.remove(os.path.curdir + '/' + file)
     return
 
 

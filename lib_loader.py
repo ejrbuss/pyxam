@@ -13,6 +13,7 @@ class LibError(Exception):
 
 def weave():
     # TODO Pweave formats
+    # TODO file extensions
     for n in range(options.state.number()):
         src, path = fileutil.read(options.state.template()), 'template_' + str(n) + '.tex'
         # fileutil.write(path, src)
@@ -22,7 +23,6 @@ def weave():
             libs.pweave.weave(path, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
             logging.info('Weaved ' + str(n + 1) + ' of ' + str(options.state.number()))
         except:
-            raise
             raise LibError('Failed to Pweave file: ' + options.state.tmp() + '/' + str(n))
 
 

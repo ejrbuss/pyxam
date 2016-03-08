@@ -48,7 +48,7 @@ def run_commands():
                 for name, command in commands.items():
                     if args.startswith(name):
                         # Run command
-                        buffer = buffer.replace(comment[0], command(args.replace(name, '', 1).strip()))
+                        buffer = buffer.replace(comment[0], ' ' + command(args.replace(name, '', 1).strip()))
                         break;
     # Move template
     options.state.template(options.state.tmp() + '/template/' + os.path.basename(options.state.template()))

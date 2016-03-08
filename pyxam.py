@@ -21,12 +21,7 @@ TITLE = '    ____                           \n' \
         '/_/    \__, /_/|_|\__,_/_/ /_/ /_/ \n' \
         '      /____/'
 
-# TODO constants in template file
-# TODO question importing
 # TODO New readme and automatic documentation
-# TODO Test selection mixing
-# TODO figure support, images -> base64
-
 
 def welcome():
     """

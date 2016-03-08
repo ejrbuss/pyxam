@@ -96,7 +96,6 @@ def compose(intermediates):
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
         fileutil.write('composed_' + str(n) + '.cmp', composed)
-    logging.info('compose')
 
 
 def pack(token, fmt):
@@ -199,7 +198,7 @@ def determine(src, fmt):
     return src[0], src[1:]
 
 
-def check(token, src, fmt, debug=False):
+def check(token, src, fmt, debug=True):
     """
 
     :param token:
@@ -223,14 +222,29 @@ def check(token, src, fmt, debug=False):
                 # No match
                 if len(unmatched) == 0:
                     return None, src
+                # If token
+                elif isinstance(symbol, list):
+                    for sub_token in symbol:
+                        if debug: print('\t\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
+                        child, unmatched = check(fmt['format'][sub_token], unmatched, fmt)
+                        if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t\t'))
+                        if child is not None:
+                            if debug: print('\t\tEND OF POST',child)
+                            definition += resolve(matched, fmt)
+                            definition.append(child)
+                            post = False
+                            break
+                    else:
+                        matched += unmatched[0]
+                        unmatched = unmatched[1:]
                 # Move down a parentheses level
-                elif unmatched.startswith(fmt['left paren']):
+                elif 'left_paren' in fmt and unmatched.startswith(fmt['left_paren']):
                     if debug: print('\t\t\tCONSUMED:', unmatched[0])
                     parens += 1
                     matched += unmatched[0]
                     unmatched = unmatched[1:]
                 # If nested move back up a parentheses level
-                elif parens != 0 and unmatched.startswith(fmt['right paren']):
+                elif 'right_paren' in fmt and parens != 0 and unmatched.startswith(fmt['right_paren']):
                     if debug: print('\t\t\tCONSUMED:', unmatched[0])
                     parens -= 1
                     matched += unmatched[0]
@@ -254,19 +268,6 @@ def check(token, src, fmt, debug=False):
                     if debug: print('\t\t\tCONSUMED:', unmatched[0])
                     matched += unmatched[0]
                     unmatched = unmatched[1:]
-                # If token
-                elif isinstance(symbol, list):
-                    if debug: print('\t\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
-                    child, unmatched = check(fmt['format'][symbol[0]], unmatched, fmt)
-                    if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t\t'))
-                    if child is None:
-                        matched += unmatched[0]
-                        unmatched = unmatched[1:]
-                    else:
-                        if debug: print('\t\tEND OF POST',child)
-                        definition += resolve(matched, fmt)
-                        definition.append(child)
-                        post = False
                 # No match
                 else:
                     return None, src
@@ -274,16 +275,18 @@ def check(token, src, fmt, debug=False):
         # If str
         elif isinstance(symbol, str) and unmatched.startswith(symbol):
             if debug: print('\t\tREMOVEING:',symbol)
-            #print('Removing symbol:', symbol.replace('\n', '\\n'))
             unmatched = unmatched[len(symbol):]
         # If token
         elif isinstance(symbol, list):
-            if debug: print('\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
-            child, unmatched = check(fmt['format'][symbol[0]], unmatched, fmt)
-            if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t'))
-            if child is None:
+            for sub_token in symbol:
+                if debug: print('\t\tCHECKING SUBTOKEN: [', sub_token, ']')
+                child, unmatched = check(fmt['format'][sub_token], unmatched, fmt)
+                if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t'))
+                if child is not None:
+                    definition.append(child)
+                    break
+            else:
                 return None, src
-            definition.append(child)
         # If content
         elif isinstance(symbol, tuple):
             if debug: print('\t\tENTERING POST')
@@ -300,13 +303,17 @@ def check(token, src, fmt, debug=False):
         matched = ''
         # While there are unmatched characters
         while post:
+            # End of string
+            if len(unmatched) == 0:
+                definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else resolve(matched, fmt)
+                post = False
             # Move down a parentheses lvel
-            if unmatched.startswith(fmt['left paren']):
+            elif 'left_paren' in fmt and unmatched.startswith(fmt['left_paren']):
                 parens += 1
                 matched += unmatched[0]
                 unmatched = unmatched[1:]
             # If nested move back up a parentheses level
-            elif parens != 0 and unmatched.startswith(fmt['right paren']):
+            elif 'right_paren' in fmt and parens != 0 and unmatched.startswith(fmt['right_paren']):
                 parens -= 1
                 matched += unmatched[0]
                 unmatched = unmatched[1:]

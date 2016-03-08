@@ -56,16 +56,17 @@ def figure(args):
     """
     Insert a python figure
     """
-    return '\n<<fig=True,echo=False>>=' + args + '\n@'
+    return '\n<<echo=False,fig=True>>=\n' + args + '\n@'
 
 
 def question_import(args):
     """
     Insert a question
     """
-    n, imports, import_string = int(args.split(' ')[0]), [], ''
+    n, imports, import_string = int(shlex.split(args)[0]), [], shlex.split(args)[1]
     os.chdir(os.path.dirname(options.state.template()))
-    for file in args.split('|'):
+    for file in import_string.split('|'):
+        file = options.state.cwd() + '/' + file
         if os.path.isfile(file):
             imports.append(fileutil.read(file))
         if os.path.isdir(file):
@@ -88,7 +89,7 @@ def define(args):
     name = args.split(' ')[0]
     value = args.replace(name, '', 1)
     logging.info('Defined ' + name + ' as ' + value)
-    bang.add_command(name, lambda x : eval(value))
+    bang.add_command(name, lambda x : str(eval(value)))
     return ''
 
 
@@ -102,8 +103,14 @@ def load():
     bang.add_command('fig', figure)
     bang.add_command('import', question_import)
     bang.add_command('def', define)
-    define('student_name $tudent__name')
-    define('student_number $tudent__number')
+
+    if options.add_option('commands', '-cmd', 'Display all available commands', False, bool):
+        print('\n'.join('pyxam!' + name + str(fn.__doc__).replace('\n', '\n    ') for name, fn in bang.commands.items()))
+        exit()
+
+    define('student_name "$tudent__name"')
+    define('student_number "$tudent__number"')
+
     # Return signature
     return plugin
 
