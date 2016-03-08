@@ -9,9 +9,7 @@ import fileutil
 import options
 import plugin_loader
 
-# TODO move functions to lib_loader
 # TODO cleanup
-# TODO DVI support
 
 
 plugin = {

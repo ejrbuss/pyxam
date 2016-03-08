@@ -8,7 +8,7 @@ import options
 import fileutil
 
 # TODO cleanup
-# TODO replace seperator with a better scheme
+# TODO formatting
 
 
 class FormatError(Exception):
@@ -198,7 +198,7 @@ def determine(src, fmt):
     return src[0], src[1:]
 
 
-def check(token, src, fmt, debug=True):
+def check(token, src, fmt, debug=False):
     """
 
     :param token:
@@ -208,13 +208,13 @@ def check(token, src, fmt, debug=True):
     :return:
     """
     definition, unmatched, post = [], src, False
+    # Nested parentheses counter
+    parens = 0
     if debug: print('SRC:\n',src)
     for symbol in token.definition[:-1]:
         if debug: print('\tPROCESSING SYMBOL:',symbol)
         # If post
         if post:
-            # Nested parentheses counter
-            parens = 0
             # Matched content
             matched = ''
             # While there are unmatched characters

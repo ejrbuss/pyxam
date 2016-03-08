@@ -12,8 +12,7 @@ class LibError(Exception):
 
 
 def weave():
-    # TODO Pweave formats
-    # TODO file extensions
+    # TODO file extensions need to transfer accross weaving
     for n in range(options.state.number()):
         src, path = fileutil.read(options.state.template()), 'template_' + str(n) + '.tex'
         # fileutil.write(path, src)

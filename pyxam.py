@@ -12,7 +12,7 @@ import exporter
 
 
 # Pyxam Version Number
-VERSION = 'v0.3.1'
+VERSION = 'v0.3.2'
 # Pyxam Title String
 TITLE = '    ____                           \n' \
         '   / __ \__  ___  ______ _____ ___ \n' \
