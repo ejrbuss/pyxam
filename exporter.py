@@ -33,7 +33,7 @@ def export():
     )
     for file in fileutil.with_extension('.mix'):
         os.rename(file, options.state.out() + '/' + options.state.title() + '_' + file[:-3] + formatter.get_extension())
-    if os.listdir(options.state.figure()):
+    if os.path.isdir(options.state.figure()) and os.listdir(options.state.figure()):
         fileutil.copy_figure()
 
 
@@ -48,13 +48,21 @@ def csv_read(file):
     file = options.state.cwd() + '/' + file if os.path.exists(options.state.cwd() + '/' + file) else file
     try:
         with open(file) as file:
+            rows = list(csv.reader(file))
+            cols = rows[0]
+            name = []
+            id = []
+            for i in range(len(cols)):
+                if cols[i].lower().replace(' ', '') in ['firstname', 'surname', 'lastname', 'studentname']:
+                    name.append(i)
+                if cols[i].lower().replace(' ', '') in ['studentid', 'id', 'identificatinonumber']:
+                    id.append(i)
             return [{
-                'number': ' '.join(n for n in row if re.match(r'.*[0-9].*', n)).strip(),
-                'name': ' '.join(s for s in row if not re.match(r'.*[0-9].*', s)).strip()
-            } for row in csv.reader(file)]
-    except Exception as e:
+                'number': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in name),
+                'name': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in id)
+            } for i in range(len(rows) - 1)]
+    except Exception:
         logging.warning('Unable to parse csv file')
-        raise
         return []
 
 

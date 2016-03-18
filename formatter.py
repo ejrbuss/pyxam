@@ -117,8 +117,8 @@ def pack(token, fmt):
         if isinstance(symbol, str):
             content += symbol
         if isinstance(symbol, tuple) or isinstance(symbol, list):
-            content += token.package(fmt).replace('\n', '\n\t')
-    return '\n' + content
+            content += token.package(fmt)
+    return content
 
 
 def add_format(fmt):
@@ -329,7 +329,6 @@ def check(token, src, fmt, debug=False):
             else:
                 matched += unmatched[0]
                 unmatched = unmatched[1:]
-
     # Check if ending regex matches
     if unmatched == '' or re.match(r'^\s*(({})|$).*'.format(token.definition[-1]), unmatched, re.DOTALL):
         return Token(token.name, definition, fmt, ''), unmatched

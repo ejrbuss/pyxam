@@ -14,7 +14,8 @@ class LibError(Exception):
 def weave():
     # TODO file extensions need to transfer accross weaving
     for n in range(options.state.number()):
-        src, path = fileutil.read(options.state.template()), 'template_' + str(n) + '.tex'
+        extension = options.state.template().split('.')[-1]
+        src, path = fileutil.read(options.state.template()), 'template_' + str(n) + '.' + extension
         # fileutil.write(path, src)
         # continue
         fileutil.write(path, src)
@@ -31,6 +32,7 @@ def gs(path):
     :param name:
     :return:
     """
+    print(path)
     try:
         with open(os.devnull, 'r') as stdin:
             subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + path[:-3] + 'png', path], stdin=stdin)

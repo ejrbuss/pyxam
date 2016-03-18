@@ -20,8 +20,6 @@ def append(process):
     :return: None
     """
     global _process_list
-    if not isinstance(_process_list, list):
-        process = [process]
     _process_list += process
 
 

@@ -13,7 +13,8 @@ plugin = {
 
 def load():
     # Set seed to option value
-    random.seed(options.add_option('random', '-rng', 'Set the seed for rng', 1234, int))
+    if options.add_option('random', '-rng', 'Set the seed for rng', 0, int):
+        random.seed(options.state.random())
     # Return signature
     return plugin
 

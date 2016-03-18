@@ -74,6 +74,7 @@ def question_import(args):
                 imports.append(fileutil.read(file + '/' + name))
     os.chdir(options.state.tmp())
     random.shuffle(imports)
+    import_string = ''
     while n > 0 and imports:
         import_string += imports.pop(0)
         n -= 1
@@ -108,8 +109,8 @@ def load():
         print('\n'.join('pyxam!' + name + str(fn.__doc__).replace('\n', '\n    ') for name, fn in bang.commands.items()))
         exit()
 
-    define('student_name "$tudent__name"')
-    define('student_number "$tudent__number"')
+    define('studentname "$tudent__name"')
+    define('studentnumber "$tudent__number"')
 
     # Return signature
     return plugin

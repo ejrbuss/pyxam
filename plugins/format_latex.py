@@ -81,7 +81,7 @@ def load():
             ('$', ['$', (), '$', '.']),
             ('questions', ['\\begin{questions}', (), '\\end{questions}', '.']),
             ('solution', ['\\begin{solution}', (), '\\end{solution}', '.']),
-            ('img', ['\\includegraphics[width= \linewidth]{', (), '}' '.']),
+            ('img', ['\\includegraphics[width= \linewidth]{', (), '}', '.']),
             ('choices', ['\\begin{choices}', (), '\\end{choices}', '.']),
             ('choice', ['\\choice ', (), r'(\\choice)|(\\CorrectChoice)']),
             ('correctchoice', ['\\CorrectChoice ', (), r'(\\choice)|(\\CorrectChoice)']),

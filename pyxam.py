@@ -9,6 +9,16 @@ import fileutil
 import lib_loader
 import formatter
 import exporter
+# Module Dependencies
+try:
+    import matplotlib
+except ImportError:
+    exit('matplotlib is required for Pyxam. Please run:\n\t pip install matplotlib')
+try:
+    import numpy
+except ImportError:
+    exit('numpy is required for Pyxam. Please run:\n\t pip install numpy')
+
 
 
 # Pyxam Version Number

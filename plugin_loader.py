@@ -18,7 +18,8 @@ def load_plugins():
     :return: None
     """
     options.add_option('plugins', '-plg', 'List all currently loaded plugins', False, bool)
-    plugins = [plugin[:-3] for plugin in os.listdir('plugins') if plugin.endswith('.py')]
+    plugins = [plugin[:-3] for plugin in os.listdir(os.path.abspath(os.path.dirname(os.path.abspath(__file__))) + '/plugins') if plugin.endswith('.py')]
+    print(os.path.dirname(os.path.abspath(__file__)) + '/plugins')
     # Put logging at the start of list
     plugins.insert(0, plugins.pop(plugins.index('_logging')))
     # Put options at the end of the list
@@ -48,7 +49,7 @@ def unload_plugins():
     Call the unload function on all plugins.
     :return: None
     """
-    plugins = sorted((plugin[:-3] for plugin in os.listdir('plugins') if plugin.endswith('.py')))
+    plugins = sorted((plugin[:-3] for plugin in os.listdir(os.path.abspath(os.path.dirname(os.path.abspath(__file__))) + '/plugins') if plugin.endswith('.py')))
     for plugin in plugins:
         try:
             exec('import plugins.{}; plugins.{}.unload()'.format(plugin, plugin))

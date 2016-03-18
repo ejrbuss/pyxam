@@ -47,7 +47,6 @@ def run_commands():
                 # Check if command is in command list
                 for name, command in commands.items():
                     if args.startswith(name):
-                        # Run command
                         buffer = buffer.replace(comment[0], ' ' + command(args.replace(name, '', 1).strip()))
                         break;
     # Move template

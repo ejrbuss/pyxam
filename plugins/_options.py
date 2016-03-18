@@ -2,6 +2,8 @@
 import options
 import pyxam
 import formatter
+import process_list
+import pyxam
 
 
 # Plugin signature
@@ -23,9 +25,11 @@ def load():
     options.add_option('shell',       '-shl', 'The shell used to weave the exam',    'python',   str)
     options.add_option('method',      '-m',   'The selection method for CSVs',       'sequence', str)
     options.add_option('population',  '-p',   'The class list CSV',                  None,       str)
-    options.add_option('solutions',   '-s',   'Enable soultions',                    False,      bool)
     options.add_option('alphabetize', '-a',   'Enable lettered versioning',          False,      bool)
     options.add_option('debug',       '-d',   'Disable file cleanup',                False,      bool)
+    # Run once and produce solutions then run again widthout solutions
+    if options.add_option('solutions',   '-s',   'Enable soultions',                 False,      bool):
+        pass
     # Display version number via the welcome message then exit
     if options.add_option('version','-v',   'Show the version number',             False,      bool):
         if options.state.api():

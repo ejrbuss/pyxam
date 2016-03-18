@@ -4,6 +4,7 @@ import formatter
 import lib_loader
 import base64
 import re
+import random
 
 
 def remove_name(ast, name):
@@ -135,6 +136,8 @@ def transform_questions(ast):
             to_numerical(token)
         if hasattr(token, 'name') and 'multichoice' in token.name:
             to_multiselect(token)
+        if hasattr(token, 'name') and 'numerical' in token.name:
+            to_calculated(token)
         elif hasattr(token, 'definition'):
             token.definition = transform_questions(token.definition)
     return ast
@@ -161,12 +164,15 @@ def to_numerical(question):
         if hasattr(token, 'name') and 'solution' in token.name:
             for solution_token in token.definition:
                 try:
-                    parsed = re.match(r'(.)*?\s*=\s*([\d.]*)\s*(\\pm\s*([\d.]*))?', solution_token.definition[0].strip())
-                    token.definition = [parsed.group(2)]
+                    parsed = re.match(r'(.*)=([^tolerance]*)(tolerance(.*))?', solution_token.definition[0].replace(' ', ''))
+                    token.definition[0] = parsed.group(2)
                     question.name = 'numerical'
                     logging.info('Converted shortanswer question to numerical')
-                    if parsed.group(4) is not None:
-                        token.definition.append(formatter.Token('tolerance', [parsed.group(4)], None, ''))
+                    tolerance = parsed.group(4)
+                    if tolerance is not None:
+                        if tolerance.endswith('\\%'):
+                            tolerance = str(float(parsed.group(2)) * (float(tolerance[:-2]) / 100.0))
+                        token.definition.insert(1, formatter.Token('tolerance', [tolerance], None, ''))
                 except:
                     return
 
@@ -202,13 +208,65 @@ def to_multiselect(question):
             logging.info('Converted multichoice question to multiselect')
 
 
-def reverse_replace(src, old, new, count):
+def to_calculated(question):
     """
-    A reverse replace function.
-    :param src: The source to replace
-    :param old: The old string
-    :param new: The new string
-    :param count: The number of replacements
-    :return: The replaced string
+    Transforms numerical token definitions from
+    solution:
+        answer
+        tolerance:
+            tolerance
+
+    to:
+    solution:
+        answer
+        tolerance:
+            tolerance
+        params:
+            param:
+                name
+                maximum:
+                    value
+                minimum:
+                    value
+                decimal:
+                    value
+                    formatter.Token('tolerance', [tolerance], None, ''))
+    :param question:
+    :return:
     """
-    return new.join(src.rsplit(old, count))
+    for token in question.definition:
+        if hasattr(token, 'name') and 'solution' in token.name:
+            definition = []
+            dataset = []
+            decimal = 0
+            for where, condition in zip(token.definition, token.definition[1:]):
+                if where == 'where':
+                    try:
+                        parsed = re.match(r'(.*)\[(.*)\]', condition.definition[0].replace(' ', ''))
+                        items = parsed.group(2).split(',')
+                        decimal = max(decimal, max([len(item.split('.')[1]) for item in items if '.' in item]))
+                        items = [float(item) for item in items]
+                        name = formatter.Token('paramname', [parsed.group(1).replace('{', '').replace('}', '')], None, '')
+                        pmax = formatter.Token('parammax', [str(max(items))], None, '')
+                        pmin = formatter.Token('parammin', [str(min(items))], None, '')
+                        pdec = formatter.Token('paramdec', ['2'], None, '')
+                        # Generate a random value
+                        count = formatter.Token('itemcount', [str(len(items))], None, '')
+                        pitems = formatter.Token('items', [], None, '')
+                        for n, item in enumerate(items):
+                            pitems.definition.append(formatter.Token('itemnumber', [str(n + 1)], None, ''))
+                            pitems.definition.append(formatter.Token('itemvalue', [str(item)], None, ''))
+                        dataset.append(formatter.Token('param', [name, pmax, pmin, pdec, count, pitems], None, ''))
+                    except:
+                        return
+                elif not hasattr(where, 'name') or 'tolerance' in where.name:
+                    definition.append(where)
+            if dataset:
+                for n, tolerance in enumerate(definition):
+                    if hasattr(tolerance, 'name') and 'tolerance' in tolerance.name:
+                        definition.insert(n + 1, formatter.Token('decimal', [str(decimal)], None, ''))
+                question.name='calculated'
+                logging.info('Converted numerical question to calculated')
+                question.definition.append(formatter.Token('params', dataset, None, ''))
+                token.definition = definition
+                return

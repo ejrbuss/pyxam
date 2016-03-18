@@ -4,7 +4,7 @@
     % Enable graphics
     \usepackage[pdftex]{graphicx}
     % Standard definition for true/false questions
-    \newcommand{\tf}[1][{}]{%
+    \newcommand{\tf}[1][]{%
         \fillin[#1][0.25in]%
     }
 
@@ -42,7 +42,7 @@
                 Numerical questions can be given a tolerance using the pm command. When translating to moodle this
                 will allow mark answers that fall within that range correct. For example the $y=\sqrt{2}$ would be?
                 \begin{solution}
-                    $y=1.414214 \pm 0.001$
+                    $y=1.414214 tolerance 10\%$
                 \end{solution}
 
             \titledquestion{5. Simple Multiple Choice Question}
@@ -70,7 +70,17 @@
                 \tf[T] This is a simple True or False question. It requires a new command be specified at the top of the
                 document. In order to translate to moodle this format must be used. This True or False question is True.
 
-            \titledquestion{8. Verbatim Python Code}
+            \titledquestion{8. Simple Calculated Question}
+                Calculated questions can have randomly generated values assigned to parameters and a formula that is used
+                to calculate the correct solution. Percent tolerances cannot be used with this question type. As a simple
+                example what is ${x} + {y}$?
+                \begin{solution}
+                    ${x} + {y} = {x} + {y} tolerance 0.01$
+                    where ${x} [1.0, 7.5, 6.0]$
+                    where ${y} [2.5, 4.0, 9.8]$
+                \end{solution}
+
+            \titledquestion{9. Verbatim Python Code}
                 You can display a snippet of python code verbatim by using the command pyxam!verb within a comment. Even
                 though this code is being displayed it is still run. Here a python program that determines whether it is
                 light out is shown.
@@ -98,7 +108,7 @@ else:
                     % pyxam!expr answer
                 \end{solution}
 
-            \titledquestion{9 Using Python to Randomly Generate a Question}
+            \titledquestion{10 Using Python to Randomly Generate a Question}
                 You can use python code to randomly generate a question. Python code in the block command will be run but not
                 shown.
                 \begin{comment} pyxam!block
@@ -120,7 +130,7 @@ b = random.randint(0, 32)
                     $
                 \end{solution}
 
-            \titledquestion{10 Other Pyxam commands}
+            \titledquestion{11 Other Pyxam commands}
                 There are other default commands available with pyxam. For instance the def command can be used to define constants.
                 % pyxam!def date "Tuesday, March 8, 2016"
                 Now everytime you use the command date you will get the result of the python code to the right of it. For example
@@ -135,7 +145,7 @@ b = random.randint(0, 32)
                 final two commands are the student\_name and student\_number commands. These will be replaced with blanks in
                 if no csv file is provided but will otherwise be replaced with student information if available.
 
-            \titledquestion{11 Question With a Figure}
+            \titledquestion{12 Question With a Figure}
                 You can generate figures and use images in your questions using the fig command.
                 \begin{comment} pyxam!fig
 

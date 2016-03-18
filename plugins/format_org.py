@@ -1,4 +1,5 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
+import re
 import formatter
 import collections
 import filters
@@ -14,7 +15,20 @@ plugin = {
 
 def composer_preprocessor(intermediate):
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
+    intermediate.ast = filters.remove_name(intermediate.ast, 'decimal')
+    intermediate.ast = filters.remove_name(intermediate.ast, 'params')
     return intermediate
+
+
+def composer_postprocessor(source):
+    source = re.sub(r'(\*+ +[A-Z]+)', r'\n\1', source)
+    source = re.sub(r'(\*+ +[A-Z]+ +)(?=[^\n]+)', r'\1\n', source)
+    source = re.sub(r'(\*+ +QUESTION +)\n', r'\1', source)
+    source = re.sub(r'\n+', '\n', source)
+    source = re.sub(r' +', ' ', source)
+    source = re.sub(r'^\n', '', source)
+    source = re.sub(r'\n ', '\n', source)
+    return source
 
 
 def load():
@@ -25,30 +39,29 @@ def load():
         'parser_preprocessor': filters.pass_through,
         'parser_postprocessor': filters.pass_through,
         'composer_preprocessor': composer_preprocessor,
-        'composer_postprocessor': filters.pass_through,
+        'composer_postprocessor': composer_postprocessor,
         # Use an OrderedDict to preserve token order
         'format': collections.OrderedDict([
             ('comment', ['#', (), '\n']),
             ('commentblock', ['#+BEGIN_COMMENT ', (), '#+END_COMMENT']),
-            ('commentblocktree', ['* COMMENT ', (), '\n \*']),
+            ('commentblocktree', ['* COMMENT ', (), '\*']),
             ('$', ['$', (), '$', '.']),
-            ('questions', [' * QUESTIONS ', (), '\n \* ']),
-            ('solution', [' *** SOLUTION ', (), '\n \*']),
-            ('img', [' **** IMG ', (), '\n \*']),
-            ('prompt', [' *** PROMPT ', (), '\n \*\*\* ']),
-            ('choices', [' *** CHOICES ', (), '\n \*']),
-            ('choice', [' - [ ]', (), '\n \*']),
+            ('questions', ['* QUESTIONS', (), '\n\* ']),
+            ('solution', ['*** SOLUTION ', (), '.']),
+            ('img', ['**** IMG ', (), '\*']),
+            ('prompt', ['*** PROMPT ', (), '(\* CHOICES)|(\* SOLUTION)|(\* TRUE)|(\* FALSE)']),
+            ('choices', ['*** CHOICES ', (), '.']),
+            ('choice', [' - [ ]', (), '\n\\*']),
             ('correctchoice', [' - [X] ', (), '\n \*']),
-            ('tolerance', [' **** TOLERANCE ', (), '\n \*']),
-            ('verbatim', [' **** VERB ', (), '\n \*']),
-            ('true', [' *** TRUE ', (), '\n \*']),
-            ('false', [' *** FALSE ', (), '\n \*']),
-            ('question', [' ** QUESTION ', (), '\n \*']),
-            ('multichoice', [['title'], (), ['choices'], (), '$']),
-            ('shortanswer', [['title'], (), ['solution'], (), '$']),
-            ('truefalse', [['title'], (), ['true', 'false'], (), '$']),
-            ('essay', [['title'], (), '$']),
-            ('title', [' *** TITLE ', (), '\n \*']),
+            ('tolerance', ['**** TOLERANCE ', (), '\n \*']),
+            ('verbatim', ['**** VERB ', (), '\n \*']),
+            ('true', ['*** TRUE ', (), '\n \*']),
+            ('false', ['*** FALSE ', (), '\n \*']),
+            ('multichoice', [['title'], ['prompt'], ['choices'], '$']),
+            ('shortanswer', [['title'], ['prompt'], ['solution'], '$']),
+            ('truefalse', [['title'], ['prompt'], ['true', 'false'], '$']),
+            ('essay', [['title'], ['prompt'], '$']),
+            ('title', ['** QUESTION ', (), '\n']),
         ])
     })
     # Return signature
