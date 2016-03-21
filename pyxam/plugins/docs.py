@@ -46,7 +46,7 @@ def load():
     """
     global url, nav
     if options.add_option('gitdocs', '-gd', 'Generate documentation for use on github', False, bool):
-        url = 'https://rawgit.com/balancededge/pyxam/master/docs/build'
+        url = 'https://rawgit.com/balancededge/pyxam/master/docs/build/'
     if options.add_option('docs', '-docs', 'Build Pyxam\'s documentation source', False, bool):
         # Get paths, use the full path each time in case abspath changes / to \\ on windows
         plugins = os.path.abspath(__file__.replace('docs.py', ''))
