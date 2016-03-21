@@ -35,14 +35,21 @@ def export():
     files = fileutil.with_extension('.cmp')
     # Name file versions
     for n, file in enumerate(files):
-        os.rename(file, (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
+        fileutil.mv(file, options.state.cwd() + '/' + (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
     # Mix files
     _selectors[options.state.method()](
         fileutil.with_extension('.mix'),
         csv_read(options.state.population())
     )
     for file in fileutil.with_extension('.mix'):
-        os.rename(file, options.state.out() + '/' + options.state.title() + '_' + file[:-3] + formatter.get_extension())
+        fileutil.mv(
+            file,
+            options.state.out() + '/' +
+            options.state.title() + '_' +
+            os.path.basename(file[:-4]) +
+            ('_solutions' if options.state.solutions() else '') +
+            '.' + formatter.get_extension()
+        )
     if os.path.isdir(options.state.figure()) and os.listdir(options.state.figure()):
         fileutil.copy_figure()
 

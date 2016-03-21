@@ -6,8 +6,9 @@ This Module provides helper functions to other modules for working with files.
 """
 import distutils.dir_util
 import logging
-import shutil
 import options
+import shutil
+import time
 import os
 
 
@@ -21,8 +22,8 @@ def build_files():
     options.state.template(os.path.abspath(options.state.template()))
     options.add_option('cwd', '', 'The original CWD', os.getcwd(), str)
     os.chdir(os.path.abspath(os.path.dirname(options.state.template())))
-    options.state.out(os.path.abspath(os.path.curdir) + '/' + options.state.out())
-    options.state.tmp(os.path.abspath(os.path.curdir) + '/' + options.state.tmp())
+    options.state.out(options.state.cwd() + '/' + options.state.out())
+    options.state.tmp(options.state.cwd() + '/' + options.state.tmp())
     options.state.figure(options.state.tmp() + '/' + options.state.figure())
     logging.info('Fixed paths')
     # Overwrite warning
@@ -36,7 +37,7 @@ def build_files():
     if not os.path.exists(options.state.out()):
         os.mkdir(options.state.out())
     # Change current working directory
-    os.chdir(options.state.tmp())
+    options.state.cwd(options.state.tmp())
     logging.info('Built directories')
 
 
@@ -46,8 +47,9 @@ def cleanup():
     """
     if not options.state.debug():
         remove(options.state.tmp())
+        wait_on_io(lambda: os.path.exists(options.state.tmp()))
     # Reset current working directory so plugins can be unloaded
-    os.chdir(options.state.cwd())
+    options.state.cwd(os.curdir)
 
 
 def with_extension(extension):
@@ -58,7 +60,7 @@ def with_extension(extension):
 
     :return: a list of files that end in the provided extension
     """
-    return [file for file in os.listdir(os.path.curdir) if file.endswith(extension)]
+    return [options.state.cwd() + '/' + file for file in os.listdir(options.state.cwd()) if file.endswith(extension)]
 
 
 def read(file):
@@ -109,6 +111,17 @@ def remove(file):
         shutil.rmtree(file)
 
 
+def mv(src, dest):
+    """
+    Moves a file from src to destination.
+
+    :param src: The relative or absolute path for the file or directory to move
+    :param dest: The relative or absolute path for the file's destination
+    """
+    logging.info('Moving ' + src + ' to ' + dest)
+    os.rename(src, dest)
+
+
 def is_bin(file):
     """
     Check if a file is a binary file.
@@ -122,3 +135,18 @@ def is_bin(file):
     except UnicodeDecodeError:
        return True
 
+
+def wait_on_io(fn, timeout=5):
+    """
+    Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
+    False.
+
+    :param fn: The io function to wait on
+    :param timeout: The maximum time to wait
+    """
+    logging.info('Waiting on io...')
+    start = time.time()
+    while fn():
+        if time.time() - start > timeout:
+            raise TimeoutError('Timed out while waiting on io')
+    logging.info('io finished')

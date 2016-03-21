@@ -83,7 +83,10 @@ def start(args, api=True):
     Start adds all needed processes to the option list and then loops % pyxam!link process_list.consume until there are
     no processes left.
     """
+    # Clear last session data
+    options.clear()
     process_list.clear()
+    # Add api option
     options.add_option('api', '-api', 'Run Pyxam in api mode', True, bool, value=api)
     process_list.append([
         options.load_options,

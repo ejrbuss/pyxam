@@ -75,7 +75,7 @@ def parse():
         intermediate.ast = filters.transform_questions(intermediate.ast)
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
-        fileutil.write('parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
+        fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
     return intermediates
 
 
@@ -95,10 +95,10 @@ def compose(intermediates):
         # If not already in native format
         if intermediate.fmt != composer:
             intermediate = composer['composer_preprocessor'](intermediate)
-            fileutil.write('composed-ast', str(intermediate.ast))
+            fileutil.write(options.state.cwd() + '/composed-ast', str(intermediate.ast))
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
-        fileutil.write('composed_' + str(n) + '.cmp', composed)
+        fileutil.write(options.state.cwd() + '/composed_' + str(n) + '.cmp', composed)
 
 
 def pack(token, fmt):

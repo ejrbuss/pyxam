@@ -14,7 +14,7 @@ class LibError(Exception):
 def weave():
     for n in range(options.state.number()):
         extension = options.state.template().split('.')[-1]
-        src, path = fileutil.read(options.state.template()), 'template_' + str(n) + '.' + extension
+        src, path = fileutil.read(options.state.template()), options.state.cwd() + '/template_' + str(n) + '.' + extension
         # fileutil.write(path, src)
         # continue
         fileutil.write(path, src)

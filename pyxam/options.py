@@ -15,6 +15,16 @@ _compiled = {}
 _hanging = []
 
 
+def clear():
+    """
+    Clear all compiled and hanging options.
+    """
+    global state, _compiled, _hanging
+    state = libs.map.Map()
+    _compiled = {}
+    _hanging = []
+
+
 def compile_(option, value=None):
     """
     Set the value field of an option with the correct type and/or retrieve the compiled value of the option.

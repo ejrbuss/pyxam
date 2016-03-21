@@ -1,3 +1,10 @@
+
+# Module process_list
+
+This module manages the Pyxam process list which is a consecutive set of functions that are run in order. This process
+list can be changed during runtime via a number of function calls.
+
+***
 **ready**()
 
 
@@ -58,3 +65,8 @@ Run the next process in the process list with any provided arguments.
 
 
 **returns**  Arguments for the next process
+
+***
+**clear**()
+
+Clears the process list of all waiting processes.

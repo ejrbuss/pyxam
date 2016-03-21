@@ -1,7 +1,11 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
-import options
+import process_list
 import formatter
+import fileutil
+import options
 import pyxam
+import sys
+import os
 
 
 signature = 'option config', 'ejrbuss', 'The default options for pyxam'
@@ -22,7 +26,7 @@ def load():
     options.add_option('debug',       '-d',   'Disable file cleanup',                False,      bool)
     # Run once and produce solutions then run again widthout solutions
     if options.add_option('solutions',   '-s',   'Enable soultions',                 False,      bool):
-        pass
+        process_list.run_before('goodbye', rerun)
     # Display version number via the welcome message then exit
     if options.add_option('version','-v',   'Show the version number',             False,      bool):
         if options.state.api():
@@ -40,6 +44,12 @@ def load():
     else:
         return signature
     # Exit
+    exit()
+
+
+def rerun():
+    args = list(arg for arg in sys.argv[1:] if arg not in ['-s', '-solutions', '--solutions'])
+    pyxam.start(args, True)
     exit()
 
 

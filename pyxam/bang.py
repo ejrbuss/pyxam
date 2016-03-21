@@ -82,8 +82,8 @@ def run_commands():
                         break;
     # Move template
     options.state.template(options.state.tmp() + '/template/' + os.path.basename(options.state.template()))
-    if not os.path.exists('template'):
-        os.mkdir('template')
+    if not os.path.exists(options.state.cwd() + '/template'):
+        os.mkdir(options.state.cwd() + '/template')
     # Write result to new template
     fileutil.write(options.state.template(), buffer)
 

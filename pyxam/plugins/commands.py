@@ -59,15 +59,13 @@ def question_import(args):
     Insert a question
     """
     n, imports, import_string = int(shlex.split(args)[0]), [], shlex.split(args)[1]
-    os.chdir(os.path.dirname(options.state.template()))
     for file in import_string.split('|'):
-        file = options.state.cwd() + '/' + file
+        file = os.curdir + '/' + file
         if os.path.isfile(file):
             imports.append(fileutil.read(file))
         if os.path.isdir(file):
             for name in os.listdir():
                 imports.append(fileutil.read(file + '/' + name))
-    os.chdir(options.state.tmp())
     random.shuffle(imports)
     import_string = ''
     while n > 0 and imports:
