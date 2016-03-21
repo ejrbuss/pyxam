@@ -1,0 +1,216 @@
+<!DOCTYPE html><html>
+<style>
+    * {
+        color: #333333;
+        outline: none !important;
+    }
+    body {
+        margin: 0;
+        background: #EFEFEF;
+    }
+    h3 {
+
+    }
+    h2 {
+
+    }
+    h1 {
+        color: #3774A6;
+        border-bottom: 2px solid #EFEFEF;
+    }
+    hr {
+        height: 2px;
+        color: #EFEFEF;
+        background: #EFEFEF;
+        border: none;
+        margin-top: 2em;
+        width: 100%;
+    }
+    .e3 {
+        float: left;
+        line-weight: bold;
+        font-style: italic;
+    }
+    .e2 {
+        float: left;
+        line-weight: bold;
+    }
+    .e1 {
+        float: left;
+        font-style: italic;
+    }
+    .verb-python {
+        padding: 1em;
+        background: #F0F1F2;
+    }
+    .verb-block {
+        padding: 1em;
+        background: #F0F1F2;
+    }
+    .verb-expr {
+        margin: 1em;
+        display:inline-block;
+        background: #F0F1F2;
+        color: #3774A6;
+        width: auto;
+    }
+    .quote {
+
+    }
+    .doc {
+        padding: 4em;
+        width: 50%;
+        display: block;
+        margin: 0 20em;
+        background: #FCFCFC;
+    }
+    .sidebar {
+        display: block;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: fixed;
+        left: 0;
+        width: 20em;
+        height: 100%;
+        background: #343131;
+    }
+    .logo-container {
+        display: block;
+        width: 18em;
+        text-align: center;
+        padding: 1em;
+        margin: 0;
+    }
+    .logo {
+        font-size: 3em;
+    }
+    .circles {
+        width: 10em;
+        display: block;
+        margin: 0 auto;
+    }
+    .circle {
+        width: 1em;
+        height: 1em;
+        border-radius: 1em;
+        float: left;
+        margin: 0.5em;
+    }
+    .search {
+        border: none;
+        padding: 0;
+        width: 18em;
+        margin: 0 auto;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        display: block;
+        border-radius: 2em 2em 2em 2em;
+        padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    .nav {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .nav li a {
+        font-size: 0.9em;
+        padding: 0.25em;
+        padding-left: 2em;
+        display: block;
+        text-decoration: none;
+        color: #817F7F;
+    }
+    .nav li a:hover {
+        background: #4E4A4A;
+    }
+    .accordion-content li a {
+        background: #393636;
+    }
+    .credits {
+        color: #A5A5A5;
+        font-size: 0.8em;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function($) {
+        $('*').find('.accordion-toggle').click(function(){
+            //Expand or collapse this panel
+            $(this).find('.accordion-content').slideToggle('fast');
+        });
+        $('.accordion-content').toggle();
+    });
+
+
+</script>
+<body>
+    <div class='sidebar'>
+        <div class='logo-container'>
+            <a href='%index.md' style='text-decoration:none'>
+                <span class='logo' style='color:#FFD343'>Py</span>
+                <span class='logo' style='color:#3774A6'>xam</span>
+                <br />
+                <div class='circles'>
+                    <div class='circle' style='background:#FFD343'></div>
+                    <div class='circle' style='background:#FFD343'></div>
+                    <div class='circle' style='background:#FFD343'></div>
+                    <div class='circle' style='background:#3774A6'></div>
+                    <div class='circle' style='background:#3774A6'></div>
+                </div>
+            </a>
+        </div>
+        <input type="text" class='search' placeholder='Search Docs'>
+        <ul class='nav'>
+            <li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildGetting_Started.html">Getting Started</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins.html">Plugins</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildSupport_and_Contact.html">Support and Contact</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildReadme.html">Readme</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildFormats.html">Formats</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildOptions.html">Options</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildProcess_List.html">Process List</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildSelectors.html">Selectors</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildindex.html">Home</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildFramework.html">Framework</a></li>
+<li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/__init__.html">__init__</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/process_list.html">process_list</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/lib_loader.html">lib_loader</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/plugin_loader.html">plugin_loader</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/options.html">options</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/exporter.html">exporter</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/formatter.html">formatter</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/filters.html">filters</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/fileutil.html">fileutil</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/pyxam.html">pyxam</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildModules/bang.html">bang</a></li>
+</ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/_logging.html">_logging</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/_random.html">_random</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/format_latex.html">format_latex</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/format_moodle.html">format_moodle</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/format_org.html">format_org</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/selector_sequence.html">selector_sequence</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/commands.html">commands</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/format_html.html">format_html</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/format_pdf.html">format_pdf</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/_options.html">_options</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/format_markdown.html">format_markdown</a></li>
+<li><a href="https://raw.githubusercontent.com/balancededge/pyxam/master/docs/buildPlugins/docs.html">docs</a></li>
+</ul></li>
+        </ul>
+        <div style='height:2em'></div>
+    </div>
+    <div class='doc'>
+        <h1>Plugin docs</h1>The docs plugin is used to build the documentation for Pyxam quickly and easily from a combination of documentation
+source files and python docstrings. All documentation is written in markdown and then converted to HTML by this plugin.<hr /><br /><b>load</b>()<br />
+Loads the doc plugin.<br /><b>localdocs</b><br /><pre class="verb-expr">-ld</pre>,<br /><pre class="verb-expr">-localdocs</pre>,<br /><pre class="verb-expr">--localdocs</pre><i>(bool) False</i>This flag determines whether documentation pages will link to repo pages or to files on your local computer.<br /><b>docs</b><br /><pre class="verb-expr">-docs</pre>,<br /><pre class="verb-expr">--docs</pre><i>(bool) False</i>If this option is supplied Pyxam's docs are rebuilt. Docs are built by:<ul><li>Finding the paths to the documentation source, module files, and plugin files<li>Copying all docstrings from module files and plugin files to the documentation source directory<li>Converting all markdown files in the documentation source directory to HTML<li>Perform post processing to add a javascript search bar and sidebar along with minor changes to HTML<li>Copying those files to the documentation build directory</ul>It can be useful to regenerate the docs if you have added a new Plugin and want to read its documentation.<hr /><br /><b>get_docs</b>(<i>docs, directory</i>)<br /><br />Copies all python docstrings from directory to docs.<br /><pre class="verb-expr">docs</pre>The directory where the docstrings will be copied to<br /><pre class="verb-expr">directory</pre>The directory whose python files while be scraped for docstrings<hr /><br /><b>compile_docs</b>(<i>docs</i>)<br /><br />Converts all markdown files found in docs to HTML and then copies them to the build directory. All folders are run
+recursively.<br /><pre class="verb-expr">docs</pre>The documentation directory to compile<br /><b><br />returns &nbsp;</b>test<hr /><br /><b>compile_doc</b>(<i>docs, doc</i>)<br /><br />Converts the given file from markdown to HTML and then copies it to the build directory.<br /><pre class="verb-expr">docs</pre>The directory of the file to compile<br /><pre class="verb-expr">doc</pre>The file to compile
+        <hr />
+        <div class='credits'>
+            &copy; Copyright Eric Buss
+            <br /><br />
+            Built with Pyxam
+        </div>
+    </div>
+</body>
+</html>

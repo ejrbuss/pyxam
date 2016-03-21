@@ -3,6 +3,7 @@ import options
 import formatter
 import collections
 import filters
+import fileutil
 import re
 
 signature = 'html format', 'ejrbuss', 'Format for viewing and producing html files'
@@ -93,9 +94,10 @@ def composer_preprocessor(intermediate):
     def fix_html(token):
         token.definition[0] = token.definition[0].replace('<', '&#60;').replace(' '*4, '&emsp;'*2)
         return token
-    intermediate.ast = filters.promote(intermediate.ast, 'questions')
+    #intermediate.ast = filters.promote(intermediate.ast, 'questions')
+    intermediate.ast = filters.wrap_lists(intermediate.ast)
     intermediate.ast = filters.img64(intermediate.ast)
-    intermediate.ast = filters.apply_function(intermediate.ast, fix_html, 'verbatim')
+    #intermediate.ast = filters.apply_function(intermediate.ast, fix_html, 'verbatim')
     return intermediate
 
 
@@ -105,12 +107,10 @@ def composer_postprocessor(src):
     # String replacements
     for symbol in math:
         src = src
-
+    src = re.sub(r'\n{2}', '<br />', src)
     if options.state.solutions():
         src = src.replace('display:none', '')
         src = src.replace('display:visible', 'display:none')
-    if not src.startswith('<!DOCTYPE html>'):
-        return '<!DOCTYPE html><html>' + css + '<body>' + src + '\n</body></html>'
     return src
 
 
@@ -139,6 +139,20 @@ def load():
             ('verbatim', ['<div class="verbatim">', (), '</div>', '.']),
             ('true', ['<div class=True>True</div>', '.']),
             ('false', ['<div class=False>False</div>', '.']),
+            ('h3', ['<h3>', (), '</h3>', '.']),
+            ('h2', ['<h2>', (), '</h2>', '.']),
+            ('h1', ['<h1>', (), '</h1>', '.']),
+            ('list', ['<ul>', (), '</ul>', '.']),
+            ('listitem', ['<li>', (), '</li>']),
+            ('hr', ['<hr />', '.']),
+            ('emphasis3', ['<i><b>', (), '</b></i>', '.']),
+            ('emphasis2', ['<br /><b>', (), '</b>', '.']),
+            ('emphasis1', ['<i>', (), '</i>', '.']),
+            ('verbython', ['<pre class="verb-python">', (), '</pre>', '.']),
+            ('verbblock', ['<pre class="verb-block">', (), '</pre>', '.']),
+            ('verbexpr', ['<br /><pre class="verb-expr">', (), '</pre>', '.']),
+            ('link', ['[', (), ']', '(', (), ')', '.']),
+            ('quote', ['<div class="quote">', (), '</div>', '.'])
         ])
     })
     # Return signature

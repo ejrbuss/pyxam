@@ -14,6 +14,7 @@ mode from another python script. This script also checks Python dependencies for
 #TODO finish docs
 #TODO solutions produce two versions
 #TODO tests
+#TODO move pweave to dependency
 import sys
 import process_list
 import options
@@ -22,7 +23,7 @@ import plugin_loader
 import fileutil
 import lib_loader
 import formatter
-import exporter
+import exporter 
 
 
 # Module Dependencies
@@ -48,12 +49,10 @@ TITLE = '    ____                           \n' \
         '/_/    \__, /_/|_|\__,_/_/ /_/ /_/ \n' \
         '      /____/'
 
+
 def welcome():
     """
-    **welcome**()
-
     Prints the Pyxam title and version number when not in api mode.
-
     """
     if not options.state.api():
         print(TITLE, '\n\n\tLatex Exam Generation.', __version__, '\n\n')
@@ -61,10 +60,7 @@ def welcome():
 
 def goodbye():
     """
-    **goodbye**()
-
     Prints a goodbye message when not in api mode.
-
     """
     if not options.state.api():
         print('Thanks for using Pyxam, have a nice day!')
@@ -72,13 +68,10 @@ def goodbye():
 
 def start(args, api=True):
     """
-    **start**(`args`, `api=True`)
-
     Start Pyxam with a set of options.
 
-    `args` A list of options provided in command line syntax
-
-    `api` A flag indicating if Pyxam is being called as an api
+    :param args: A list of options provided in command line syntax
+    :param api: A flag indicating if Pyxam is being called as an api
 
     Start adds all needed processes to the option list and then loops % pyxam!link process_list.consume until there are
     no processes left.

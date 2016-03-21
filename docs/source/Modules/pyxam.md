@@ -12,30 +12,24 @@ mode from another python script. This script also checks Python dependencies for
 ***
 **welcome**()
 
-**welcome**()
 
 Prints the Pyxam title and version number when not in api mode.
-
 
 ***
 **goodbye**()
 
-**goodbye**()
 
 Prints a goodbye message when not in api mode.
-
 
 ***
 **start**(*args, api=True*)
 
 
-**start**(`args`, `api=True`)
 
 Start Pyxam with a set of options.
 
-`args` A list of options provided in command line syntax
-
-`api` A flag indicating if Pyxam is being called as an api
+`args`  A list of options provided in command line syntax
+`api`  A flag indicating if Pyxam is being called as an api
 
 Start adds all needed processes to the option list and then loops % pyxam!link process_list.consume until there are
 no processes left.

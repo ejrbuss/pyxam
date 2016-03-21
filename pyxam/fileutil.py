@@ -22,9 +22,12 @@ def build_files():
     options.state.template(os.path.abspath(options.state.template()))
     options.add_option('cwd', '', 'The original CWD', os.getcwd(), str)
     os.chdir(os.path.abspath(os.path.dirname(options.state.template())))
-    options.state.out(options.state.cwd() + '/' + options.state.out())
-    options.state.tmp(options.state.cwd() + '/' + options.state.tmp())
-    options.state.figure(options.state.tmp() + '/' + options.state.figure())
+    if os.path.abspath(options.state.out()) != options.state.out():
+        options.state.out(options.state.cwd() + '/' + options.state.out())
+    if os.path.abspath(options.state.tmp()) != options.state.tmp():
+        options.state.tmp(options.state.cwd() + '/' + options.state.tmp())
+    if os.path.abspath(options.state.figure()) != options.state.figure():
+        options.state.figure(options.state.tmp() + '/' + options.state.figure())
     logging.info('Fixed paths')
     # Overwrite warning
     if os.path.isdir(options.state.tmp()) and not options.state.api() and \

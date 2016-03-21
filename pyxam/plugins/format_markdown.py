@@ -18,15 +18,19 @@ def load():
         'composer_postprocessor': filters.pass_through,
         # Use an OrderedDict to preserve token order
         'format': collections.OrderedDict([
-            ('comment', ['<!--', (), '-->', '.']),
-            ('$', ['<span class="$"><i>', (), '</i></span>', '.']),
-            ('title', ['<br /><b>', (), '</b><br />', '.']),
-            ('img', ['<img alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
-            ('choice', ['<br /> __ ', (), '<br />', '.']),
-            ('correctchoice', ['<br /> __ ', (), '<br />', '.']),
-            ('verbatim', ['<p style="font-family:monospace;padding:1em"><b>', (), '</b></p>', '.']),
-            ('true', [' __ True', '.']),
-            ('false', [' __ False', '.']),
+            ('h3', ['###', (), '\n']),
+            ('h2', ['##', (), '\n']),
+            ('h1', ['#', (), '\n']),
+            ('listitem', [' - ', (), '\n']),
+            ('hr', ['***', '\s*']),
+            ('emphasis3', ['***', (), '***', '.']),
+            ('emphasis2', ['**', (), '**', '.']),
+            ('emphasis1', ['*', (), '*', '.']),
+            ('verbython', ['```python', (), '```', '.']),
+            ('verbblock', ['```', (), '```', '.']),
+            ('verbexpr', ['`', (), '`', '.']),
+            ('link', ['[', (), ']', '(', (), ')', '.']),
+            ('quote', ['\n >', (), '\n'])
         ])
     })
     # Return signature

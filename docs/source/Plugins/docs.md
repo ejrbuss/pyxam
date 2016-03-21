@@ -7,6 +7,7 @@ source files and python docstrings. All documentation is written in markdown and
 ***
 **load**()
 
+
 Loads the doc plugin.
 
 **localdocs** `-ld`, `-localdocs`, `--localdocs` *(bool) False*
@@ -27,35 +28,29 @@ It can be useful to regenerate the docs if you have added a new Plugin and want 
 **get_docs**(*docs, directory*)
 
 
+
 Copies all python docstrings from directory to docs.
 
-
-
 `docs`  The directory where the docstrings will be copied to
-
-
 `directory`  The directory whose python files while be scraped for docstrings
 
 ***
 **compile_docs**(*docs*)
 
 
+
 Converts all markdown files found in docs to HTML and then copies them to the build directory. All folders are run
 recursively.
 
-
-
 `docs`  The documentation directory to compile
-
-
-**returns**  test
+**<br />returns &nbsp;**  test
 
 ***
-**compile_doc**(*doc*)
+**compile_doc**(*docs, doc*)
+
 
 
 Converts the given file from markdown to HTML and then copies it to the build directory.
 
-
-
+`docs`  The directory of the file to compile
 `doc`  The file to compile

@@ -61,6 +61,7 @@ def csv_read(file):
     :param file: The csv file to read
     :return: a list of dictionaries containing `number` and `name` entries
     """
+    #TODO fail-safe if no columns could be identified
     if file is None:
         return []
     file = options.state.cwd() + '/' + file if os.path.exists(options.state.cwd() + '/' + file) else file

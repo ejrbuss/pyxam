@@ -7,12 +7,23 @@ source files and python docstrings. All documentation is written in markdown and
 """
 import fileutil
 import options
-import shutil
+import pyxam
 import os
 import re
 
 
+# TODO search
+# TODO links
+# TODO replaced links
+# TODO cleanup
+
 signature = 'docs builder', 'ejrbuss', 'Builder for Pyxam\'s documentation'
+
+
+nav = ''
+
+
+url = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/build') + '/'
 
 
 def load():
@@ -33,12 +44,33 @@ def load():
      - Copying those files to the documentation build directory
     It can be useful to regenerate the docs if you have added a new Plugin and want to read its documentation.
     """
-    options.add_option('localdocs', '-ld', 'Generate documentation for local use', False, bool)
+    global url, nav
+    if options.add_option('gitdocs', '-gd', 'Generate documentation for use on github', False, bool):
+        url = 'https://raw.githubusercontent.com/balancededge/pyxam/master/docs/build'
     if options.add_option('docs', '-docs', 'Build Pyxam\'s documentation source', False, bool):
         # Get paths, use the full path each time in case abspath changes / to \\ on windows
         plugins = os.path.abspath(__file__.replace('docs.py', ''))
         modules = os.path.abspath(__file__.replace('docs.py', '') + '..')
         docs = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/source')
+        # Add docs
+        for file in os.listdir(docs):
+            path = docs + '/' + file
+            if os.path.isfile(path) and path.endswith('.md'):
+                nav += '<li><a href="' + url + file.replace('.md', '.html') + '">' + file[:-3].replace('_', ' ').replace('index', 'Home') + '</a></li>\n'
+        # Add Modules
+        nav += '<li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">\n'
+        for file in os.listdir(modules):
+            path = modules + '/' + file
+            if os.path.isfile(path) and path.endswith('.py'):
+                nav += '<li><a href="' + url + 'Modules/' + file.replace('.py', '.html') + '">' + file[:-3] + '</a></li>\n'
+        nav += '</ul></li>'
+        # Add plugins
+        nav += '<li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">\n'
+        for file in os.listdir(plugins):
+            path = plugins + '/' + file
+            if os.path.isfile(path) and path.endswith('.py'):
+                nav += '<li><a href="' + url + 'Plugins/' + file.replace('.py', '.html') + '">' + file[:-3] + '</a></li>\n'
+        nav += '</ul></li>'
         # Copy Plugin docstrings
         get_docs(docs + '/Plugins', plugins)
         # Copy Module docstrings
@@ -63,14 +95,15 @@ def get_docs(docs, directory):
     for file in os.listdir(directory):
         path = directory + '/' + file
         # If file is python file other than __init__
-        if os.path.isfile(path) and path.endswith('.py') and file != '__init__.py':
+        if os.path.isfile(path) and path.endswith('.py') and '__init__' not in file:
+            # Read file
             buffer = fileutil.read(path)
             # Get docstrings
             docstrings = re.findall(r'(((def[^\n]*:\s*)?"{3}.*?)"{3})', buffer, re.DOTALL)
             # remove triple quotes
             docstrings = [re.sub(r'"{3}', '', doc[0]) for doc in docstrings]
             # Transform function headers
-            docstrings = [re.sub(r'def (.*?)\((.*?)\):', r'**\1**(*\2*)\n', doc) for doc in docstrings]
+            docstrings = [re.sub(r'def (.*?)\((.*?)\):', r'**\1**(*\2*)\n\n', doc) for doc in docstrings]
             # Convert list to buffer
             buffer = '\n***\n'.join(docstrings)
             # Reformat *Kills sub lists TODO better parsing
@@ -78,9 +111,9 @@ def get_docs(docs, directory):
             # Remove any empty paramters
             buffer = buffer.replace('(**)\n', '()')
             # Convert parameter definitions
-            buffer = re.sub(r':param\s*(.*?):(.*?)', r'\n\n`\1` \2', buffer)
+            buffer = re.sub(r':param\s*(.*?):(.*?)', r'`\1` \2', buffer)
             # Convert return statements
-            buffer = re.sub(r':return:(.*?)', r'\n\n**returns** \1', buffer)
+            buffer = re.sub(r':return:(.*?)', r'**<br />returns &nbsp;** \1', buffer)
             # Write to docs
             fileutil.write(docs + '/' + file.replace('.py', '.md'), buffer)
 
@@ -98,17 +131,26 @@ def compile_docs(docs):
     for file in os.listdir(docs):
         path = docs + '/' + file
         if os.path.isfile(path) and path.endswith('.md'):
-            compile_doc(path)
+            compile_doc(docs, path)
         elif os.path.isdir(path):
             compile_docs(path)
 
 
-def compile_doc(doc):
+def compile_doc(docs, doc):
     """
     Converts the given file from markdown to HTML and then copies it to the build directory.
 
+    :param docs: The directory of the file to compile
     :param doc: The file to compile
     """
-    if not os.path.exists(doc.replace('source', 'build')):
-        open(doc.replace('source', 'build'), 'w').close()
-    shutil.copy(doc, doc.replace('source', 'build'))
+    build = docs.replace('source', 'build')
+    pyxam.start(['-f', 'html', '-o', build, '-t', 'doc', doc])
+    buffer = fileutil.read(build + '/doc_1.html')
+    fileutil.remove(build + '/doc_1.html')
+    template = os.path.abspath(__file__.replace('docs.py', '') + '../templates/docs.html')
+    fileutil.write(
+        doc.replace('source', 'build').replace('.md', '.html'),
+        fileutil.read(template)
+            .replace('<!-- pyxam!docs -->', buffer)
+            .replace('<!-- pyxam!nav -->', nav)
+    )

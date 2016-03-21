@@ -144,6 +144,30 @@ def promote(ast, name):
     return promote(sum([token.definition for token in ast if hasattr(token, 'definition')], []), name)
 
 
+def wrap_lists(ast):
+    """
+    Wraps consecutive listitem tokens in a list token. Applied recursively.
+
+    :param ast: The tree to be modified
+    :return: The modifed tree
+    """
+    new_ast = []
+    buffer = []
+    for token in ast:
+        if hasattr(token, 'definition'):
+            wrap_lists(token.definition)
+        if hasattr(token, 'name') and 'listitem' in token.name:
+            buffer.append(token)
+        else:
+            if buffer:
+                new_ast.append(formatter.Token('list', buffer, None, ''))
+                buffer = []
+            new_ast.append(token)
+    if buffer:
+        new_ast.append(formatter.Token('list', buffer, None, ''))
+    return new_ast
+
+
 def transform_questions(ast):
     """
     Performs a number of transformations to questions in the tree. These include converting shortanswer questions to

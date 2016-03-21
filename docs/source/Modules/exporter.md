@@ -13,6 +13,7 @@ by the compile format.
 ***
 **export**()
 
+
 Mix the composed files with the specified selector then copy all mixed files to the out directory with the
 appropriate names. If any files are in the figure directory they are copied out as well.
 
@@ -20,24 +21,18 @@ appropriate names. If any files are in the figure directory they are copied out 
 **csv_read**(*file*)
 
 
+
 Attempts to read the provided CSV file.
 
-
-
 `file`  The csv file to read
-
-
-**returns**  a list of dictionaries containing `number` and `name` entries
+**<br />returns &nbsp;**  a list of dictionaries containing `number` and `name` entries
 
 ***
 **add_selector**(*name, selector*)
 
 
+
 Add a selector to the selector list.
 
-
-
 `name`  The name of the selector being added
-
-
 `selector`  The selector to add

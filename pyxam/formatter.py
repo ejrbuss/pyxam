@@ -261,7 +261,7 @@ def check(token, src, fmt, debug=False):
                     if debug: print('\t\tEND OF POST:',symbol)
                     definition += [matched] if \
                         '$' in token.name or \
-                        'verbatim' in token.name or \
+                        'verb' in token.name or \
                         'comment' in token.name in token.name \
                         else resolve(matched, fmt)
                     unmatched = unmatched[len(symbol):]
@@ -326,7 +326,11 @@ def check(token, src, fmt, debug=False):
                 unmatched = unmatched[1:]
             # If at the end of content
             elif re.match(r'^\s*(({})|$).*'.format(token.definition[-1]), unmatched, re.DOTALL):
-                definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else resolve(matched, fmt)
+                definition += [matched] if \
+                        '$' in token.name or \
+                        'verb' in token.name or \
+                        'comment' in token.name in token.name \
+                        else resolve(matched, fmt)
                 post = False
             # If not at the end of content
             else:
