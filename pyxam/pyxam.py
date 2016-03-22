@@ -11,10 +11,18 @@ mode from another python script. This script also checks Python dependencies for
 `numpy` Needed for generating figure images
 
 """
-#TODO finish docs
-#TODO solutions produce two versions
-#TODO tests
-#TODO move pweave to dependency
+
+
+# TODO finish docs
+# TODO tests
+# TODO move pweave to dependency
+# TODO cleanup
+# TODO test html
+# TODO org mode
+# TODO markdown
+# TODO calculated
+
+
 import sys
 import process_list
 import options

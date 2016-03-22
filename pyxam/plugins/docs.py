@@ -12,18 +12,28 @@ import os
 import re
 
 
-# TODO search
-# TODO links
-# TODO replaced links
-# TODO cleanup
-
 signature = 'docs builder', 'ejrbuss', 'Builder for Pyxam\'s documentation'
 
-
+# Base url
+url = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/build')
+# Navigation javascript
 nav = ''
-
-
-url = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/build') + '/'
+# Table of contents
+table = '<ul>'
+# Navigation search content
+nav_content = '<input type="hidden" id="{}" value="{}">\n'
+# Navigation item
+nav_item = '<li class="searchable" id="#{}"><a href="{}">{}</a></li>\n'
+# Table item
+table_item = '<li><a href="{}">{}</a></li>\n'
+# Navigation section start
+nav_sec_start = '<li class="accordion-toggle"><b><a href="#">{}</a></b><ul class="nav accordion-content">\n'
+# Table section start
+table_sec_start = '<li><a href="#">{}</a><ul>\n'
+# Navigation section end
+nav_sec_end = '</ul></li>'
+# Table section end
+table_sec_end = '</ul></li>'
 
 
 def load():
@@ -45,80 +55,108 @@ def load():
     It can be useful to regenerate the docs if you have added a new Plugin and want to read its documentation.
     """
     global url, nav
-    if options.add_option('gitdocs', '-gd', 'Generate documentation for use on github', False, bool):
-        url = 'https://rawgit.com/balancededge/pyxam/master/docs/build/'
-    if options.add_option('docs', '-docs', 'Build Pyxam\'s documentation source', False, bool):
+    options.add_option('docs', '-docs', 'Build Pyxam\'s documentation source', False, bool)
+    options.add_option('gitdocs', '-gdocs', 'Generate documentation for use on github', False, bool)
+    if options.state.docs() or options.state.gitdocs():
+        if options.state.gitdocs():
+            url = 'https://rawgit.com/balancededge/pyxam/master/docs/build'
         # Get paths, use the full path each time in case abspath changes / to \\ on windows
         plugins = os.path.abspath(__file__.replace('docs.py', ''))
         modules = os.path.abspath(__file__.replace('docs.py', '') + '..')
         docs = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/source')
-        # Add docs
-        for file in os.listdir(docs):
-            path = docs + '/' + file
-            if os.path.isfile(path) and path.endswith('.md'):
-                nav += '<li><a href="' + url + file.replace('.md', '.html') + '">' + file[:-3].replace('_', ' ').replace('index', 'Home') + '</a></li>\n'
-        # Add Modules
-        nav += '<li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">\n'
-        for file in os.listdir(modules):
-            path = modules + '/' + file
-            if os.path.isfile(path) and path.endswith('.py'):
-                nav += '<li><a href="' + url + 'Modules/' + file.replace('.py', '.html') + '">' + file[:-3] + '</a></li>\n'
-        nav += '</ul></li>'
-        # Add plugins
-        nav += '<li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">\n'
-        for file in os.listdir(plugins):
-            path = plugins + '/' + file
-            if os.path.isfile(path) and path.endswith('.py'):
-                nav += '<li><a href="' + url + 'Plugins/' + file.replace('.py', '.html') + '">' + file[:-3] + '</a></li>\n'
-        nav += '</ul></li>'
-        # Copy Plugin docstrings
-        get_docs(docs + '/Plugins', plugins)
-        # Copy Module docstrings
-        get_docs(docs + '/Modules', modules)
+        build = docs.replace('source', 'build')
+        load_docs(docs)
+        load_source('Modules', modules, build)
+        load_source('Plugins', plugins, build)
         # Compile docs
-        compile_docs(docs)
+        compile_docs(build)
         # Exit
         exit('Docs successfully recompiled')
     return signature
 
 
-def get_docs(docs, directory):
+def load_source(name, directory, build):
     """
-    Copies all python docstrings from directory to docs.
 
-    :param docs: The directory where the docstrings will be copied to
-    :param directory: The directory whose python files while be scraped for docstrings
+    :param name:
+    :param directory:
+    :param build:
+    :return:
     """
-    # TODO tabbing
-    # TODO markdown to html
-    # TODO javascript and css wrapper
+    global nav, table
+    nav += nav_sec_start.format(name)
+    table += table_sec_start.format(name)
+    if not os.path.exists(build + '/' + name):
+        os.mkdir(build + '/' + name)
     for file in os.listdir(directory):
         path = directory + '/' + file
-        # If file is python file other than __init__
-        if os.path.isfile(path) and path.endswith('.py') and '__init__' not in file:
-            # Read file
-            buffer = fileutil.read(path)
-            # Get docstrings
-            docstrings = re.findall(r'(((def[^\n]*:\s*)?"{3}.*?)"{3})', buffer, re.DOTALL)
-            # remove triple quotes
-            docstrings = [re.sub(r'"{3}', '', doc[0]) for doc in docstrings]
-            # Transform function headers
-            docstrings = [re.sub(r'def (.*?)\((.*?)\):', r'**\1**(*\2*)\n\n', doc) for doc in docstrings]
-            # Convert list to buffer
-            buffer = '\n***\n'.join(docstrings)
-            # Reformat *Kills sub lists TODO better parsing
-            buffer = re.sub(r'\n {4}', '\n', buffer)
-            # Remove any empty paramters
-            buffer = buffer.replace('(**)\n', '()')
-            # Convert parameter definitions
-            buffer = re.sub(r':param\s*(.*?):(.*?)', r'`\1` \2', buffer)
-            # Convert return statements
-            buffer = re.sub(r':return:(.*?)', r'**<br />returns &nbsp;** \1', buffer)
-            # Write to docs
-            fileutil.write(docs + '/' + file.replace('.py', '.md'), buffer)
+        if os.path.isfile(path) and path.endswith('.py') and '__init__' not in path:
+            docstrings = re.findall(r'(((def[^\n]*:\s*)?"{3}.*?)"{3})', fileutil.read(path), re.DOTALL)
+            parsed = '\n***\n'.join([parse_docstring(doc[0]) for doc in docstrings])
+            fileutil.write(build + '/' + name + '/' + file.replace('.py', '.md'), parsed)
+            id = file.replace('.', '_')
+            nav += nav_content.format(id, parsed.replace('"', ''))
+            nav += nav_item.format(id, '%/' + name + '/' + file[:-3] + '.html', file[:-3])
+            table += table_item.format('%/' + name + '/' + file[:-3] + '.html', file[:-3])
+    nav += nav_sec_end
+    table += table_sec_end
 
 
-def compile_docs(docs):
+def parse_docstring(docstring):
+    # Remove comment quotes
+    docstring = re.sub(r'"{3}', '', docstring)
+    # Format function signature
+    docstring = re.sub(r'^def (.*?)\((.*?)\):', r'**\1**(*\2*)\n\n', docstring)
+    # Remove empty parameters
+    docstring = re.sub(r'\(\*\*\)\n', '()', docstring)
+    # Format param
+    docstring = re.sub(r':param\s*(.*?):(.*?)', r'<br />`\1` \2', docstring)
+    # Format return
+    docstring = re.sub(r':return:(.*?)', r'**<br />returns&nbsp;** \1', docstring)
+    lines = docstring.split('\n')
+    overwrite = False
+    while not overwrite:
+        for line in lines:
+            overwrite = overwrite or (len(line) > 0 and line[0] != ' ')
+        if not overwrite:
+            lines = [line[1:] for line in lines]
+    return '\n'.join(lines)
+
+
+def load_docs(docs, name=''):
+    """
+
+    :param docs:
+    :param name:
+    :return:
+    """
+    global nav, table
+    directories = []
+    if not os.path.exists(docs.replace('source', 'build')):
+        os.mkdir(docs.replace('source', 'build'))
+    for file in os.listdir(docs):
+        path = docs + '/' + file
+        if os.path.isfile(path) and path.endswith('.md'):
+            id = file.replace('.', '_')
+            nav += nav_content.format(id, re.sub(r'(")|(<!--.*-->)', '', fileutil.read(path)))
+            nav += nav_item.format(id, '%/' + name + '/' + file[:-3] + '.html', file[2:-3]
+                                   .replace('_', ' ')
+                                   .replace('index', 'Overview'))
+            table += table_item.format('%/' + name + '/' + file[:-3] + '.html', file[2:-3]
+                                   .replace('_', ' ')
+                                   .replace('index', 'Overview'))
+            fileutil.write(docs.replace('source', 'build') + '/' + file, fileutil.read(path))
+        elif os.path.isdir(path):
+            directories.append((file, path))
+    for file, path in directories:
+        nav += nav_sec_start.format(file)
+        table += table_sec_start.format(file)
+        load_docs(path, name=file)
+        nav += nav_sec_end
+        table += table_sec_end
+
+
+def compile_docs(build):
     """
     Converts all markdown files found in docs to HTML and then copies them to the build directory. All folders are run
     recursively.
@@ -126,31 +164,29 @@ def compile_docs(docs):
     :param docs: The documentation directory to compile
     :return: test
     """
-    if not os.path.exists(docs.replace('source', 'build')):
-        os.mkdir(docs.replace('source', 'build'))
-    for file in os.listdir(docs):
-        path = docs + '/' + file
+    for file in os.listdir(build):
+        path = build + '/' + file
         if os.path.isfile(path) and path.endswith('.md'):
-            compile_doc(docs, path)
+            compile_doc(build, path)
         elif os.path.isdir(path):
             compile_docs(path)
 
 
-def compile_doc(docs, doc):
+def compile_doc(build, doc):
     """
     Converts the given file from markdown to HTML and then copies it to the build directory.
 
-    :param docs: The directory of the file to compile
+    :param build: The directory of the file to compile
     :param doc: The file to compile
     """
-    build = docs.replace('source', 'build')
-    pyxam.start(['-f', 'html', '-o', build, '-t', 'doc', doc])
+    pyxam.start(['-f', 'html', '-o', build, '-t', 'doc', '-htt', 'docs.html', doc])
     buffer = fileutil.read(build + '/doc_1.html')
+    fileutil.remove(doc)
     fileutil.remove(build + '/doc_1.html')
-    template = os.path.abspath(__file__.replace('docs.py', '') + '../templates/docs.html')
     fileutil.write(
-        doc.replace('source', 'build').replace('.md', '.html'),
-        fileutil.read(template)
-            .replace('<!-- pyxam!docs -->', buffer)
-            .replace('<!-- pyxam!nav -->', nav)
+        doc.replace('.md', '.html'),
+        buffer
+            .replace('<!-- nav -->', nav)
+            .replace('<!-- table -->', table + '</ul>')
+            .replace('%/', url + '/')
     )

@@ -1,12 +1,20 @@
 <!DOCTYPE html><html>
 <style>
     * {
+        font-family: Verdana, sans-serif;
         color: #333333;
         outline: none !important;
     }
     body {
         margin: 0;
         background: #EFEFEF;
+    }
+    a {
+        text-decoration: none;
+        color: #3774A6;
+    }
+    a:hover {
+        text-decoration: underline;
     }
     h3 {
 
@@ -40,15 +48,18 @@
         font-style: italic;
     }
     .verb-python {
+        font-family: consolas, monospace;
         padding: 1em;
         background: #F0F1F2;
     }
     .verb-block {
+        font-family: consolas, monospace;
         padding: 1em;
         background: #F0F1F2;
     }
     .verb-expr {
-        margin: 1em;
+        font-family: consolas, monospace;
+        margin: 0.5em;
         display:inline-block;
         background: #F0F1F2;
         color: #3774A6;
@@ -117,10 +128,10 @@
         padding: 0.25em;
         padding-left: 2em;
         display: block;
-        text-decoration: none;
         color: #817F7F;
     }
     .nav li a:hover {
+        text-decoration: none;
         background: #4E4A4A;
     }
     .accordion-content li a {
@@ -134,19 +145,37 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 <script>
     $(document).ready(function($) {
-        $('*').find('.accordion-toggle').click(function(){
+        $('.nav').find('.accordion-toggle').click(function(){
             //Expand or collapse this panel
             $(this).find('.accordion-content').slideToggle('fast');
         });
-        $('.accordion-content').toggle();
+        $('.nav').find('.accordion-content').toggle();
+        $('.search').on('input', function() {
+            var search_text = $(this).val();
+            $('.searchable').each(function(){
+                var content = $($(this).attr('id')).val();
+                if (content.indexOf(search_text) < 0) {
+                    $(this).removeClass('match');
+                    $(this).hide();
+                } else {
+                    $(this).addClass('match');
+                    $(this).show();
+                }
+            });
+            $('.accordion-toggle').each(function() {
+                if ($(this).find('.match').length < 1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
     });
-
-
 </script>
 <body>
     <div class='sidebar'>
         <div class='logo-container'>
-            <a href='%index.md' style='text-decoration:none'>
+            <a href='https://github.com/balancededge/pyxam' style='text-decoration:none'>
                 <span class='logo' style='color:#FFD343'>Py</span>
                 <span class='logo' style='color:#3774A6'>xam</span>
                 <br />
@@ -159,51 +188,926 @@
                 </div>
             </a>
         </div>
-        <input type="text" class='search' placeholder='Search Docs'>
+        <input type="text" autocomplete="off" class='search' placeholder='Search Docs'>
         <ul class='nav'>
-            <li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Getting_Started.html">Getting Started</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins.html">Plugins</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Support_and_Contact.html">Support and Contact</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Readme.html">Readme</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Formats.html">Formats</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Options.html">Options</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Process_List.html">Process List</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Selectors.html">Selectors</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/index.html">Home</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework.html">Framework</a></li>
-<li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/__init__.html">__init__</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/pyxam.html">pyxam</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html">bang</a></li>
+            <input type="hidden" id="0_index_md" value="# Pyxam Docs
+
+This is the code documentation for the Pyxam Python module. For details on installation and usage checkout the [readme](https://github.com/balancededge/pyxam).
+
+### Overview
+
+
+
+### Content
+
+
+
+
+
+### Thanks
+
+Pyxam is inspired by the [R exam package](https://cran.r-project.org/web/packages/exams/index.html) which used [Sweave](https://www.statistik.lmu.de/~leisch/Sweave/), a tool for running inline R code in LaTeX documents, to generate exams. Pyxam aims to bring similar functionality to inline Python code using [Pweave](http://mpastell.com/pweave/), a tool that emulates Sweave for Python. Without the great work by these other parties Pyxam would not have been created.
+
+">
+<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//0_index.html">Overview</a></li>
+<input type="hidden" id="1_Getting_Started_md" value="">
+<li class="searchable" id="#1_Getting_Started_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//1_Getting_Started.html">Getting Started</a></li>
+<input type="hidden" id="2_Support_and_Contact_md" value="">
+<li class="searchable" id="#2_Support_and_Contact_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//2_Support_and_Contact.html">Support and Contact</a></li>
+<li class="accordion-toggle"><b><a href="#">Framework</a></b><ul class="nav accordion-content">
+<input type="hidden" id="0_index_md" value=" 
+">
+<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/0_index.html">Overview</a></li>
+<input type="hidden" id="1_Options_md" value="">
+<li class="searchable" id="#1_Options_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/1_Options.html">Options</a></li>
+<input type="hidden" id="2_Process_List_md" value="">
+<li class="searchable" id="#2_Process_List_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/2_Process_List.html">Process List</a></li>
+<input type="hidden" id="3_Plugins_md" value="">
+<li class="searchable" id="#3_Plugins_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/3_Plugins.html">Plugins</a></li>
+<input type="hidden" id="4_Formats_md" value="">
+<li class="searchable" id="#4_Formats_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/4_Formats.html">Formats</a></li>
+<input type="hidden" id="5_Selectors_md" value="">
+<li class="searchable" id="#5_Selectors_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/5_Selectors.html">Selectors</a></li>
+</ul></li><li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">
+<input type="hidden" id="process_list_py" value="
+# Module process_list
+
+This module manages the Pyxam process list which is a consecutive set of functions that are run in order. This process
+list can be changed during runtime via a number of function calls.
+
+***
+**ready**()
+
+    
+    **<br />returns&nbsp;**  True as long as there are items in the process list
+    
+***
+**append**(*process*)
+
+
+    
+    Append a process to the end of the process list, or if the provided argument is a list, append all the items to
+    the process list.
+    <br />`process` 
+    **<br />returns&nbsp;**  None
+    
+***
+**run_after**(*process, hook*)
+
+
+    
+    Add a hook to run after a given process.
+    <br />`process`  The string name of the process to hook
+    <br />`hook`  A function to run
+    **<br />returns&nbsp;**  None
+    
+***
+**run_before**(*process, hook*)
+
+
+    
+    Add a hook to run before a given process.
+    <br />`process`  The string name of the process to hook
+    <br />`hook`  A function to run
+    **<br />returns&nbsp;**  None
+    
+***
+**consume**(*arg=None*)
+
+
+    
+    Run the next process in the process list with any provided arguments.
+    <br />`arg`  Arguments
+    **<br />returns&nbsp;**  Arguments for the next process
+    
+***
+**clear**()
+
+    
+    Clears the process list of all waiting processes.
+    ">
+<li class="searchable" id="#process_list_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
+<input type="hidden" id="lib_loader_py" value="**gs**(*path*)
+
+
+    
+    Convert pdf image file to png using ghostscript
+    <br />`name` 
+    **<br />returns&nbsp;** 
+    ">
+<li class="searchable" id="#lib_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+<input type="hidden" id="plugin_loader_py" value="**load_plugins**()
+
+    
+    Call the load function on all plugins in the appropriate order.
+    **<br />returns&nbsp;**  None
+    
+***
+**unload_plugins**()
+
+    
+    Call the unload function on all plugins.
+    **<br />returns&nbsp;**  None
+    
+***
+**load**(*signature*)
+
+
+    
+    Called on the return value of a plugin. Should return a valid signature.
+    <br />`signature`  The return value of the plugin's load function
+    **<br />returns&nbsp;**  None
+    ">
+<li class="searchable" id="#plugin_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
+<input type="hidden" id="exporter_py" value="
+# Module exporter
+
+This module is responsible for copying files from the tmp directory to the out directory, calling the selector, and
+reading any csv population data associated with this Pyxam call.
+
+The stages of the export process are managed with file extensions. All files that end with .cmp (short for compiled)
+will be renamed with either a number or letter depending on whether the `alphabetize` flag has been set and the
+extension .mix. These files are then passed to the selector for mixing along with csv data. The selector is expected to
+add any necessary .mix files. At this point all .mix files are copied to the out directory with the extension specified
+by the compile format.
+
+***
+**export**()
+
+    
+    Mix the composed files with the specified selector then copy all mixed files to the out directory with the
+    appropriate names. If any files are in the figure directory they are copied out as well.
+    
+***
+**csv_read**(*file*)
+
+
+    
+    Attempts to read the provided CSV file.
+
+    <br />`file`  The csv file to read
+    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
+    
+***
+**add_selector**(*name, selector*)
+
+
+    
+    Add a selector to the selector list.
+
+    <br />`name`  The name of the selector being added
+    <br />`selector`  The selector to add
+    ">
+<li class="searchable" id="#exporter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
+<input type="hidden" id="formatter_py" value="
+# Module formatter
+
+***
+**get_extension**()
+
+    
+    Get the output extension
+    **<br />returns&nbsp;**  The output extension
+    
+***
+**parse**()
+
+    
+    source to ast
+    **<br />returns&nbsp;** 
+    
+***
+**compose**(*intermediates*)
+
+
+    
+    ast to source
+    <br />`intermediates` 
+    **<br />returns&nbsp;** 
+    
+***
+**pack**(*token, fmt*)
+
+
+    
+    Convert a token into a string using the following rules:
+    - If the token name is contained in the format:
+        - Append every pure string in that format
+        - Append every tuple or list as the packed content of the token
+    - If the token name is not contained in the format
+        - Append the packed content of the token
+    <br />`token` 
+    <br />`fmt` 
+    **<br />returns&nbsp;** 
+    
+***
+**add_format**(*fmt*)
+
+
+    
+    Check format signature before adding.
+    Insert into formats at all valid extensions.
+    Convert format list to Token list.
+    <br />`fmt`  The format map
+    **<br />returns&nbsp;**  None
+    
+***
+**unpack**(*token, fmt, tail=False*)
+
+
+    
+    Convert format list to a regex using the following rules:
+    - Convert pure strings to pure strings within the regex with all regex characters escapted
+    - Convert empty tuples to non-greedy character grabbers (.*?)
+    - Convert lists to recursively obtain the regex of the token contained within that list
+    - Throw an error for any other input
+    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
+    the last entry in the format list regex
+    <br />`token`  The token to build the regex for
+    <br />`fmt`  The reference format
+    <br />`tail`  Whether the regex should have a prefix and postfix applied
+    **<br />returns&nbsp;**  The regex
+    
+***
+**resolve**(*src, fmt*)
+
+
+    
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+    <br />`src`  The source to convert into an ast
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The ast
+    
+***
+**determine**(*src, fmt*)
+
+
+    
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+    <br />`src`  The string sequence
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The matched token, The unmatched sequence
+    
+***
+**check**(*token, src, fmt, debug=False*)
+
+
+    
+
+    <br />`token` 
+    <br />`src` 
+    <br />`fmt` 
+    <br />`debug` 
+    **<br />returns&nbsp;** 
+    ">
+<li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
+<input type="hidden" id="filters_py" value="
+# Module filters
+
+This module provides helper functions for transforming a Pyxam parse tree.
+
+***
+**remove_name**(*ast, name*)
+
+
+    
+    Remove all tokens with a given name along with all their sub tokens. Tokens will be removed recursively from the
+    provided tree
+
+    <br />`ast`  The tree to walk and remove tokens from
+    <br />`name`  The token name to remove
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**recursive_filter**(*fn, node*)
+
+
+    
+    Filters a list and recursively filters any sublists attached to the node.
+
+    <br />`fn`  The filter function
+    <br />`node`  The starting node
+    **<br />returns&nbsp;**  the filtered node
+    
+***
+**apply_function**(*ast, fn, name*)
+
+
+    
+    Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
+    to every part of the tree.
+
+    <br />`ast`  The tree to transform
+    <br />`fn`  The function to apply
+    <br />`name`  The token name to apply the function to
+    **<br />returns&nbsp;**  the modified tre
+    
+***
+**pass_through**(*intermediate*)
+
+
+    
+    A dummy function that simply returns its provided intermediate.
+
+    <br />`intermediate`  The intermediate
+    **<br />returns&nbsp;**  the intermediate
+    
+***
+**pop_unknowns**(*ast*)
+
+
+    
+    Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
+    tokens are also processed for unknowns
+
+    <br />`ast`  The tree whose unknowns are being popped
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**img64**(*ast*)
+
+
+    
+    Convert image file paths to base64 representations of those images.
+
+    <br />`ast`  The tree whose images will be converted
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**homogenize_strings**(*ast*)
+
+
+    
+    Combine consecutive string tokens into a single string. Applied recursively.
+
+    <br />`ast`  The tree whose strings tokens are combined
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**promote**(*ast, name*)
+
+
+    
+    Finds the first instance (based on a depth first search) of a token with the matching name.
+
+    <br />`ast`  The tree to be searched
+    <br />`name`  The token name to find
+    **<br />returns&nbsp;**  the subtree starting at the matching token
+    
+***
+**wrap_lists**(*ast*)
+
+
+    
+    Wraps consecutive listitem tokens in a list token. Applied recursively.
+
+    <br />`ast`  The tree to be modified
+    **<br />returns&nbsp;**  The modifed tree
+    
+***
+**transform_questions**(*ast*)
+
+
+    
+    Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
+    numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
+    questions. Applied recursively.
+
+    <br />`ast`  The tree to modify
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**to_numerical**(*question*)
+
+
+    
+    Transforms shortanswer token definitions from
+    ```
+    solution:
+        $:
+            var = answer \pm tolerance
+    ```
+    to
+    ```
+    solution:
+        answer
+        tolerance:
+            tolerance
+    ```
+    <br />`question`  The question to transform
+    
+***
+**to_multiselect**(*question*)
+
+
+    
+    Transforms multichoice token definitions from
+    ```
+    choices:
+        correctchoice:
+            choice
+        correctchoice:
+            choice
+    ```
+    to
+    ```
+    single: false
+    choices:
+        correctchoice:
+            choice
+        correctchoice:
+            choice
+    ```
+    <br />`question`  The question to transform
+    
+***
+**to_calculated**(*question*)
+
+
+    
+    Transforms numerical token definitions from
+    ```
+    solution:
+        answer
+        tolerance:
+            tolerance
+    ```
+    to
+    ```
+    solution:
+        answer
+        tolerance:
+            tolerance
+        params:
+            param:
+                name
+                maximum:
+                    value
+                minimum:
+                    value
+                decimal:
+                    value
+                    formatter.Token('tolerance', [tolerance], None, ''))
+    ```
+    <br />`question`  The question to transform
+    ">
+<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
+<input type="hidden" id="fileutil_py" value="
+# Module fileutil
+
+This Module provides helper functions to other modules for working with files.
+
+***
+**build_files**()
+
+    
+    Find the absolute file path for the template, tmp directory, and out directory and update thir options to point to
+    their absolute path. Create the tmp and out directories if necessary. Warns user if tmp is going to be overridden
+    as this may delete files. Changes the current working directory to tmp.
+    
+***
+**cleanup**()
+
+    
+    When not in debug mode remove all temporary folders.
+    
+***
+**with_extension**(*extension*)
+
+
+    
+    Find all files in the current working directory that match the given extension.
+
+    <br />`extension`  The extension to match
+
+    **<br />returns&nbsp;**  a list of files that end in the provided extension
+    
+***
+**read**(*file*)
+
+
+    
+    Read a string from a file.
+
+    <br />`file`  The relative or absolute path to the file to read
+    **<br />returns&nbsp;**  The string contents of the file
+    
+***
+**write**(*file, src*)
+
+
+    
+    Write a string to a file.
+
+    <br />`file`  The relative or absolute path to the file to write to
+    <br />`src`  The string to write to the file
+    
+***
+**copy_figure**()
+
+    
+    Copy the figure directory to the out directory along with its children.
+    
+***
+**remove**(*file*)
+
+
+    
+    Remove a file or directory. If removing a directory all contents of that directory will also be removed.
+
+    <br />`file`  The relative or absolute path for the file or directory or directory to remove
+    
+***
+**mv**(*src, dest*)
+
+
+    
+    Moves a file from src to destination.
+
+    <br />`src`  The relative or absolute path for the file or directory to move
+    <br />`dest`  The relative or absolute path for the file's destination
+    
+***
+**is_bin**(*file*)
+
+
+    
+    Check if a file is a binary file.
+
+    <br />`file`  The file to check
+    **<br />returns&nbsp;**  True if the file is a binary file
+    
+***
+**wait_on_io**(*fn, timeout=5*)
+
+
+    
+    Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
+    False.
+
+    <br />`fn`  The io function to wait on
+    <br />`timeout`  The maximum time to wait
+    ">
+<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
+<input type="hidden" id="options_py" value="**clear**()
+
+    
+    Clear all compiled and hanging options.
+    
+***
+**compile_**(*option, value=None*)
+
+
+    
+    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
+    The compiled value is the default if no value hs been provided by the current or past callers.
+    <br />`option`  The option to compile
+    <br />`value`  The value to try and set, when None the value is not set
+    **<br />returns&nbsp;**  The compiled value
+    
+***
+**add_option**(*name, flag, description, default, type_, value=None*)
+
+
+    
+    Add an option.
+    <br />`name`  The name of the option
+    <br />`flag`  The flag for the option
+    <br />`description`  A description of the option
+    <br />`default`  The default value of the option
+    <br />`type_`  The type of the option
+    <br />`value`  A value, defaults to None
+    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
+    
+***
+**load_options**(*options*)
+
+
+    
+    Load options provided as a list in command line syntax.
+    <br />`options`  A list of options to load
+    **<br />returns&nbsp;**  None
+    
+***
+**load_template**()
+
+    
+    Load the template option. Expects to be the last option loaded.
+    **<br />returns&nbsp;**  None
+    
+***
+**get_help**()
+
+    
+    Get a string representing the help message for all options currently added.
+    **<br />returns&nbsp;**  The help string
+    ">
+<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
+<input type="hidden" id="bang_py" value="
+# Module bang
+
+This module pre processes the template file and runs all inline commands prior to weaving.
+
+Commands can be thought of in the same way as preprocessor directives in c. These commands will define a command which
+if seen in the template file will be replaced with the return values of a function specified by the command. Commands
+can have arguments but importantly are not reprocessed. All commands should appear in a comment block of the format
+being worked with and must be preceeded with the `pyxam!` prefix.
+
+An example usage of a mock command named `cmd`:
+
+```
+This is template file
+# This is a normal comment
+Some more text
+# pyxam!cmd
+That last comment was a command
+```
+
+***
+**add_command**(*name, command*)
+
+
+    
+    Add a name, command pair to commands
+
+    <br />`name`  The name of the command
+    <br />`command`  The command function
+
+    This function is meant to be used by plugin files in order to add commands. Commands must take an argument which is
+    whatever portion of the comment was not part of the command call. Here is an example implementation of a mock
+    command `Hello World` which replaces all instances of `pyxam!hello world` with `Hello World!!!`:
+
+    ```python
+    import bang
+
+    def hello_world(args):
+        return 'Hello World!!!'
+
+    bang.add_command('hello world', hello_world)
+    ```
+    
+***
+**run_commands**()
+
+    
+    Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
+    The resulting string is copied to the tmp directory and the template option is pointed towards the new file
+    ">
+<li class="searchable" id="#bang_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html">bang</a></li>
+<input type="hidden" id="pyxam_py" value="
+# Module pyxam
+
+This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
+mode from another python script. This script also checks Python dependencies for:
+
+`matplotlib` Needed for generating figure images
+
+`numpy` Needed for generating figure images
+
+
+***
+**welcome**()
+
+    
+    Prints the Pyxam title and version number when not in api mode.
+    
+***
+**goodbye**()
+
+    
+    Prints a goodbye message when not in api mode.
+    
+***
+**start**(*args, api=True*)
+
+
+    
+    Start Pyxam with a set of options.
+
+    <br />`args`  A list of options provided in command line syntax
+    <br />`api`  A flag indicating if Pyxam is being called as an api
+
+    Start adds all needed processes to the option list and then loops % pyxam!link process_list.consume until there are
+    no processes left.
+    ">
+<li class="searchable" id="#pyxam_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/pyxam.html">pyxam</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_logging.html">_logging</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_random.html">_random</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_latex.html">format_latex</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/selector_sequence.html">selector_sequence</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/commands.html">commands</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
-<li><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/docs.html">docs</a></li>
+<input type="hidden" id="_logging_py" value="**load**()
+
+    
+    Sets the logging the logging configuration for Pyxam
+    **<br />returns&nbsp;** 
+    ">
+<li class="searchable" id="#_logging_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_logging.html">_logging</a></li>
+<input type="hidden" id="_random_py" value="">
+<li class="searchable" id="#_random_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_random.html">_random</a></li>
+<input type="hidden" id="format_latex_py" value="**parser_preprocessor**(*src*)
+
+
+    
+    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
+    <br />`src`  The template source
+    **<br />returns&nbsp;**  The modified source
+    
+***
+**parser_postprocessor**(*intermediate*)
+
+
+    
+    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
+    prompt Token.
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    ">
+<li class="searchable" id="#format_latex_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_latex.html">format_latex</a></li>
+<input type="hidden" id="format_moodle_py" value="**composer_preprocessor**(*intermediate*)
+
+
+    
+    Promote questions to top level of the ast
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    ">
+<li class="searchable" id="#format_moodle_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
+<input type="hidden" id="format_org_py" value="">
+<li class="searchable" id="#format_org_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
+<input type="hidden" id="selector_sequence_py" value="**mix**(*files, data*)
+
+
+    
+    Selects exams in round robin sequence
+    ">
+<li class="searchable" id="#selector_sequence_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/selector_sequence.html">selector_sequence</a></li>
+<input type="hidden" id="commands_py" value="**arguments**(*args*)
+
+
+    
+    Load args as though they were command line options.
+    
+***
+**expression**(*args*)
+
+
+    
+    Run a python expression and echo the result
+    
+***
+**silent_expression**(*args*)
+
+
+    
+    Run a python expression silently
+    
+***
+**verbatim**(*args*)
+
+
+    
+    Run a python block and return a verbatim copy of the code
+    
+***
+**block**(*args*)
+
+
+    
+    Run a python block silently
+    
+***
+**figure**(*args*)
+
+
+    
+    Insert a python figure
+    
+***
+**question_import**(*args*)
+
+
+    
+    Insert a question
+    
+***
+**define**(*args*)
+
+
+    
+    Define a constant
+    ">
+<li class="searchable" id="#commands_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/commands.html">commands</a></li>
+<input type="hidden" id="format_pdf_py" value="**pdf_bypass**()
+
+    
+    Bypass formatter steps
+    **<br />returns&nbsp;** 
+    
+***
+**pdf_compile**()
+
+    
+    Compile to pdf or dvi
+    **<br />returns&nbsp;** 
+    
+***
+**check_compiled**(*extensions, file*)
+
+
+    
+    Check that a file with file compiled to one of the specified extensions. If the file does not compile it is
+    recompiled in interactive mode
+    <br />`extensions`  The extensions to look for
+    <br />`file`  The original file
+    **<br />returns&nbsp;**  None
+    ">
+<li class="searchable" id="#format_pdf_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
+<input type="hidden" id="_options_py" value="">
+<li class="searchable" id="#_options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
+<input type="hidden" id="format_markdown_py" value="">
+<li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
+<input type="hidden" id="format_html_py" value="">
+<li class="searchable" id="#format_html_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
+<input type="hidden" id="docs_py" value="
+# Plugin docs
+
+The docs plugin is used to build the documentation for Pyxam quickly and easily from a combination of documentation
+source files and python docstrings. All documentation is written in markdown and then converted to HTML by this plugin.
+
+***
+**load**()
+
+    
+    Loads the doc plugin.
+
+    **localdocs** `-ld`, `-localdocs`, `--localdocs` *(bool) False*
+
+    This flag determines whether documentation pages will link to repo pages or to files on your local computer.
+
+    **docs** `-docs`, `--docs` *(bool) False*
+
+    If this option is supplied Pyxam's docs are rebuilt. Docs are built by:
+     - Finding the paths to the documentation source, module files, and plugin files
+     - Copying all docstrings from module files and plugin files to the documentation source directory
+     - Converting all markdown files in the documentation source directory to HTML
+     - Perform post processing to add a javascript search bar and sidebar along with minor changes to HTML
+     - Copying those files to the documentation build directory
+    It can be useful to regenerate the docs if you have added a new Plugin and want to read its documentation.
+    
+***
+**load_source**(*name, directory, build*)
+
+
+    
+
+    <br />`name` 
+    <br />`directory` 
+    <br />`build` 
+    **<br />returns&nbsp;** 
+    
+***
+**load_docs**(*docs, name=''*)
+
+
+    
+
+    <br />`docs` 
+    <br />`name` 
+    **<br />returns&nbsp;** 
+    
+***
+**compile_docs**(*build*)
+
+
+    
+    Converts all markdown files found in docs to HTML and then copies them to the build directory. All folders are run
+    recursively.
+
+    <br />`docs`  The documentation directory to compile
+    **<br />returns&nbsp;**  test
+    
+***
+**compile_doc**(*build, doc*)
+
+
+    
+    Converts the given file from markdown to HTML and then copies it to the build directory.
+
+    <br />`build`  The directory of the file to compile
+    <br />`doc`  The file to compile
+    ">
+<li class="searchable" id="#docs_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/docs.html">docs</a></li>
 </ul></li>
         </ul>
         <div style='height:2em'></div>
     </div>
     <div class='doc'>
-        <br /><b>load_plugins</b>()<br />
-Call the load function on all plugins in the appropriate order.<br /><b><br />returns &nbsp;</b>None<hr /><br /><b>unload_plugins</b>()<br />
-Call the unload function on all plugins.<br /><b><br />returns &nbsp;</b>None<hr /><br /><b>load</b>(<i>signature</i>)<br /><br />Called on the return value of a plugin. Should return a valid signature.<br /><pre class="verb-expr">signature</pre>The return value of the plugin's load function<br /><b><br />returns &nbsp;</b>None
+        <br /><b>load_plugins</b>()<br />    
+    Call the load function on all plugins in the appropriate order.<br /><b><br />returns&nbsp;</b>None<hr /><br /><b>unload_plugins</b>()<br />    
+    Call the unload function on all plugins.<br /><b><br />returns&nbsp;</b>None<hr /><br /><b>load</b>(<i>signature</i>)<br />
+    
+    Called on the return value of a plugin. Should return a valid signature.
+    <br /><pre class="verb-expr">signature</pre>The return value of the plugin's load function<br /><b><br />returns&nbsp;</b>None
         <hr />
         <div class='credits'>
             &copy; Copyright Eric Buss
