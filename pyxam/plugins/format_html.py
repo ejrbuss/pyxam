@@ -26,6 +26,7 @@ math = {
 def composer_preprocessor(intermediate):
     intermediate.ast = filters.wrap_lists(intermediate.ast)
     intermediate.ast = filters.img64(intermediate.ast)
+    intermediate.ast = filters.untab_verb(intermediate.ast)
     return intermediate
 
 

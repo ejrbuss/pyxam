@@ -1,0 +1,119 @@
+
+\documentclass[9pt]{extarticle}
+\usepackage[letterpaper, landscape, margin=.5in]{geometry}
+\usepackage{multicol}
+\usepackage{hyperref}
+\pagestyle{empty}
+\begin{document}
+\centering\section*{Pyxam Cheat Sheet v0.3.2}
+\begin{multicols}{2}
+\raggedright\subsection*{Running Pyxam}
+Usage pyxam.py [Options] template \\
+{\bf Command list:} \\
+\begin{tabular}{l l l l}
+alphabetize & -a &  & Enable lettered versioning\\
+out & -o & [out] & Set the output directory\\
+recomps & -r & [recomps] & The number of LaTeX recompilations\\
+version & -v &  & Show the version number\\
+population & -p & [population] & The class list CSV\\
+commands & -cmd &  & Display all available commands\\
+method & -m & [method] & The selection method for CSVs\\
+readme & -rd &  & Generate a new README.md file\\
+number & -n & [number] & Set the number of exams to generate\\
+help & -h &  & Show a help message\\
+list & -ls &  & List all available formats\\
+random & -rng & [random] & Set the seed for rng\\
+figure & -fig & [figure] & Set the figure directory\\
+plugins & -plg &  & List all currently loaded plugins\\
+logging & -l & [logging] & Set the logging level for pyxam\\
+ & & & 10: DEBUG\\
+ & & & 20: INFO\\
+ & & & 30: WARNING\\
+ & & & 50: CRITICAL\\
+solutions & -s &  & Enable soultions\\
+format & -f & [format] & The export format\\
+api & -api &  & Run Pyxam in api mode\\
+cheatsheat & -cht &  & Generate a new cheatsheet\\
+tmp & -tmp & [tmp] & Set the temporary directory\\
+debug & -d &  & Disable file cleanup\\
+title & -t & [title] & The title of the exam\\
+shell & -shl & [shell] & The shell used to weave the exam
+\end{tabular} 
+
+For more details see README.md \\
+\subsection*{Pyxam Bang Commands}
+
+\begin{tabular}{l l}
+pyxam! sexpr & 
+    Run a python expression silently
+    \\
+pyxam! verb & 
+    Run a python block and return a verbatim copy of the code
+    \\
+pyxam! expr & 
+    Run a python expression and echo the result
+    \\
+pyxam! fig & 
+    Insert a python figure
+    \\
+pyxam! studentname & None\\
+pyxam! studentnumber & None\\
+pyxam! args & 
+    Load args as though they were command line options.
+    \\
+pyxam! block & 
+    Run a python block silently
+    \\
+pyxam! import & 
+    Insert a question
+    \\
+pyxam! def & 
+    Define a constant
+    
+\end{tabular}
+\subsection*{Examples}
+\begin{description}
+    \item See {\it examples/template.tex} for a simple exam that implements all of Pyxam's features 
+    \item See {\it examples/exam.tex} for examples of more complex problems 
+    \item See {\it examples/github.tex} for an introductory guide to github
+    \item See {\it README.md} for a general overview of the tools and basic usage 
+\end{description}
+\subsection*{Development Tools}
+\begin{description}
+    \item {\bf Github} \\
+        The version control system used for Pyxam. Github allows for easy
+        management and access of source code. Github can be found at
+        \url{https://github.com/ and the project page} for Pyxam
+        can be found at \url{https://github.com/balancededge/pyxam}.  
+    \item {\bf Git-Cola} \\
+        A GUI client for github on Unix systems. A convenient tool when
+        working with a larger number of files in sub directories where the
+        command line may be less suitable. Git-Cola can be installed through
+        Yast.
+    \item {\bf PyCharm} \\
+        A Python IDE with all the bells and whistles. PyCharm makes
+        programming Python easy and enjoyable whilst also still being one of the
+        most responsive editors available. PyCharm Community edition is free
+        and can be found at \url{https://www.jetbrains.com/pycharm/}.
+    \item {\bf Dillinger.io} \\
+        A Markdown browser based editor. Dillinge   r is simple and elegant a
+        great solution for writing Markdown documents. Dillinger can be found
+        at \url{http://dillinger.io/}.
+    \item {\bf Emacs } \\
+        A powerful and configurable text editor. An ideal environment when
+        working in a large variety of programming languages and with a large
+        number of file formats. Emacs can be installed through Yast.
+\end{description}
+\subsection*{Emacs Shortlist}
+\begin{tabular}{l l}
+M-p & Previous shell command \\
+C-x-C-v RET & Refresh the currently selected buffer \\
+C-x-1 & Close all windows except the currently selected one \\
+C-x-2 & Split window vertically \\
+C-x-3 & Split window horizontally \\
+C-x-0 & Close the currently selected window \\
+C-x-k RET & Kill the currently selected buffer \\
+\end{tabular}
+
+\end{multicols}
+\end{document}

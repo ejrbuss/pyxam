@@ -2,14 +2,16 @@
 """
 # Module bang
 
-This module pre processes the template file and runs all inline commands prior to weaving.
+This module prepossesses the template file runs all inline commands prior to weaving.
 
-Commands can be thought of in the same way as preprocessor directives in c. These commands will define a command which
-if seen in the template file will be replaced with the return values of a function specified by the command. Commands
-can have arguments but importantly are not reprocessed. All commands should appear in a comment block of the format
-being worked with and must be preceeded with the `pyxam!` prefix.
+Commands can be thought of in the same way as preprocessor directives in c. Commands appear in comments. When a command
+name is recognized the contents of the comment are replaced with the result of a function that corresponds to that
+command. Commands can have arguments but importantly are not reprocessed. All commands should appear in a comment block
+of the format being worked with and must be preceded with the `pyxam!` prefix to avoid confusion.
 
-An example usage of a mock command named `cmd`:
+
+
+An example usage of a mock comman        x = 3d named `cmd`:
 
 ```
 This is template file
@@ -27,20 +29,16 @@ import re
 import os
 
 
-# A dict containing all currently loaded name -> command pairs
+# A dictionary containing all currently loaded name command pairs
 commands = {}
 
 
 def add_command(name, command):
     """
-    Add a name, command pair to commands
-
-    :param name: The name of the command
-    :param command: The command function
-
-    This function is meant to be used by plugin files in order to add commands. Commands must take an argument which is
-    whatever portion of the comment was not part of the command call. Here is an example implementation of a mock
-    command `Hello World` which replaces all instances of `pyxam!hello world` with `Hello World!!!`:
+    Add a name, command pair to commands. This function is meant to be used by plugin files in order to add commands.
+    Commands must take an argument which is whatever portion of the comment was not part of the command call. Here is an
+    example implementation of a mock command `Hello World` which replaces all instances of `pyxam!hello world` with
+    `Hello World!!!`:
 
     ```python
     import bang
@@ -50,6 +48,9 @@ def add_command(name, command):
 
     bang.add_command('hello world', hello_world)
     ```
+
+    :param name: The name of the command
+    :param command: The command function
     """
     commands[name] = command
 
@@ -57,13 +58,13 @@ def add_command(name, command):
 def run_commands():
     """
     Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
-    The resulting string is copied to the tmp directory and the template option is pointed towards the new file
+    The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
     """
     try:
         # Try and find an appropriate parser
         parser = formatter.formats[options.state.template().split('.')[-1]]
     except:
-        raise options.FormatError('Unknown format')
+        raise formatter.FormatError('Unknown format')
     logging.info('Using ' + parser['extensions'][0] + ' format to parse pyxam! in ' + options.state.template())
     # Read the template
     buffer = fileutil.read(options.state.template())

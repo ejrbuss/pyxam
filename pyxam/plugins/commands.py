@@ -1,4 +1,9 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
+"""
+# Plugin commands
+
+Defines a default set of [bang](%/Modules/bang.html) commands to be used when prepossessing a template.
+"""
 import logging
 import random
 import fileutil
@@ -7,13 +12,17 @@ import bang
 import shlex
 import os
 
-
+# command config by ejrbuss: The default command set
 signature = 'command config', 'ejrbuss', 'the default command set'
 
 
 def arguments(args):
     """
-    Load args as though they were command line options.
+    Load args as though they were command line options. These take priority over command line options. This command will
+    be replaced with an empty string. An example where the output format is set to pdf and the debug flag is enabled:
+    ```python
+    # pyxam!args -f pdf -d
+    ```
     """
     options.load_options(shlex.split(args))
     return ''
@@ -21,21 +30,39 @@ def arguments(args):
 
 def expression(args):
     """
-    Run a python expression and echo the result
+    Run a python expression and echo the result. An example hello world program:
+    ```
+    # pyxam!expr 'Hello World'
+    ```
     """
     return '<%= ' + args + '%>'
 
 
 def silent_expression(args):
     """
-    Run a python expression silently
+    Run a python expression silently. This can be used to set variables that are used later. An example:
+    ```
+    # pyxam!sexpr x = 3
+    ```
     """
     return '<% ' + args + '%>'
 
 
 def verbatim(args):
     """
-    Run a python block and return a verbatim copy of the code
+    Run a python block and return a verbatim copy of the code. An example:
+    ```
+    /** pyxam!verb
+        import time
+        x = time.time()
+    */
+    ```
+    Would be turned into:
+    ```python
+    import time()
+    x = time.time()
+    ```
+    And x would now store the current time which could be used by other commands.
     """
     return '\n<<echo=True>>=\n' + args + '\n@'
 

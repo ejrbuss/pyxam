@@ -91,8 +91,11 @@ def load_source(name, directory, build):
     for file in os.listdir(directory):
         path = directory + '/' + file
         if os.path.isfile(path) and path.endswith('.py') and '__init__' not in path:
-            docstrings = re.findall(r'(((def[^\n]*:\s*)?"{3}.*?)"{3})', fileutil.read(path), re.DOTALL)
+            docstrings = re.findall(r'((((def[^\n]*:\s*)?"{3}.*?)"{3})|(\n#[^\n]*\n[^\n]* =))', fileutil.read(path), re.DOTALL)
             parsed = '\n***\n'.join([parse_docstring(doc[0]) for doc in docstrings])
+            parsed += '\n***\nView the [source](%/../../pyxam/{})'.format(
+                path.replace(os.path.dirname(os.path.dirname(__file__)), '')
+            )
             fileutil.write(build + '/' + name + '/' + file.replace('.py', '.md'), parsed)
             id = file.replace('.', '_')
             nav += nav_content.format(id, parsed.replace('"', ''))
@@ -103,6 +106,9 @@ def load_source(name, directory, build):
 
 
 def parse_docstring(docstring):
+    if re.match(r'\n#[^\n]*\n[^\n]* =', docstring, re.DOTALL):
+        docstring = re.sub(r'\n#(.*?)\n(.*?)=', r'**\2**<br />\1', docstring)
+        return docstring
     # Remove comment quotes
     docstring = re.sub(r'"{3}', '', docstring)
     # Format function signature
@@ -113,11 +119,12 @@ def parse_docstring(docstring):
     docstring = re.sub(r':param\s*(.*?):(.*?)', r'<br />`\1` \2', docstring)
     # Format return
     docstring = re.sub(r':return:(.*?)', r'**<br />returns&nbsp;** \1', docstring)
+    # Format single line comments
     lines = docstring.split('\n')
     overwrite = False
     while not overwrite:
         for line in lines:
-            overwrite = overwrite or (len(line) > 0 and line[0] != ' ')
+            overwrite = overwrite or (len(line) < 1 or line[0] != ' ')
         if not overwrite:
             lines = [line[1:] for line in lines]
     return '\n'.join(lines)

@@ -1,0 +1,254 @@
+<!DOCTYPE html><html>
+<style>
+    * {
+        line-height: 1.5em;
+        font-family: Verdana, sans-serif;
+        color: #333333;
+        outline: none !important;
+
+    }
+    body {
+        margin: 0;
+        background: #EFEFEF;
+    }
+    a {
+        text-decoration: none;
+        color: #3774A6;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    h3 {
+
+    }
+    h2 {
+
+    }
+    h1 {
+        color: #3774A6;
+        border-bottom: 2px solid #EFEFEF;
+    }
+    hr {
+        height: 2px;
+        color: #EFEFEF;
+        background: #EFEFEF;
+        border: none;
+        margin-top: 2em;
+        width: 100%;
+    }
+    .e3 {
+        float: left;
+        line-weight: bold;
+        font-style: italic;
+    }
+    .e2 {
+        float: left;
+        line-weight: bold;
+    }
+    .e1 {
+        float: left;
+        font-style: italic;
+    }
+    .verb-python {
+        font-family: consolas, monospace;
+        padding: 1em;
+        background: #F0F1F2;
+    }
+    .verb-block {
+        font-family: consolas, monospace;
+        padding: 1em;
+        background: #F0F1F2;
+    }
+    .verb-expr {
+        font-family: consolas, monospace;
+        margin: 0;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        display:inline-block;
+        background: #F0F1F2;
+        color: #3774A6;
+        width: auto;
+    }
+    .quote {
+
+    }
+    .doc {
+        padding: 4em;
+        width: 50%;
+        display: block;
+        margin: 0 20em;
+        background: #FCFCFC;
+    }
+    .sidebar {
+        display: block;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: fixed;
+        left: 0;
+        width: 20em;
+        height: 100%;
+        background: #343131;
+    }
+    .logo-container {
+        display: block;
+        width: 18em;
+        text-align: center;
+        padding: 1em;
+        margin: 0;
+    }
+    .logo {
+        font-size: 3em;
+    }
+    .circles {
+        width: 10em;
+        display: block;
+        margin: 0 auto;
+    }
+    .circle {
+        width: 1em;
+        height: 1em;
+        border-radius: 1em;
+        float: left;
+        margin: 0.5em;
+    }
+    .search {
+        border: none;
+        padding: 0;
+        width: 18em;
+        margin: 0 auto;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        display: block;
+        border-radius: 2em 2em 2em 2em;
+        padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    .nav {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .nav li a {
+        font-size: 0.9em;
+        padding: 0.25em;
+        padding-left: 2em;
+        display: block;
+        color: #817F7F;
+    }
+    .nav li a:hover {
+        text-decoration: none;
+        background: #4E4A4A;
+    }
+    .accordion-content li a {
+        background: #393636;
+    }
+    .credits {
+        color: #A5A5A5;
+        font-size: 0.9em;
+    }
+    .hl-keyword {
+        font-family: consolas, monospace;
+        font-weight: bold;
+        color: #A71D5D;
+    }
+    .hl-string {
+        font-family: consolas, monospace;
+        color: #2F499B
+    }
+    .hl-num {
+        font-family: consolas, monospace;
+        color: #43A33C;
+    }
+    .hl-comment {
+        text-decoration: italics;
+        color: #9F9F9F;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function($) {
+        $('.nav').find('.accordion-toggle').click(function(){
+            //Expand or collapse this panel
+            $(this).find('.accordion-content').slideToggle('fast');
+        });
+        $('.nav').find('.accordion-content').toggle();
+        $('.search').on('input', function() {
+            var search_text = $(this).val();
+            $('.searchable').each(function(){
+                var content = $($(this).attr('id')).val();
+                if (content.indexOf(search_text) < 0) {
+                    $(this).removeClass('match');
+                    $(this).hide();
+                } else {
+                    $(this).addClass('match');
+                    $(this).show();
+                }
+            });
+            $('.accordion-toggle').each(function() {
+                if ($(this).find('.match').length < 1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+        var keywords = [
+            'and', 'del', 'from', 'not', 'while', 'as', 'if', 'global', 'or', 'with', 'assert', 'else', 'elif', 'pass',
+            'yield', 'break', 'except', 'import', 'exec', 'in', 'raise', 'continue', 'finally', 'is', 'return', 'def',
+            'for', 'lambda', 'try'
+        ];
+        $('.verb-python').each(function() {
+            $(this).html($(this).html().replace(
+                /(('|")[^'"\n]+('|"))/g,
+                '<span class="hl-string">$1</span>'
+            ));
+            $(this).html($(this).html().replace(
+               /(#.*)/g,
+               '<span class="hl-comment">$1</span>'
+            ));
+            $(this).html($(this).html().replace(
+               /(\s[0-9.]+)/g,
+               '<span class="hl-num">$1</span>'
+            ));
+            for (var i in keywords) {
+                $(this).html($(this).html().replace(
+                    new RegExp('(' + keywords[i] + '\\s)', 'g'),
+                    '<span class="hl-keyword">$1</span>'));
+            }
+
+
+        });
+    });
+</script>
+<body>
+    <div class='sidebar'>
+        <div class='logo-container'>
+            <a href='https://github.com/balancededge/pyxam' style='text-decoration:none'>
+                <span class='logo' style='color:#FFD343'>Py</span>
+                <span class='logo' style='color:#3774A6'>xam</span>
+                <br />
+                <div class='circles'>
+                    <div class='circle' style='background:#FFD343'></div>
+                    <div class='circle' style='background:#FFD343'></div>
+                    <div class='circle' style='background:#FFD343'></div>
+                    <div class='circle' style='background:#3774A6'></div>
+                    <div class='circle' style='background:#3774A6'></div>
+                </div>
+            </a>
+        </div>
+        <input type="text" autocomplete="off" class='search' placeholder='Search Docs'>
+        <ul class='nav'>
+            <!-- nav -->
+        </ul>
+        <div style='height:2em'></div>
+    </div>
+    <div class='doc'>
+        <!-- content -->
+        <hr />
+        <div class='credits'>
+            &copy; Copyright Eric Buss
+            <br /><br />
+            Built with Pyxam
+        </div>
+    </div>
+</body>
+</html>

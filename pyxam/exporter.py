@@ -5,6 +5,8 @@
 This module is responsible for copying files from the tmp directory to the out directory, calling the selector, and
 reading any csv population data associated with this Pyxam call.
 
+
+
 The stages of the export process are managed with file extensions. All files that end with .cmp (short for compiled)
 will be renamed with either a number or letter depending on whether the `alphabetize` flag has been set and the
 extension .mix. These files are then passed to the selector for mixing along with csv data. The selector is expected to
@@ -17,10 +19,6 @@ import logging
 import options
 import csv
 import os
-
-
-class ExportError(Exception):
-    pass
 
 
 # A map of all currently loaded selectors

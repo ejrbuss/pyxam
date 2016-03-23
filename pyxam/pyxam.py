@@ -4,14 +4,16 @@
 # Module pyxam
 
 This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
-mode from another python script. This script also checks Python dependencies for:
+mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
+mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
+messages and tracking the Pyxam version number.
 
-`matplotlib` Needed for generating figure images
 
-`numpy` Needed for generating figure images
 
+Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
+generating figure images. Failing to meet one of these dependencies will result in an exit statement and a
+recommendation todo `pip install` for the dependency.
 """
-
 
 # TODO finish docs
 # TODO tests
@@ -46,11 +48,11 @@ except ImportError:
 
 
 # Pyxam Version Number
-__version__ = 'v0.3.2'
+__version__ = 'v0.3.3'
 
 
 # Pyxam Title String
-TITLE = '    ____                           \n' \
+title = '    ____                           \n' \
         '   / __ \__  ___  ______ _____ ___ \n' \
         '  / /_/ / / / / |/_/ __ `/ __ `__ \\ \n' \
         ' / ____/ /_/ />  </ /_/ / / / / / /\n' \
@@ -63,7 +65,7 @@ def welcome():
     Prints the Pyxam title and version number when not in api mode.
     """
     if not options.state.api():
-        print(TITLE, '\n\n\tLatex Exam Generation.', __version__, '\n\n')
+        print(title, '\n\n\tLatex Exam Generation.', __version__, '\n\n')
 
 
 def goodbye():
@@ -76,13 +78,24 @@ def goodbye():
 
 def start(args, api=True):
     """
-    Start Pyxam with a set of options.
+    Start Pyxam with a set of [options](%/Modules/options.html). Start adds the following processes to the
+    [process_list](%/Modules/process_list.html):
+     - `load_options` loads the command line options
+     - `welcome` displays a welcome message
+     - `load_plugins` loads all available plugins
+     - `build_files` fixes paths and builds all necessary files
+     - `run_commands` prepossesses commands in the template (see [bang](%/Modules/bang.html))
+     - `weave` runs any inline code within the template
+     - `parse` reads the template document into an intermediate format (see [formatter](%/Modules/formatter.py))
+     - `compose` converts the intermediate format into the output format
+     - `export` moves files from the tmp directory to the final out directory
+     - `cleanup` removes all temporary files
+     - `unload_plugins` unloads all available plugins
+     - `goodbye` display a goodbye message
+    Once added these processes are consumed until there are no more processes.
 
     :param args: A list of options provided in command line syntax
     :param api: A flag indicating if Pyxam is being called as an api
-
-    Start adds all needed processes to the option list and then loops % pyxam!link process_list.consume until there are
-    no processes left.
     """
     # Clear last session data
     options.clear()

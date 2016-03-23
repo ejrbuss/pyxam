@@ -50,7 +50,7 @@ def apply_function(ast, fn, name):
     :return: the modified tre
     """
     for token in ast:
-        if hasattr(token, 'name') and token.name == name:
+        if hasattr(token, 'name') and name in token.name:
             fn(token)
         if hasattr(token, 'definition'):
             apply_function(token.definition, fn, name)
@@ -117,15 +117,15 @@ def homogenize_strings(ast):
     buffer = ''
     for token in ast:
         if hasattr(token, 'definition'):
-            if buffer.strip() != '':
-                new_ast.append(buffer.strip())
+            if buffer != '':
+                new_ast.append(buffer)
                 buffer = ''
             new_ast.append(token)
             token.definition = homogenize_strings(token.definition)
         else:
             buffer += token
     if buffer != '':
-        new_ast.append(buffer.strip())
+        new_ast.append(buffer)
     return new_ast
 
 
@@ -166,6 +166,24 @@ def wrap_lists(ast):
     if buffer:
         new_ast.append(formatter.Token('list', buffer, None, ''))
     return new_ast
+
+
+def untab_verb(ast):
+    """
+
+    :param ast: The tree to modify
+    :return: the modified tree
+    """
+    def untab(token):
+        lines = [line for line in token.definition[0].split('\n') if line != '\n']
+        overwrite = False
+        while not overwrite:
+            for line in lines:
+                overwrite = overwrite or (len(line) > 0 and (line[0] != ' '))
+            if not overwrite:
+                lines = [line[1:] for line in lines if len(line) > 0]
+        token.definition = ['\n'.join(lines)]
+    return apply_function(ast, untab, 'verb')
 
 
 def transform_questions(ast):
