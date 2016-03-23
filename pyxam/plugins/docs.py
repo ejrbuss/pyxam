@@ -190,7 +190,8 @@ def compile_doc(build, doc):
         '-f', 'html',
         '-o', build,
         '-t', 'doc',
-        '-htt', os.path.abspath(__file__).replace('\\', '/') + '/../templates/docs.html', doc])
+        '-htt', os.path.abspath(os.path.dirname(__file__) + '/../templates/docs.html'), doc
+    ])
     buffer = fileutil.read(build + '/doc_1.html')
     fileutil.remove(doc)
     fileutil.remove(build + '/doc_1.html')

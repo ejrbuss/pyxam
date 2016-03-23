@@ -376,376 +376,6 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugin_loader.py)">
 <li class="searchable" id="#plugin_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
-<input type="hidden" id="formatter_py" value="
-# Module formatter
-
-***
-**get_extension**()
-
-    
-    Get the output extension
-    **<br />returns&nbsp;**  The output extension
-    
-***
-**parse**()
-
-    
-    source to ast
-    **<br />returns&nbsp;** 
-    
-***
-**compose**(*intermediates*)
-
-
-    
-    ast to source
-    <br />`intermediates` 
-    **<br />returns&nbsp;** 
-    
-***
-**pack**(*token, fmt*)
-
-
-    
-    Convert a token into a string using the following rules:
-    - If the token name is contained in the format:
-        - Append every pure string in that format
-        - Append every tuple or list as the packed content of the token
-    - If the token name is not contained in the format
-        - Append the packed content of the token
-    <br />`token` 
-    <br />`fmt` 
-    **<br />returns&nbsp;** 
-    
-***
-**add_format**(*fmt*)
-
-
-    
-    Check format signature before adding.
-    Insert into formats at all valid extensions.
-    Convert format list to Token list.
-    <br />`fmt`  The format map
-    **<br />returns&nbsp;**  None
-    
-***
-**unpack**(*token, fmt, tail=False*)
-
-
-    
-    Convert format list to a regex using the following rules:
-    - Convert pure strings to pure strings within the regex with all regex characters escapted
-    - Convert empty tuples to non-greedy character grabbers (.*?)
-    - Convert lists to recursively obtain the regex of the token contained within that list
-    - Throw an error for any other input
-    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
-    the last entry in the format list regex
-    <br />`token`  The token to build the regex for
-    <br />`fmt`  The reference format
-    <br />`tail`  Whether the regex should have a prefix and postfix applied
-    **<br />returns&nbsp;**  The regex
-    
-***
-**resolve**(*src, fmt*)
-
-
-    
-    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
-    tokens must be provided. Any string sequences that cannot be matched will be returned as
-    raw characters
-    <br />`src`  The source to convert into an ast
-    <br />`fmt`  The format providing the tokens
-    **<br />returns&nbsp;**  The ast
-    
-***
-**determine**(*src, fmt*)
-
-
-    
-    Determine what token a specific string sequence begins with. If no token can be found in the given
-    template a raw character is returned off the top.
-    <br />`src`  The string sequence
-    <br />`fmt`  The format providing the tokens
-    **<br />returns&nbsp;**  The matched token, The unmatched sequence
-    
-***
-**check**(*token, src, fmt, debug=False*)
-
-
-    
-
-    <br />`token` 
-    <br />`src` 
-    <br />`fmt` 
-    <br />`debug` 
-    **<br />returns&nbsp;** 
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//formatter.py)">
-<li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
-<input type="hidden" id="fileutil_py" value="
-# Module fileutil
-
-This Module provides helper functions to other modules for working with files.
-
-***
-**build_files**()
-
-    
-    Find the absolute file path for the template, tmp directory, and out directory and update thir options to point to
-    their absolute path. Create the tmp and out directories if necessary. Warns user if tmp is going to be overridden
-    as this may delete files. Changes the current working directory to tmp.
-    
-***
-**cleanup**()
-
-    
-    When not in debug mode remove all temporary folders.
-    
-***
-**with_extension**(*extension*)
-
-
-    
-    Find all files in the current working directory that match the given extension.
-
-    <br />`extension`  The extension to match
-
-    **<br />returns&nbsp;**  a list of files that end in the provided extension
-    
-***
-**read**(*file*)
-
-
-    
-    Read a string from a file.
-
-    <br />`file`  The relative or absolute path to the file to read
-    **<br />returns&nbsp;**  The string contents of the file
-    
-***
-**write**(*file, src*)
-
-
-    
-    Write a string to a file.
-
-    <br />`file`  The relative or absolute path to the file to write to
-    <br />`src`  The string to write to the file
-    
-***
-**copy_figure**()
-
-    
-    Copy the figure directory to the out directory along with its children.
-    
-***
-**remove**(*file*)
-
-
-    
-    Remove a file or directory. If removing a directory all contents of that directory will also be removed.
-
-    <br />`file`  The relative or absolute path for the file or directory or directory to remove
-    
-***
-**mv**(*src, dest*)
-
-
-    
-    Moves a file from src to destination.
-
-    <br />`src`  The relative or absolute path for the file or directory to move
-    <br />`dest`  The relative or absolute path for the file's destination
-    
-***
-**is_bin**(*file*)
-
-
-    
-    Check if a file is a binary file.
-
-    <br />`file`  The file to check
-    **<br />returns&nbsp;**  True if the file is a binary file
-    
-***
-**wait_on_io**(*fn, timeout=5*)
-
-
-    
-    Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
-    False.
-
-    <br />`fn`  The io function to wait on
-    <br />`timeout`  The maximum time to wait
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py)">
-<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
-<input type="hidden" id="options_py" value="**state **<br /> A Map of all current compile functions
-***
-**_compiled **<br /> A Map of all current options
-***
-**_hanging **<br /> A list of not compiled options
-***
-**clear**()
-
-    
-    Clear all compiled and hanging options.
-    
-***
-**compile_**(*option, value=None*)
-
-
-    
-    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
-    The compiled value is the default if no value hs been provided by the current or past callers.
-    <br />`option`  The option to compile
-    <br />`value`  The value to try and set, when None the value is not set
-    **<br />returns&nbsp;**  The compiled value
-    
-***
-**add_option**(*name, flag, description, default, type_, value=None*)
-
-
-    
-    Add an option.
-    <br />`name`  The name of the option
-    <br />`flag`  The flag for the option
-    <br />`description`  A description of the option
-    <br />`default`  The default value of the option
-    <br />`type_`  The type of the option
-    <br />`value`  A value, defaults to None
-    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
-    
-***
-**load_options**(*options*)
-
-
-    
-    Load options provided as a list in command line syntax.
-    <br />`options`  A list of options to load
-    **<br />returns&nbsp;**  None
-    
-***
-**load_template**()
-
-    
-    Load the template option. Expects to be the last option loaded.
-    **<br />returns&nbsp;**  None
-    
-***
-**get_help**()
-
-    
-    Get a string representing the help message for all options currently added.
-    **<br />returns&nbsp;**  The help string
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//options.py)">
-<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
-<input type="hidden" id="bang_py" value="
-# Module bang
-
-This module prepossesses the template file runs all inline commands prior to weaving.
-
-Commands can be thought of in the same way as preprocessor directives in c. Commands appear in comments. When a command
-name is recognized the contents of the comment are replaced with the result of a function that corresponds to that
-command. Commands can have arguments but importantly are not reprocessed. All commands should appear in a comment block
-of the format being worked with and must be preceded with the `pyxam!` prefix to avoid confusion.
-
-
-
-An example usage of a mock comman        x = 3d named `cmd`:
-
-```
-This is template file
-# This is a normal comment
-Some more text
-# pyxam!cmd
-That last comment was a command
-```
-
-***
-**commands **<br /> A dictionary containing all currently loaded name command pairs
-***
-**add_command**(*name, command*)
-
-
-    
-    Add a name, command pair to commands. This function is meant to be used by plugin files in order to add commands.
-    Commands must take an argument which is whatever portion of the comment was not part of the command call. Here is an
-    example implementation of a mock command `Hello World` which replaces all instances of `pyxam!hello world` with
-    `Hello World!!!`:
-
-    ```python
-    import bang
-
-    def hello_world(args):
-        return 'Hello World!!!'
-
-    bang.add_command('hello world', hello_world)
-    ```
-
-    <br />`name`  The name of the command
-    <br />`command`  The command function
-    
-***
-**run_commands**()
-
-    
-    Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
-    The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//bang.py)">
-<li class="searchable" id="#bang_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html">bang</a></li>
-<input type="hidden" id="exporter_py" value="
-# Module exporter
-
-This module is responsible for copying files from the tmp directory to the out directory, calling the selector, and
-reading any csv population data associated with this Pyxam call.
-
-
-
-The stages of the export process are managed with file extensions. All files that end with .cmp (short for compiled)
-will be renamed with either a number or letter depending on whether the `alphabetize` flag has been set and the
-extension .mix. These files are then passed to the selector for mixing along with csv data. The selector is expected to
-add any necessary .mix files. At this point all .mix files are copied to the out directory with the extension specified
-by the compile format.
-
-***
-**_selectors **<br /> A map of all currently loaded selectors
-***
-**export**()
-
-    
-    Mix the composed files with the specified selector then copy all mixed files to the out directory with the
-    appropriate names. If any files are in the figure directory they are copied out as well.
-    
-***
-**csv_read**(*file*)
-
-
-    
-    Attempts to read the provided CSV file.
-
-    <br />`file`  The csv file to read
-    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
-    
-***
-**add_selector**(*name, selector*)
-
-
-    
-    Add a selector to the selector list.
-
-    <br />`name`  The name of the selector being added
-    <br />`selector`  The selector to add
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//exporter.py)">
-<li class="searchable" id="#exporter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
 <input type="hidden" id="filters_py" value="
 # Module filters
 
@@ -948,6 +578,376 @@ This module provides helper functions for transforming a Pyxam parse tree.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
 <li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
+<input type="hidden" id="formatter_py" value="
+# Module formatter
+
+***
+**get_extension**()
+
+    
+    Get the output extension
+    **<br />returns&nbsp;**  The output extension
+    
+***
+**parse**()
+
+    
+    source to ast
+    **<br />returns&nbsp;** 
+    
+***
+**compose**(*intermediates*)
+
+
+    
+    ast to source
+    <br />`intermediates` 
+    **<br />returns&nbsp;** 
+    
+***
+**pack**(*token, fmt*)
+
+
+    
+    Convert a token into a string using the following rules:
+    - If the token name is contained in the format:
+        - Append every pure string in that format
+        - Append every tuple or list as the packed content of the token
+    - If the token name is not contained in the format
+        - Append the packed content of the token
+    <br />`token` 
+    <br />`fmt` 
+    **<br />returns&nbsp;** 
+    
+***
+**add_format**(*fmt*)
+
+
+    
+    Check format signature before adding.
+    Insert into formats at all valid extensions.
+    Convert format list to Token list.
+    <br />`fmt`  The format map
+    **<br />returns&nbsp;**  None
+    
+***
+**unpack**(*token, fmt, tail=False*)
+
+
+    
+    Convert format list to a regex using the following rules:
+    - Convert pure strings to pure strings within the regex with all regex characters escapted
+    - Convert empty tuples to non-greedy character grabbers (.*?)
+    - Convert lists to recursively obtain the regex of the token contained within that list
+    - Throw an error for any other input
+    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
+    the last entry in the format list regex
+    <br />`token`  The token to build the regex for
+    <br />`fmt`  The reference format
+    <br />`tail`  Whether the regex should have a prefix and postfix applied
+    **<br />returns&nbsp;**  The regex
+    
+***
+**resolve**(*src, fmt*)
+
+
+    
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+    <br />`src`  The source to convert into an ast
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The ast
+    
+***
+**determine**(*src, fmt*)
+
+
+    
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+    <br />`src`  The string sequence
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The matched token, The unmatched sequence
+    
+***
+**check**(*token, src, fmt, debug=False*)
+
+
+    
+
+    <br />`token` 
+    <br />`src` 
+    <br />`fmt` 
+    <br />`debug` 
+    **<br />returns&nbsp;** 
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//formatter.py)">
+<li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
+<input type="hidden" id="options_py" value="**state **<br /> A Map of all current compile functions
+***
+**_compiled **<br /> A Map of all current options
+***
+**_hanging **<br /> A list of not compiled options
+***
+**clear**()
+
+    
+    Clear all compiled and hanging options.
+    
+***
+**compile_**(*option, value=None*)
+
+
+    
+    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
+    The compiled value is the default if no value hs been provided by the current or past callers.
+    <br />`option`  The option to compile
+    <br />`value`  The value to try and set, when None the value is not set
+    **<br />returns&nbsp;**  The compiled value
+    
+***
+**add_option**(*name, flag, description, default, type_, value=None*)
+
+
+    
+    Add an option.
+    <br />`name`  The name of the option
+    <br />`flag`  The flag for the option
+    <br />`description`  A description of the option
+    <br />`default`  The default value of the option
+    <br />`type_`  The type of the option
+    <br />`value`  A value, defaults to None
+    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
+    
+***
+**load_options**(*options*)
+
+
+    
+    Load options provided as a list in command line syntax.
+    <br />`options`  A list of options to load
+    **<br />returns&nbsp;**  None
+    
+***
+**load_template**()
+
+    
+    Load the template option. Expects to be the last option loaded.
+    **<br />returns&nbsp;**  None
+    
+***
+**get_help**()
+
+    
+    Get a string representing the help message for all options currently added.
+    **<br />returns&nbsp;**  The help string
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//options.py)">
+<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
+<input type="hidden" id="bang_py" value="
+# Module bang
+
+This module prepossesses the template file runs all inline commands prior to weaving.
+
+Commands can be thought of in the same way as preprocessor directives in c. Commands appear in comments. When a command
+name is recognized the contents of the comment are replaced with the result of a function that corresponds to that
+command. Commands can have arguments but importantly are not reprocessed. All commands should appear in a comment block
+of the format being worked with and must be preceded with the `pyxam!` prefix to avoid confusion.
+
+
+
+An example usage of a mock comman        x = 3d named `cmd`:
+
+```
+This is template file
+# This is a normal comment
+Some more text
+# pyxam!cmd
+That last comment was a command
+```
+
+***
+**commands **<br /> A dictionary containing all currently loaded name command pairs
+***
+**add_command**(*name, command*)
+
+
+    
+    Add a name, command pair to commands. This function is meant to be used by plugin files in order to add commands.
+    Commands must take an argument which is whatever portion of the comment was not part of the command call. Here is an
+    example implementation of a mock command `Hello World` which replaces all instances of `pyxam!hello world` with
+    `Hello World!!!`:
+
+    ```python
+    import bang
+
+    def hello_world(args):
+        return 'Hello World!!!'
+
+    bang.add_command('hello world', hello_world)
+    ```
+
+    <br />`name`  The name of the command
+    <br />`command`  The command function
+    
+***
+**run_commands**()
+
+    
+    Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
+    The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//bang.py)">
+<li class="searchable" id="#bang_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html">bang</a></li>
+<input type="hidden" id="exporter_py" value="
+# Module exporter
+
+This module is responsible for copying files from the tmp directory to the out directory, calling the selector, and
+reading any csv population data associated with this Pyxam call.
+
+
+
+The stages of the export process are managed with file extensions. All files that end with .cmp (short for compiled)
+will be renamed with either a number or letter depending on whether the `alphabetize` flag has been set and the
+extension .mix. These files are then passed to the selector for mixing along with csv data. The selector is expected to
+add any necessary .mix files. At this point all .mix files are copied to the out directory with the extension specified
+by the compile format.
+
+***
+**_selectors **<br /> A map of all currently loaded selectors
+***
+**export**()
+
+    
+    Mix the composed files with the specified selector then copy all mixed files to the out directory with the
+    appropriate names. If any files are in the figure directory they are copied out as well.
+    
+***
+**csv_read**(*file*)
+
+
+    
+    Attempts to read the provided CSV file.
+
+    <br />`file`  The csv file to read
+    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
+    
+***
+**add_selector**(*name, selector*)
+
+
+    
+    Add a selector to the selector list.
+
+    <br />`name`  The name of the selector being added
+    <br />`selector`  The selector to add
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//exporter.py)">
+<li class="searchable" id="#exporter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
+<input type="hidden" id="fileutil_py" value="
+# Module fileutil
+
+This Module provides helper functions to other modules for working with files.
+
+***
+**build_files**()
+
+    
+    Find the absolute file path for the template, tmp directory, and out directory and update thir options to point to
+    their absolute path. Create the tmp and out directories if necessary. Warns user if tmp is going to be overridden
+    as this may delete files. Changes the current working directory to tmp.
+    
+***
+**cleanup**()
+
+    
+    When not in debug mode remove all temporary folders.
+    
+***
+**with_extension**(*extension*)
+
+
+    
+    Find all files in the current working directory that match the given extension.
+
+    <br />`extension`  The extension to match
+
+    **<br />returns&nbsp;**  a list of files that end in the provided extension
+    
+***
+**read**(*file*)
+
+
+    
+    Read a string from a file.
+
+    <br />`file`  The relative or absolute path to the file to read
+    **<br />returns&nbsp;**  The string contents of the file
+    
+***
+**write**(*file, src*)
+
+
+    
+    Write a string to a file.
+
+    <br />`file`  The relative or absolute path to the file to write to
+    <br />`src`  The string to write to the file
+    
+***
+**copy_figure**()
+
+    
+    Copy the figure directory to the out directory along with its children.
+    
+***
+**remove**(*file*)
+
+
+    
+    Remove a file or directory. If removing a directory all contents of that directory will also be removed.
+
+    <br />`file`  The relative or absolute path for the file or directory or directory to remove
+    
+***
+**mv**(*src, dest*)
+
+
+    
+    Moves a file from src to destination.
+
+    <br />`src`  The relative or absolute path for the file or directory to move
+    <br />`dest`  The relative or absolute path for the file's destination
+    
+***
+**is_bin**(*file*)
+
+
+    
+    Check if a file is a binary file.
+
+    <br />`file`  The file to check
+    **<br />returns&nbsp;**  True if the file is a binary file
+    
+***
+**wait_on_io**(*fn, timeout=5*)
+
+
+    
+    Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
+    False.
+
+    <br />`fn`  The io function to wait on
+    <br />`timeout`  The maximum time to wait
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py)">
+<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
 <input type="hidden" id="pyxam_py" value="
 # Module pyxam
 
@@ -1123,7 +1123,7 @@ Defines a default set of [bang](https://rawgit.com/balancededge/pyxam/master/doc
     
     Load args as though they were command line options. These take priority over command line options. This command will
     be replaced with an empty string. An example where the output format is set to pdf and the debug flag is enabled:
-    ```python
+    ```
     # pyxam!args -f pdf -d
     ```
     
@@ -1161,8 +1161,9 @@ Defines a default set of [bang](https://rawgit.com/balancededge/pyxam/master/doc
     ```
     Would be turned into:
     ```python
-    import time()
-    x = time.time()
+    verb:
+        import time()
+        x = time.time()
     ```
     And x would now store the current time which could be used by other commands.
     
@@ -1228,10 +1229,6 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_markdown.py)">
 <li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
-<input type="hidden" id="format_html_py" value="
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_html.py)">
-<li class="searchable" id="#format_html_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
 <input type="hidden" id="_options_py" value="
 # Plugin _options
 
@@ -1287,6 +1284,10 @@ options can be seen by _options.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_options.py)">
 <li class="searchable" id="#_options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
+<input type="hidden" id="format_html_py" value="
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_html.py)">
+<li class="searchable" id="#format_html_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
 <input type="hidden" id="docs_py" value="
 # Plugin docs
 
@@ -1384,25 +1385,13 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
     </div>
     <div class='doc'>
         <br /><b>pdf_bypass</b>()<br />    
-    Bypass formatter steps
-    <br /><b><br />returns&nbsp;</b> 
-    
-<hr />
-<br /><b>pdf_compile</b>()<br />    
-    Compile to pdf or dvi
-    <br /><b><br />returns&nbsp;</b> 
-    
-<hr />
-<br /><b>check_compiled</b>(<i>extensions, file</i>)<br />
+    Bypass formatter steps<br /><b><br />returns&nbsp;</b><hr /><br /><b>pdf_compile</b>()<br />    
+    Compile to pdf or dvi<br /><b><br />returns&nbsp;</b><hr /><br /><b>check_compiled</b>(<i>extensions, file</i>)<br />
     
     Check that a file with file compiled to one of the specified extensions. If the file does not compile it is
     recompiled in interactive mode
-    <br /><pre class="verb-expr">extensions</pre>  The extensions to look for
-    <br /><pre class="verb-expr">file</pre>  The original file
-    <br /><b><br />returns&nbsp;</b>  None
-    
-<hr />
-View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_pdf.py">source</a>
+    <br /><pre class="verb-expr">extensions</pre>The extensions to look for
+    <br /><pre class="verb-expr">file</pre>The original file<br /><b><br />returns&nbsp;</b>None<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_pdf.py">source</a>
         <hr />
         <div class='credits'>
             &copy; Copyright Eric Buss

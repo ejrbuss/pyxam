@@ -118,14 +118,15 @@ def homogenize_strings(ast):
     for token in ast:
         if hasattr(token, 'definition'):
             if buffer != '':
-                new_ast.append(buffer)
+                new_ast.append(buffer.strip())
                 buffer = ''
             new_ast.append(token)
-            token.definition = homogenize_strings(token.definition)
+            if 'verb' not in token.name:
+                token.definition = homogenize_strings(token.definition)
         else:
             buffer += token
     if buffer != '':
-        new_ast.append(buffer)
+        new_ast.append(buffer.strip())
     return new_ast
 
 

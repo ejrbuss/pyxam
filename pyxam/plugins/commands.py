@@ -20,7 +20,7 @@ def arguments(args):
     """
     Load args as though they were command line options. These take priority over command line options. This command will
     be replaced with an empty string. An example where the output format is set to pdf and the debug flag is enabled:
-    ```python
+    ```
     # pyxam!args -f pdf -d
     ```
     """
@@ -59,8 +59,9 @@ def verbatim(args):
     ```
     Would be turned into:
     ```python
-    import time()
-    x = time.time()
+    verb:
+        import time()
+        x = time.time()
     ```
     And x would now store the current time which could be used by other commands.
     """
