@@ -1,0 +1,104 @@
+
+# Module formatter
+
+***
+**get_extension**()
+
+    
+    Get the output extension
+    **<br />returns&nbsp;**  The output extension
+    
+***
+**parse**()
+
+    
+    source to ast
+    **<br />returns&nbsp;** 
+    
+***
+**compose**(*intermediates*)
+
+
+    
+    ast to source
+    <br />`intermediates` 
+    **<br />returns&nbsp;** 
+    
+***
+**pack**(*token, fmt*)
+
+
+    
+    Convert a token into a string using the following rules:
+    - If the token name is contained in the format:
+        - Append every pure string in that format
+        - Append every tuple or list as the packed content of the token
+    - If the token name is not contained in the format
+        - Append the packed content of the token
+    <br />`token` 
+    <br />`fmt` 
+    **<br />returns&nbsp;** 
+    
+***
+**add_format**(*fmt*)
+
+
+    
+    Check format signature before adding.
+    Insert into formats at all valid extensions.
+    Convert format list to Token list.
+    <br />`fmt`  The format map
+    **<br />returns&nbsp;**  None
+    
+***
+**unpack**(*token, fmt, tail=False*)
+
+
+    
+    Convert format list to a regex using the following rules:
+    - Convert pure strings to pure strings within the regex with all regex characters escapted
+    - Convert empty tuples to non-greedy character grabbers (.*?)
+    - Convert lists to recursively obtain the regex of the token contained within that list
+    - Throw an error for any other input
+    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
+    the last entry in the format list regex
+    <br />`token`  The token to build the regex for
+    <br />`fmt`  The reference format
+    <br />`tail`  Whether the regex should have a prefix and postfix applied
+    **<br />returns&nbsp;**  The regex
+    
+***
+**resolve**(*src, fmt*)
+
+
+    
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+    <br />`src`  The source to convert into an ast
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The ast
+    
+***
+**determine**(*src, fmt*)
+
+
+    
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+    <br />`src`  The string sequence
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The matched token, The unmatched sequence
+    
+***
+**check**(*token, src, fmt, debug=False*)
+
+
+    
+
+    <br />`token` 
+    <br />`src` 
+    <br />`fmt` 
+    <br />`debug` 
+    **<br />returns&nbsp;** 
+    

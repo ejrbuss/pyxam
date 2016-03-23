@@ -41,12 +41,17 @@ def composer_postprocessor(src):
         src = src.replace('display:none', '')
         src = src.replace('display:visible', 'display:none')
     return fileutil.read(
-        os.path.dirname(os.path.abspath(__file__)) + '/../templates/' + options.state.htmltemplate()
+        os.path.dirname(options.state.htmltemplate())
      ).replace('<!-- content -->', src)
 
 
 def load():
-    options.add_option('htmltemplate', '-htt', 'Specify an HTML template file', 'exam.html', str)
+    options.add_option(
+        'htmltemplate', '-htt',
+        'Specify an HTML template file',
+        os.path.abspath(__file__).replace('\\', '/') + '/../templates/exam.html',
+        str
+    )
     formatter.add_format({
         'extensions': ['html', 'html'],
         'description': signature[1],
