@@ -31,7 +31,6 @@ def gs(path):
     :param name:
     :return:
     """
-    print(path)
     try:
         with open(os.devnull, 'r') as stdin:
             subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + path[:-3] + 'png', path], stdin=stdin)

@@ -36,6 +36,7 @@ def composer_postprocessor(src):
     # String replacements
     for symbol in math:
         src = src
+    src = re.sub(r'\[img]\((.*?)\)', r'<img src="\1">', src)
     src = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', src)
     src = re.sub(r'\n{2}', '<br />', src)
     if options.state.solutions():
@@ -89,7 +90,7 @@ def load():
             ('verbython', ['<pre class="verb-python">', (), '</pre>', '.']),
             ('verbblock', ['<pre class="verb-block">', (), '</pre>', '.']),
             ('verbexpr', ['<pre class="verb-expr">', (), '</pre>', '.']),
-            ('quote', ['<div class="quote">', (), '</div>', '.'])
+            ('newline', ['<br />', '.'])
         ])
     })
     # Return signature

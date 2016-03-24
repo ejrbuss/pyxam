@@ -179,8 +179,11 @@ def untab_verb(ast):
         lines = [line for line in token.definition[0].split('\n') if line != '\n']
         overwrite = False
         while not overwrite:
+            clear = True
             for line in lines:
+                clear = not len(line) > 0 and clear
                 overwrite = overwrite or (len(line) > 0 and (line[0] != ' '))
+            overwrite = overwrite or clear
             if not overwrite:
                 lines = [line[1:] for line in lines if len(line) > 0]
         token.definition = ['\n'.join(lines)]
