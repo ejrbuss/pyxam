@@ -12,7 +12,7 @@ option is added to allow the user to set the logging level at runtime. The [plug
 always load _logging first so that other Plugins can use logging
 in their load functions.
 """
-
+import config
 import logging
 import options
 
@@ -24,9 +24,6 @@ description = 'Set the logging level for pyxam\n{}: DEBUG\n{}: INFO\n{}: WARNING
     logging.DEBUG, logging.INFO, logging.WARNING, logging.CRITICAL
 )
 
-# Default logging level
-default = logging.DEBUG
-
 
 def load():
     """
@@ -36,7 +33,7 @@ def load():
 
     :return: plugin signature
     """
-    options.add_option('logging', '-l', description, default, int)
+    options.add_option('logging', '-l', description, config.default_logging, int)
     # Set logging configuration
     logging.basicConfig(format='%(levelname)s@%(module)s.%(funcName)s(): %(message)s', level=options.state.logging())
     # Log configuration

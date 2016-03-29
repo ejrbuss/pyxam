@@ -60,13 +60,11 @@ def parse():
     for file in fileutil.with_extension('.tex'):
         logging.info('Using ' + parser['extensions'][0] + ' format to parse ' + options.state.template())
         intermediate = libs.map.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
+
         intermediate.ast = resolve(intermediate.src, parser)
-        #stack = intermediate.src
-        #while stack:
-        #    token, stack = match(parser, stack)
-        #    intermediate.ast.append(token)
+        fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
         # Remove comments
-        intermediate.ast = filters.remove_name(intermediate.ast, 'comment')
+        intermediate.ast = filters.remove_partial(intermediate.ast, 'comment')
         # Pop unknowns
         intermediate.ast = filters.pop_unknowns(intermediate.ast)
         # Homogenize strings
@@ -124,13 +122,26 @@ def pack(token, fmt):
     return content
 
 
-def add_format(fmt):
+def add_format(name,
+               extensions,
+               format,
+               description='',
+               parser_preprocessor=filters.pass_through,
+               parser_postprocessor=filters.pass_through,
+               composer_postprocessor=filters.pass_through,
+               composer_preprocessor=filters.pass_through
+):
     """
-    Check format signature before adding.
-    Insert into formats at all valid extensions.
-    Convert format list to Token list.
-    :param fmt: The format map
-    :return: None
+
+    :param name:
+    :param extensions:
+    :param description:
+    :param format:
+    :param parser_preprocessor:
+    :param parser_postprocessor:
+    :param composer_postprocessor:
+    :param composer_preprocessor:
+    :return:
     """
     if (
             'extensions' and 'description' and 'format' and

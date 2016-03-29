@@ -22,7 +22,7 @@ def mix(files, data):
         n = str(chr(n % len(files) + ord('A')) if options.state.alphabetize() else n % len(files) + 1)
         fileutil.write(
             n + row['name'].replace(' ', '_') + '_' + row['number'] + '.mix',
-            fileutil.read(n + '.mix').
+            fileutil.read(options.state.cwd() + '/' + n + '.mix').
                 replace('$tudent__name', ' ' + row['name']).
                 replace('$tudent__number', ' ' + row['number'])
         )

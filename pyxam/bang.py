@@ -65,7 +65,7 @@ def run_commands():
         parser = formatter.formats[options.state.template().split('.')[-1]]
     except:
         raise formatter.FormatError('Unknown format')
-    logging.info('Using ' + parser['extensions'][0] + ' format to parse pyxam! in ' + options.state.template())
+    logging.info('Using ' + parser['extensions'][0] + ' format to process pyxam! in ' + options.state.template())
     # Read the template
     buffer = fileutil.read(options.state.template())
     # Look through tokens and find all comment tokens
@@ -87,5 +87,6 @@ def run_commands():
         os.mkdir(options.state.cwd() + '/template')
     # Write result to new template
     fileutil.write(options.state.template(), buffer)
+    logging.info('Finished preprocessing commands')
 
 

@@ -3,10 +3,6 @@
 \documentclass[12pt]{exam}
     % Enable graphics
     \usepackage[pdftex]{graphicx}
-    % Standard definition for true/false questions
-    \newcommand{\tf}[1][]{%
-        \fillin[#1][0.25in]%
-    }
 
     \begin{document}
 
@@ -67,8 +63,12 @@
                 \end{choices}
 
             \titledquestion{7. Simple True False Question}
-                \tf[T] This is a simple True or False question. It requires a new command be specified at the top of the
-                document. In order to translate to moodle this format must be used. This True or False question is True.
+                True False questions are simply multichoice questions with a true or false correctchoice. These will be
+                automatically converted to true false questions in Moodle.
+                \begin{choices}
+                    \CorrectChoice True
+                    \choice False
+                \end{choices}
 
             \titledquestion{8. Simple Calculated Question}
                 Calculated questions can have randomly generated values assigned to parameters and a formula that is used
@@ -159,7 +159,7 @@ plt.show()
                 \end{comment}
                 Your image will be displayed inline with the text and appear regardless of what output format you choose.
 
-            % pyxam!import 1 examples/questions/import\ example.tex
+            % pyxam!import 1 questions/import\ example.tex
 
         \end{questions}
 

@@ -338,17 +338,6 @@ list can be changed during runtime via a number of function calls.
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//process_list.py)">
 <li class="searchable" id="#process_list_py"><a href="/home/ebuss/pyxam/docs/build/Modules/process_list.html">process_list</a></li>
-<input type="hidden" id="lib_loader_py" value="**gs**(*path*)
-
-
-    
-    Convert pdf image file to png using ghostscript
-    <br />`name` 
-    **<br />returns&nbsp;** 
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//lib_loader.py)">
-<li class="searchable" id="#lib_loader_py"><a href="/home/ebuss/pyxam/docs/build/Modules/lib_loader.html">lib_loader</a></li>
 <input type="hidden" id="plugin_loader_py" value="**_plugins **<br /> A map of all currently loaded plugins
 ***
 **load_plugins**()
@@ -405,7 +394,7 @@ This module provides helper functions for transforming a Pyxam parse tree.
     **<br />returns&nbsp;**  the filtered node
     
 ***
-**apply_function**(*ast, fn, name*)
+**apply_function**(*ast, fn, partial*)
 
 
     
@@ -414,7 +403,7 @@ This module provides helper functions for transforming a Pyxam parse tree.
 
     <br />`ast`  The tree to transform
     <br />`fn`  The function to apply
-    <br />`name`  The token name to apply the function to
+    <br />`partial`  TODO
     **<br />returns&nbsp;**  the modified tre
     
 ***
@@ -578,113 +567,63 @@ This module provides helper functions for transforming a Pyxam parse tree.
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//filters.py)">
 <li class="searchable" id="#filters_py"><a href="/home/ebuss/pyxam/docs/build/Modules/filters.html">filters</a></li>
-<input type="hidden" id="formatter_py" value="
-# Module formatter
+<input type="hidden" id="pyxam_py" value="
+# Module pyxam
+
+This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
+mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
+mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
+messages and tracking the Pyxam version number.
+
+
+
+Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
+generating figure images. Failing to meet one of these dependencies will result in an exit statement and a
+recommendation todo `pip install` for the dependency.
 
 ***
-**get_extension**()
+**__version__ **<br /> Pyxam Version Number
+***
+**title **<br /> Pyxam Title String
+***
+**welcome**()
 
     
-    Get the output extension
-    **<br />returns&nbsp;**  The output extension
+    Prints the Pyxam title and version number when not in api mode.
     
 ***
-**parse**()
+**goodbye**()
 
     
-    source to ast
-    **<br />returns&nbsp;** 
-    
-***
-**compose**(*intermediates*)
-
-
-    
-    ast to source
-    <br />`intermediates` 
-    **<br />returns&nbsp;** 
+    Prints a goodbye message when not in api mode.
     
 ***
-**pack**(*token, fmt*)
+**start**(*args, api=True*)
 
 
     
-    Convert a token into a string using the following rules:
-    - If the token name is contained in the format:
-        - Append every pure string in that format
-        - Append every tuple or list as the packed content of the token
-    - If the token name is not contained in the format
-        - Append the packed content of the token
-    <br />`token` 
-    <br />`fmt` 
-    **<br />returns&nbsp;** 
-    
-***
-**add_format**(*fmt*)
+    Start Pyxam with a set of [options](/home/ebuss/pyxam/docs/build/Modules/options.html). Start adds the following processes to the
+    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html):
+     - `load_options` loads the command line options
+     - `welcome` displays a welcome message
+     - `load_plugins` loads all available plugins
+     - `build_files` fixes paths and builds all necessary files
+     - `run_commands` prepossesses commands in the template (see [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html))
+     - `weave` runs any inline code within the template
+     - `parse` reads the template document into an intermediate format (see [formatter](/home/ebuss/pyxam/docs/build/Modules/formatter.py))
+     - `compose` converts the intermediate format into the output format
+     - `export` moves files from the tmp directory to the final out directory
+     - `cleanup` removes all temporary files
+     - `unload_plugins` unloads all available plugins
+     - `goodbye` display a goodbye message
+    Once added these processes are consumed until there are no more processes.
 
-
-    
-    Check format signature before adding.
-    Insert into formats at all valid extensions.
-    Convert format list to Token list.
-    <br />`fmt`  The format map
-    **<br />returns&nbsp;**  None
+    <br />`args`  A list of options provided in command line syntax
+    <br />`api`  A flag indicating if Pyxam is being called as an api
     
 ***
-**unpack**(*token, fmt, tail=False*)
-
-
-    
-    Convert format list to a regex using the following rules:
-    - Convert pure strings to pure strings within the regex with all regex characters escapted
-    - Convert empty tuples to non-greedy character grabbers (.*?)
-    - Convert lists to recursively obtain the regex of the token contained within that list
-    - Throw an error for any other input
-    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
-    the last entry in the format list regex
-    <br />`token`  The token to build the regex for
-    <br />`fmt`  The reference format
-    <br />`tail`  Whether the regex should have a prefix and postfix applied
-    **<br />returns&nbsp;**  The regex
-    
-***
-**resolve**(*src, fmt*)
-
-
-    
-    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
-    tokens must be provided. Any string sequences that cannot be matched will be returned as
-    raw characters
-    <br />`src`  The source to convert into an ast
-    <br />`fmt`  The format providing the tokens
-    **<br />returns&nbsp;**  The ast
-    
-***
-**determine**(*src, fmt*)
-
-
-    
-    Determine what token a specific string sequence begins with. If no token can be found in the given
-    template a raw character is returned off the top.
-    <br />`src`  The string sequence
-    <br />`fmt`  The format providing the tokens
-    **<br />returns&nbsp;**  The matched token, The unmatched sequence
-    
-***
-**check**(*token, src, fmt, debug=False*)
-
-
-    
-
-    <br />`token` 
-    <br />`src` 
-    <br />`fmt` 
-    <br />`debug` 
-    **<br />returns&nbsp;** 
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//formatter.py)">
-<li class="searchable" id="#formatter_py"><a href="/home/ebuss/pyxam/docs/build/Modules/formatter.html">formatter</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//pyxam.py)">
+<li class="searchable" id="#pyxam_py"><a href="/home/ebuss/pyxam/docs/build/Modules/pyxam.html">pyxam</a></li>
 <input type="hidden" id="options_py" value="**state **<br /> A Map of all current compile functions
 ***
 **_compiled **<br /> A Map of all current options
@@ -948,63 +887,124 @@ This Module provides helper functions to other modules for working with files.
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//fileutil.py)">
 <li class="searchable" id="#fileutil_py"><a href="/home/ebuss/pyxam/docs/build/Modules/fileutil.html">fileutil</a></li>
-<input type="hidden" id="pyxam_py" value="
-# Module pyxam
-
-This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
-mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
-mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
-messages and tracking the Pyxam version number.
-
-
-
-Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
-generating figure images. Failing to meet one of these dependencies will result in an exit statement and a
-recommendation todo `pip install` for the dependency.
-
-***
-**__version__ **<br /> Pyxam Version Number
-***
-**title **<br /> Pyxam Title String
-***
-**welcome**()
-
-    
-    Prints the Pyxam title and version number when not in api mode.
-    
-***
-**goodbye**()
-
-    
-    Prints a goodbye message when not in api mode.
-    
-***
-**start**(*args, api=True*)
+<input type="hidden" id="lib_loader_py" value="**gs**(*path*)
 
 
     
-    Start Pyxam with a set of [options](/home/ebuss/pyxam/docs/build/Modules/options.html). Start adds the following processes to the
-    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html):
-     - `load_options` loads the command line options
-     - `welcome` displays a welcome message
-     - `load_plugins` loads all available plugins
-     - `build_files` fixes paths and builds all necessary files
-     - `run_commands` prepossesses commands in the template (see [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html))
-     - `weave` runs any inline code within the template
-     - `parse` reads the template document into an intermediate format (see [formatter](/home/ebuss/pyxam/docs/build/Modules/formatter.py))
-     - `compose` converts the intermediate format into the output format
-     - `export` moves files from the tmp directory to the final out directory
-     - `cleanup` removes all temporary files
-     - `unload_plugins` unloads all available plugins
-     - `goodbye` display a goodbye message
-    Once added these processes are consumed until there are no more processes.
-
-    <br />`args`  A list of options provided in command line syntax
-    <br />`api`  A flag indicating if Pyxam is being called as an api
+    Convert pdf image file to png using ghostscript
+    <br />`name` 
+    **<br />returns&nbsp;** 
     
 ***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//pyxam.py)">
-<li class="searchable" id="#pyxam_py"><a href="/home/ebuss/pyxam/docs/build/Modules/pyxam.html">pyxam</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//lib_loader.py)">
+<li class="searchable" id="#lib_loader_py"><a href="/home/ebuss/pyxam/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+<input type="hidden" id="formatter_py" value="
+# Module formatter
+
+***
+**get_extension**()
+
+    
+    Get the output extension
+    **<br />returns&nbsp;**  The output extension
+    
+***
+**parse**()
+
+    
+    source to ast
+    **<br />returns&nbsp;** 
+    
+***
+**compose**(*intermediates*)
+
+
+    
+    ast to source
+    <br />`intermediates` 
+    **<br />returns&nbsp;** 
+    
+***
+**pack**(*token, fmt*)
+
+
+    
+    Convert a token into a string using the following rules:
+    - If the token name is contained in the format:
+        - Append every pure string in that format
+        - Append every tuple or list as the packed content of the token
+    - If the token name is not contained in the format
+        - Append the packed content of the token
+    <br />`token` 
+    <br />`fmt` 
+    **<br />returns&nbsp;** 
+    
+***
+**add_format**(*fmt*)
+
+
+    
+    Check format signature before adding.
+    Insert into formats at all valid extensions.
+    Convert format list to Token list.
+    <br />`fmt`  The format map
+    **<br />returns&nbsp;**  None
+    
+***
+**unpack**(*token, fmt, tail=False*)
+
+
+    
+    Convert format list to a regex using the following rules:
+    - Convert pure strings to pure strings within the regex with all regex characters escapted
+    - Convert empty tuples to non-greedy character grabbers (.*?)
+    - Convert lists to recursively obtain the regex of the token contained within that list
+    - Throw an error for any other input
+    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
+    the last entry in the format list regex
+    <br />`token`  The token to build the regex for
+    <br />`fmt`  The reference format
+    <br />`tail`  Whether the regex should have a prefix and postfix applied
+    **<br />returns&nbsp;**  The regex
+    
+***
+**resolve**(*src, fmt*)
+
+
+    
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+    <br />`src`  The source to convert into an ast
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The ast
+    
+***
+**determine**(*src, fmt*)
+
+
+    
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+    <br />`src`  The string sequence
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The matched token, The unmatched sequence
+    
+***
+**check**(*token, src, fmt, debug=False*)
+
+
+    
+
+    <br />`token` 
+    <br />`src` 
+    <br />`fmt` 
+    <br />`debug` 
+    **<br />returns&nbsp;** 
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//formatter.py)">
+<li class="searchable" id="#formatter_py"><a href="/home/ebuss/pyxam/docs/build/Modules/formatter.html">formatter</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
 <input type="hidden" id="format_moodle_py" value="**composer_preprocessor**(*intermediate*)
 
@@ -1017,47 +1017,6 @@ View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//pyxam.py)">
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_moodle.py)">
 <li class="searchable" id="#format_moodle_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
-<input type="hidden" id="selector_sequence_py" value="**mix**(*files, data*)
-
-
-    
-    Selects exams in round robin sequence
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/selector_sequence.py)">
-<li class="searchable" id="#selector_sequence_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/selector_sequence.html">selector_sequence</a></li>
-<input type="hidden" id="_logging_py" value="
-# Plugin _logging
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-
-This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
-option is added to allow the user to set the logging level at runtime. The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will
-always load _logging first so that other Plugins can use logging
-in their load functions.
-
-***
-**signature **<br /> logging config by ejrbuss: The default logging configuration for pyxam
-***
-**description **<br /> Logging option description
-***
-**default **<br /> Default logging level
-***
-**load**()
-
-    
-    Loads the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
-     - `logging -l` Set the logging level for pyxam
-    Sets logging.basicConfig with a default format and sets it to the option value.
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_logging.py)">
-<li class="searchable" id="#_logging_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_logging.html">_logging</a></li>
 <input type="hidden" id="_random_py" value="
 # Plugin _random
 
@@ -1082,6 +1041,64 @@ This plugin allows the random seed to be set.
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_random.py)">
 <li class="searchable" id="#_random_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_random.html">_random</a></li>
+<input type="hidden" id="format_latex_py" value="**end **<br /> Regex for recognizing the end of a question
+***
+**parser_preprocessor**(*src*)
+
+
+    
+    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
+    <br />`src`  The template source
+    **<br />returns&nbsp;**  The modified source
+    
+***
+**parser_postprocessor**(*intermediate*)
+
+
+    
+    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
+    prompt Token.
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_latex.py)">
+<li class="searchable" id="#format_latex_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_latex.html">format_latex</a></li>
+<input type="hidden" id="format_pdf_py" value="**pdf_bypass**()
+
+    
+    Bypass formatter steps
+    **<br />returns&nbsp;** 
+    
+***
+**pdf_compile**()
+
+    
+    Compile to pdf or dvi
+    **<br />returns&nbsp;** 
+    
+***
+**check_compiled**(*extensions, file*)
+
+
+    
+    Check that a file with file compiled to one of the specified extensions. If the file does not compile it is
+    recompiled in interactive mode
+    <br />`extensions`  The extensions to look for
+    <br />`file`  The original file
+    **<br />returns&nbsp;**  None
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_pdf.py)">
+<li class="searchable" id="#format_pdf_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
+<input type="hidden" id="format_markdown_py" value="
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_markdown.py)">
+<li class="searchable" id="#format_markdown_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
+<input type="hidden" id="format_org_py" value="
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_org.py)">
+<li class="searchable" id="#format_org_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_org.html">format_org</a></li>
 <input type="hidden" id="commands_py" value="
 # Plugin commands
 
@@ -1171,64 +1188,6 @@ Defines a default set of [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html) 
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/commands.py)">
 <li class="searchable" id="#commands_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/commands.html">commands</a></li>
-<input type="hidden" id="format_latex_py" value="**end **<br /> Regex for recognizing the end of a question
-***
-**parser_preprocessor**(*src*)
-
-
-    
-    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
-    <br />`src`  The template source
-    **<br />returns&nbsp;**  The modified source
-    
-***
-**parser_postprocessor**(*intermediate*)
-
-
-    
-    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
-    prompt Token.
-    <br />`intermediate`  An intermediate parse object
-    **<br />returns&nbsp;**  A modified intermediate
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_latex.py)">
-<li class="searchable" id="#format_latex_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_latex.html">format_latex</a></li>
-<input type="hidden" id="format_pdf_py" value="**pdf_bypass**()
-
-    
-    Bypass formatter steps
-    **<br />returns&nbsp;** 
-    
-***
-**pdf_compile**()
-
-    
-    Compile to pdf or dvi
-    **<br />returns&nbsp;** 
-    
-***
-**check_compiled**(*extensions, file*)
-
-
-    
-    Check that a file with file compiled to one of the specified extensions. If the file does not compile it is
-    recompiled in interactive mode
-    <br />`extensions`  The extensions to look for
-    <br />`file`  The original file
-    **<br />returns&nbsp;**  None
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_pdf.py)">
-<li class="searchable" id="#format_pdf_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
-<input type="hidden" id="format_markdown_py" value="
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_markdown.py)">
-<li class="searchable" id="#format_markdown_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
-<input type="hidden" id="format_html_py" value="
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_html.py)">
-<li class="searchable" id="#format_html_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_html.html">format_html</a></li>
 <input type="hidden" id="_options_py" value="
 # Plugin _options
 
@@ -1284,10 +1243,51 @@ options can be seen by _options.
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_options.py)">
 <li class="searchable" id="#_options_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_options.html">_options</a></li>
-<input type="hidden" id="format_org_py" value="
+<input type="hidden" id="format_html_py" value="
 ***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_org.py)">
-<li class="searchable" id="#format_org_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_org.html">format_org</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_html.py)">
+<li class="searchable" id="#format_html_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_html.html">format_html</a></li>
+<input type="hidden" id="selector_sequence_py" value="**mix**(*files, data*)
+
+
+    
+    Selects exams in round robin sequence
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/selector_sequence.py)">
+<li class="searchable" id="#selector_sequence_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/selector_sequence.html">selector_sequence</a></li>
+<input type="hidden" id="_logging_py" value="
+# Plugin _logging
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+
+This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
+option is added to allow the user to set the logging level at runtime. The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will
+always load _logging first so that other Plugins can use logging
+in their load functions.
+
+***
+**signature **<br /> logging config by ejrbuss: The default logging configuration for pyxam
+***
+**description **<br /> Logging option description
+***
+**default **<br /> Default logging level
+***
+**load**()
+
+    
+    Loads the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `logging -l` Set the logging level for pyxam
+    Sets logging.basicConfig with a default format and sets it to the option value.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_logging.py)">
+<li class="searchable" id="#_logging_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_logging.html">_logging</a></li>
 <input type="hidden" id="docs_py" value="
 # Plugin docs
 

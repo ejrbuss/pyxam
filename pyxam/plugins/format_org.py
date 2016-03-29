@@ -10,8 +10,8 @@ signature = 'org mode foramt', 'ejrbuss', 'Format for producing and viewing org 
 
 def composer_preprocessor(intermediate):
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
-    intermediate.ast = filters.remove_name(intermediate.ast, 'decimal')
-    intermediate.ast = filters.remove_name(intermediate.ast, 'params')
+    intermediate.ast = filters.remove_partial(intermediate.ast, 'decimal')
+    intermediate.ast = filters.remove_partial(intermediate.ast, 'params')
     return intermediate
 
 

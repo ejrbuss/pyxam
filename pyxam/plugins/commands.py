@@ -88,7 +88,7 @@ def question_import(args):
     """
     n, imports, import_string = int(shlex.split(args)[0]), [], shlex.split(args)[1]
     for file in import_string.split('|'):
-        file = os.curdir + '/' + file
+        file = os.path.dirname(options.state.template()) + '/' + file
         if os.path.isfile(file):
             imports.append(fileutil.read(file))
         if os.path.isdir(file):

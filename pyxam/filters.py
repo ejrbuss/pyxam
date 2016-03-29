@@ -21,7 +21,12 @@ def remove_name(ast, name):
     :return: The modified tree
     """
     logging.info('Name filter for "' + name + '"')
-    return recursive_filter(lambda t: not (hasattr(t, 'name') and name in t.name), ast)
+    return recursive_filter(lambda t: not (hasattr(t, 'name') and name == t.name), ast)
+
+
+def remove_partial(ast, partial):
+    logging.info('Paritalfilter for "' + partial + '"')
+    return recursive_filter(lambda t: not (hasattr(t, 'name') and partial in t.name), ast)
 
 
 def recursive_filter(fn, node):
@@ -39,21 +44,21 @@ def recursive_filter(fn, node):
     return node
 
 
-def apply_function(ast, fn, name):
+def apply_function(ast, fn, partial):
     """
     Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
     to every part of the tree.
 
     :param ast: The tree to transform
     :param fn: The function to apply
-    :param name: The token name to apply the function to
+    :param partial: TODO
     :return: the modified tre
     """
     for token in ast:
-        if hasattr(token, 'name') and name in token.name:
+        if hasattr(token, 'name') and partial in token.name:
             fn(token)
         if hasattr(token, 'definition'):
-            apply_function(token.definition, fn, name)
+            apply_function(token.definition, fn, partial)
     return ast
 
 
@@ -117,7 +122,7 @@ def homogenize_strings(ast):
     buffer = ''
     for token in ast:
         if hasattr(token, 'definition'):
-            if buffer != '':
+            if buffer.strip() != '':
                 new_ast.append(buffer.strip())
                 buffer = ''
             new_ast.append(token)
@@ -125,7 +130,7 @@ def homogenize_strings(ast):
                 token.definition = homogenize_strings(token.definition)
         else:
             buffer += token
-    if buffer != '':
+    if buffer.strip() != '':
         new_ast.append(buffer.strip())
     return new_ast
 
@@ -202,10 +207,12 @@ def transform_questions(ast):
     for token in ast:
         if hasattr(token, 'name') and 'shortanswer' in token.name:
             to_numerical(token)
-        if hasattr(token, 'name') and 'multichoice' in token.name:
-            to_multiselect(token)
         if hasattr(token, 'name') and 'numerical' in token.name:
             to_calculated(token)
+        if hasattr(token, 'name') and 'multichoice' in token.name:
+            to_multiselect(token)
+        #if hasattr(token, 'name') and 'multichoice' in token.name:
+        #    to_true_false(token)
         elif hasattr(token, 'definition'):
             token.definition = transform_questions(token.definition)
     return ast
@@ -275,6 +282,22 @@ def to_multiselect(question):
         if count > 1:
             question.name = 'multiselect'
             logging.info('Converted multichoice question to multiselect')
+
+
+def to_true_false(question):
+    for token in question.definition:
+        count = 0
+        if hasattr(token, 'name') and 'choices' in token.name:
+            for choice in token.definition:
+                if hasattr(choice, 'name') and 'correctchoice' in choice.name:
+                    count += 1
+        if count == 1:
+            question.name = 'truefalse'
+            if token.definition[0].definition[0].lower() == 'true':
+                token.definition = [formatter.Token('true', [], None, '')]
+            else:
+                token.definition = [formatter.Token('false', [], None, '')]
+            logging.info('Converted multichoice question to truefalse')
 
 
 def to_calculated(question):

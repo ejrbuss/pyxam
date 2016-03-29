@@ -33,7 +33,7 @@ import plugin_loader
 import fileutil
 import lib_loader
 import formatter
-import exporter 
+import exporter
 
 
 # Module Dependencies
@@ -76,6 +76,13 @@ def goodbye():
         print('Thanks for using Pyxam, have a nice day!')
 
 
+def status():
+    """
+    When not in api mode prints a status message describing the job pyxam is about to perform.
+    """
+    print('Pyxam will convert')
+
+
 def start(args, api=True):
     """
     Start Pyxam with a set of [options](%/Modules/options.html). Start adds the following processes to the
@@ -109,6 +116,7 @@ def start(args, api=True):
         options.load_template,
         fileutil.build_files,
         bang.run_commands,
+        status,
         lib_loader.weave,
         formatter.parse,
         formatter.compose,
