@@ -23,6 +23,7 @@ recommendation todo `pip install` for the dependency.
 # TODO org mode
 # TODO markdown
 # TODO calculated
+# TODO pick from a list example
 
 
 import sys

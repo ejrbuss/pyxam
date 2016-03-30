@@ -42,7 +42,8 @@ csv_filename = '{n}_{name}_{number}.mix'
 student_name = '$tudent__name'
 # Default string to replace with student number
 student_number = '$tudent__number'
-
+# Default string to replace test version
+version_number = '$est__version'
 # Logging
 
 # Default logging level

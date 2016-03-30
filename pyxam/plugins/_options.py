@@ -67,6 +67,7 @@ def load():
     options.add_option('help',         '-h',  'Show a help message',                 False,              bool)
     # Run once and produce solutions then run again widthout solutions
     if options.state.solutions():
+        options.state.population('')
         process_list.run_before('goodbye', rerun_without_solutions)
     # Display version number via the welcome message then exit
     if options.state.version():
@@ -94,6 +95,8 @@ def rerun_without_solutions():
     [process_list](%/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
     one with solutions and one without. This function exits on close.
     """
+    if options.state.format() not in ['pdf', 'dvi', 'html']:
+        return
     args = pyxam.store_args()
     if '--solutions' in args:
         args.remove('--solutions')
@@ -101,7 +104,6 @@ def rerun_without_solutions():
         args.remove('-solutions')
     if '-s' in args:
         args.remove('-s')
-    # TODO Remove CSV files
     pyxam.start(args, options.state.api())
     exit()
 
