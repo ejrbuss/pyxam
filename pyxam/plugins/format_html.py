@@ -54,18 +54,16 @@ def load():
         os.path.abspath(os.path.dirname(__file__) + '/../templates/exam.html'),
         str
     )
-    formatter.add_format({
-        'extensions': ['html', 'html'],
-        'description': signature[1],
-        # Assign processors
-        'parser_preprocessor': filters.pass_through,
-        'parser_postprocessor': filters.pass_through,
-        'composer_preprocessor': composer_preprocessor,
-        'composer_postprocessor': composer_postprocessor,
-        'left_paren': '<div',
-        'right_paren': '</div>',
+    formatter.add_format(
+        name='html',
+        extensions=['html'],
+        description=signature[2],
+        composer_preprocessor=composer_preprocessor,
+        composer_postprocessor=composer_postprocessor,
+        left_paren='<div',
+        right_paren='</div>',
         # Use an OrderedDict to preserve token order
-        'format': collections.OrderedDict([
+        format=collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
             ('questions', ['<div class="questions">', (), '</div>', '.']),
             ('$', ['<span class="latex"> ', (), ' </span>', '.']),
@@ -92,7 +90,7 @@ def load():
             ('verbexpr', ['<pre class="verb-expr">', (), '</pre>', '.']),
             ('newline', ['<br />', '.'])
         ])
-    })
+    )
     # Return signature
     return signature
 

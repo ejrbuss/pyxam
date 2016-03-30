@@ -48,7 +48,11 @@ except ImportError:
 
 
 # Pyxam Version Number
-__version__ = 'v0.3.3'
+__version__ = 'v0.3.4'
+
+
+# Copy of original arguments
+_args = ['No stored args']
 
 
 # Pyxam Title String
@@ -76,11 +80,16 @@ def goodbye():
         print('Thanks for using Pyxam, have a nice day!')
 
 
-def status():
+def store_args(args=None):
     """
-    When not in api mode prints a status message describing the job pyxam is about to perform.
+
+    :param args:
+    :return:
     """
-    print('Pyxam will convert')
+    from pyxam import _args
+    if args is not None:
+        _args.append(args)
+    return _args[-1]
 
 
 def start(args, api=True):
@@ -105,6 +114,7 @@ def start(args, api=True):
     :param api: A flag indicating if Pyxam is being called as an api
     """
     # Clear last session data
+    store_args(args)
     options.clear()
     process_list.clear()
     # Add api option
@@ -116,7 +126,7 @@ def start(args, api=True):
         options.load_template,
         fileutil.build_files,
         bang.run_commands,
-        status,
+        options.status,
         lib_loader.weave,
         formatter.parse,
         formatter.compose,

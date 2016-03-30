@@ -16,12 +16,14 @@ def mix(files, data):
     Selects exams in round robin sequence
     """
     logging.info('Performing sequence mixing')
+    if not options.state.api():
+        print('Performing round robin mixing of', len(files), 'exam versions among', len(data), 'students.\n')
     # Fix template files
     # Mix data
     for n, row in enumerate(data):
         n = str(chr(n % len(files) + ord('A')) if options.state.alphabetize() else n % len(files) + 1)
         fileutil.write(
-            n + row['name'].replace(' ', '_') + '_' + row['number'] + '.mix',
+            options.state.cwd() + '/' + n + '_' + row['name'].replace(' ', '_') + '_' + row['number'] + '.mix',
             fileutil.read(options.state.cwd() + '/' + n + '.mix').
                 replace('$tudent__name', ' ' + row['name']).
                 replace('$tudent__number', ' ' + row['number'])
@@ -33,7 +35,6 @@ def mix(files, data):
                 replace('$tudent__name', '').
                 replace('$tudent__number', '')
         )
-
 
 
 def load():

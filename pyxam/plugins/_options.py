@@ -21,7 +21,6 @@ import process_list
 import formatter
 import options
 import pyxam
-import sys
 
 # option config by ejrbuss: The default options for pyxam
 signature = 'option config', 'ejrbuss', 'The default options for pyxam'
@@ -90,8 +89,14 @@ def rerun():
     [process_list](%/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
     one with solutions and one without. This function exits on close.
     """
-    args = list(arg for arg in sys.argv[1:] if arg not in ['-s', '-solutions', '--solutions'])
-    pyxam.start(args, True)
+    args = pyxam.store_args()
+    if '--solutions' in args:
+        args.remove('--solutions')
+    if '-solutions' in args:
+        args.remove('-solutions')
+    if '-s' in args:
+        args.remove('-s')
+    pyxam.start(args, options.state.api())
     exit()
 
 

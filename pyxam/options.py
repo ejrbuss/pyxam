@@ -104,3 +104,19 @@ def get_help():
         option.description.replace('\n', '\n' + ' ' * (2 * name + flag + 7)),
         name=name, flag=flag, arg=name + 2
     ) for key, option in _compiled.items() if key.startswith('--')))
+
+
+def status():
+    """
+
+    :return:
+    """
+    name = max([len(v.name) for k, v in _compiled.items() if k.startswith('--')]) + 1
+    value = max([len(str(compile_(v))) for k, v in _compiled.items() if k.startswith('--')])
+    out = '\n'.join((' {0:<{name}}{1} '.format(
+        option.name,
+        compile_(option),
+        name=name,
+    ) for key, option in _compiled.items() if key.startswith('--')))
+    if not state.api():
+        print('OPTIONS TABLE'.center(name + value, '='), '\n Name', ' ' * (name - 6), 'Value', '\n' + '=' * (name + value), '\n' + out + '\n')

@@ -11,7 +11,6 @@ import options
 import fileutil
 
 # TODO cleanup
-# TODO formatting
 
 
 class FormatError(Exception):
@@ -43,7 +42,7 @@ def get_extension():
     Get the output extension
     :return: The output extension
     """
-    return formats[options.state.format()]['extensions'][1]
+    return formats[options.state.format()]['extensions'][0]
 
 
 def parse():
@@ -58,7 +57,7 @@ def parse():
     except:
         raise FormatError('Unknown format')
     for file in fileutil.with_extension('.tex'):
-        logging.info('Using ' + parser['extensions'][0] + ' format to parse ' + options.state.template())
+        logging.info('Using ' + parser['name'] + ' format to parse ' + options.state.template())
         intermediate = libs.map.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
 
         intermediate.ast = resolve(intermediate.src, parser)
@@ -74,6 +73,8 @@ def parse():
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
+    if not options.state.api():
+        print('Successfully parsed', parser['name'] + '.\n')
     return intermediates
 
 
@@ -87,7 +88,7 @@ def compose(intermediates):
         composer = formats[options.state.format()]
     except:
         raise FormatError('Unknown format')
-    logging.info('Using ' + composer['extensions'][0] + ' format to compose ' + options.state.template())
+    logging.info('Using ' + composer['name'][0] + ' format to compose ' + options.state.template())
     for n, intermediate in enumerate(intermediates):
         composed = intermediate.src
         # If not already in native format
@@ -97,6 +98,8 @@ def compose(intermediates):
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
         fileutil.write(options.state.cwd() + '/composed_' + str(n) + '.cmp', composed)
+    if not options.state.api():
+        print('Successfully composed', composer['name'] + '.\n')
 
 
 def pack(token, fmt):
@@ -129,7 +132,9 @@ def add_format(name,
                parser_preprocessor=filters.pass_through,
                parser_postprocessor=filters.pass_through,
                composer_postprocessor=filters.pass_through,
-               composer_preprocessor=filters.pass_through
+               composer_preprocessor=filters.pass_through,
+               left_paren=None,
+               right_paren=None
 ):
     """
 
@@ -141,17 +146,23 @@ def add_format(name,
     :param parser_postprocessor:
     :param composer_postprocessor:
     :param composer_preprocessor:
+
     :return:
     """
-    if (
-            'extensions' and 'description' and 'format' and
-            'parser_preprocessor' and 'parser_postprocessor' and
-            'composer_preprocessor' and 'composer_postprocessor'
-    ) in fmt:
-        formats.update(dict((extension, fmt) for extension in fmt['extensions']))
-        fmt['format'] = collections.OrderedDict([(name, Token(name, defn, fmt['format'])) for name, defn in fmt['format'].items()])
-    else:
-        raise FormatError('Invalid signature for format')
+    fmt = {
+        'name': name,
+        'extensions': extensions + [name],
+        'description': description,
+        'parser_preprocessor': parser_preprocessor,
+        'parser_postprocessor': parser_postprocessor,
+        'composer_preprocessor': composer_preprocessor,
+        'composer_postprocessor': composer_postprocessor,
+        'left_paren': left_paren,
+        'right_paren': right_paren,
+        'format': format
+    }
+    formats.update(dict((extension, fmt) for extension in fmt['extensions']))
+    fmt['format'] = collections.OrderedDict([(name, Token(name, defn, fmt['format'])) for name, defn in fmt['format'].items()])
 
 
 def unpack(token, fmt, tail=False):
@@ -252,13 +263,13 @@ def check(token, src, fmt, debug=False):
                         matched += unmatched[0]
                         unmatched = unmatched[1:]
                 # Move down a parentheses level
-                elif 'left_paren' in fmt and unmatched.startswith(fmt['left_paren']):
+                elif fmt['left_paren'] is not None and unmatched.startswith(fmt['left_paren']):
                     if debug: print('\t\t\tCONSUMED:', unmatched[0])
                     parens += 1
                     matched += unmatched[0]
                     unmatched = unmatched[1:]
                 # If nested move back up a parentheses level
-                elif 'right_paren' in fmt and parens != 0 and unmatched.startswith(fmt['right_paren']):
+                elif parens != 0 and unmatched.startswith(fmt['right_paren']):
                     if debug: print('\t\t\tCONSUMED:', unmatched[0])
                     parens -= 1
                     matched += unmatched[0]
@@ -322,12 +333,12 @@ def check(token, src, fmt, debug=False):
                 definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else resolve(matched, fmt)
                 post = False
             # Move down a parentheses lvel
-            elif 'left_paren' in fmt and unmatched.startswith(fmt['left_paren']):
+            elif fmt['left_paren'] is not None and unmatched.startswith(fmt['left_paren']):
                 parens += 1
                 matched += unmatched[0]
                 unmatched = unmatched[1:]
             # If nested move back up a parentheses level
-            elif 'right_paren' in fmt and parens != 0 and unmatched.startswith(fmt['right_paren']):
+            elif parens != 0 and unmatched.startswith(fmt['right_paren']):
                 parens -= 1
                 matched += unmatched[0]
                 unmatched = unmatched[1:]

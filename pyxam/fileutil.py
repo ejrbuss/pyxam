@@ -36,6 +36,9 @@ def build_files():
     # Build tmp directory
     if not os.path.exists(options.state.tmp()):
         os.mkdir(options.state.tmp())
+    else:
+        cleanup(True)
+        os.mkdir(options.state.tmp())
     # Build out directory
     if not os.path.exists(options.state.out()):
         os.mkdir(options.state.out())
@@ -44,11 +47,11 @@ def build_files():
     logging.info('Built directories')
 
 
-def cleanup():
+def cleanup(forced=False):
     """
     When not in debug mode remove all temporary folders.
     """
-    if not options.state.debug():
+    if not options.state.debug() or forced:
         remove(options.state.tmp())
         wait_on_io(lambda: os.path.exists(options.state.tmp()))
     # Reset current working directory so plugins can be unloaded

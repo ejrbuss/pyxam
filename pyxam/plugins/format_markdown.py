@@ -8,16 +8,12 @@ signature = 'markdown format', 'ejrbuss', 'Format for producing and viewing file
 
 
 def load():
-    formatter.add_format({
-        'extensions': ['md', 'md'],
-        'description': signature[1],
-        # Assign processors
-        'parser_preprocessor': filters.pass_through,
-        'parser_postprocessor': filters.pass_through,
-        'composer_preprocessor': filters.pass_through,
-        'composer_postprocessor': filters.pass_through,
+    formatter.add_format(
+        name='markdown',
+        extensions=['md'],
+        description=signature[2],
         # Use an OrderedDict to preserve token order
-        'format': collections.OrderedDict([
+        format=collections.OrderedDict([
             ('h3', ['###', (), '\n']),
             ('h2', ['##', (), '\n']),
             ('h1', ['#', (), '\n']),
@@ -30,7 +26,7 @@ def load():
             ('verbblock', ['```', (), '```', '.']),
             ('verbexpr', ['`', (), '`', '.'])
         ])
-    })
+    )
     # Return signature
     return signature
 

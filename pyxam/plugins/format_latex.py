@@ -48,25 +48,23 @@ def parser_postprocessor(intermediate):
 
 def composer_postprocessor(composed):
     if options.state.solutions():
-        composed = re.sub(r'(?:^|[^\\])\\documentclass\[', r'\documentclass[answers,', composed)
-        composed = re.sub(r'(?:^|[^\\])\\documentclass{', r'\documentclass[answers]{', composed)
+        composed = re.sub(r'(?:^|[^\\%])\\documentclass\[', r'\documentclass[answers,', composed)
+        composed = re.sub(r'(?:^|[^\\%])\\documentclass{', r'\documentclass[answers]{', composed)
     return composed
 
 
 def load():
-    formatter.add_format({
-        'extensions': ['latex', 'tex'],
-        'description': signature[1],
-        # Assign processors
-        'parser_preprocessor': parser_preprocessor,
-        'parser_postprocessor': parser_postprocessor,
-        'composer_preprocessor': filters.pass_through,
-        'composer_postprocessor': composer_postprocessor,
-        # Left & right parentheses
-        'left_paren': '{',
-        'right_paren': '}',
+    formatter.add_format(
+        name='latex',
+        extensions=['tex'],
+        description=signature[2],
+        parser_preprocessor=parser_preprocessor,
+        parser_postprocessor=parser_postprocessor,
+        composer_postprocessor=composer_postprocessor,
+        left_paren='{',
+        right_paren='}',
         # Use an OrderedDict to preserve token order
-        'format': collections.OrderedDict([
+        format=collections.OrderedDict([
             ('comment', ['%', (), '\n']),
             ('commentblock', ['\\begin{comment}', (), '\\end{comment}', '.']),
             ('$', ['$', (), '$', '.']),
@@ -86,7 +84,7 @@ def load():
             ('unknownarg', ['{', (), '}', '.']),
             ('unknown', ['\\', (), '\\s+']),
         ])
-    })
+    )
     # Return signature
     return signature
 

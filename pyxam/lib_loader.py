@@ -23,6 +23,8 @@ def weave():
             logging.info('Weaved ' + str(n + 1) + ' of ' + str(options.state.number()))
         except:
             raise LibError('Failed to Pweave file: ' + options.state.tmp() + '/' + str(n))
+        if not options.state.api():
+            print('Template succesfully weaved.\n')
 
 
 def gs(path):

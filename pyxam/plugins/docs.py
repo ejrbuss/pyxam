@@ -91,7 +91,7 @@ def load_source(name, directory, build):
     for file in os.listdir(directory):
         path = directory + '/' + file
         if os.path.isfile(path) and path.endswith('.py') and '__init__' not in path:
-            docstrings = re.findall(r'((((def[^\n]*:\s*)?"{3}.*?)"{3})|(\n#[^\n]*\n[^\n]* =))', fileutil.read(path), re.DOTALL)
+            docstrings = re.findall(r'((((def\s+.*?:\s*)?"{3}.*?)"{3})|(\n#[^\n]*\n[^\n]* =))', fileutil.read(path), re.DOTALL)
             parsed = '\n***\n'.join([parse_docstring(doc[0]) for doc in docstrings])
             parsed += '\n***\nView the [source](%/../../pyxam/{})'.format(
                 path.replace(os.path.dirname(os.path.dirname(__file__)), '')
@@ -112,7 +112,7 @@ def parse_docstring(docstring):
     # Remove comment quotes
     docstring = re.sub(r'"{3}', '', docstring)
     # Format function signature
-    docstring = re.sub(r'^def (.*?)\((.*?)\):', r'**\1**(*\2*)\n\n', docstring)
+    docstring = re.sub(r'^def\s+(.*?)\((.*?)\):', r'**\1**(*\2*)\n\n', docstring, 1, re.DOTALL)
     # Remove empty parameters
     docstring = re.sub(r'\(\*\*\)\n', '()', docstring)
     # Format param

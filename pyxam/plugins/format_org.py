@@ -27,16 +27,14 @@ def composer_postprocessor(source):
 
 
 def load():
-    formatter.add_format({
-        'extensions': ['org', 'org'],
-        'description': signature[1],
-        # Assign processors
-        'parser_preprocessor': filters.pass_through,
-        'parser_postprocessor': filters.pass_through,
-        'composer_preprocessor': composer_preprocessor,
-        'composer_postprocessor': composer_postprocessor,
+    formatter.add_format(
+        name='org',
+        extensions=['org'],
+        description=signature[2],
+        composer_preprocessor=composer_preprocessor,
+        composer_postprocessor=composer_postprocessor,
         # Use an OrderedDict to preserve token order
-        'format': collections.OrderedDict([
+        format=collections.OrderedDict([
             ('comment', ['#', (), '\n']),
             ('commentblock', ['#+BEGIN_COMMENT ', (), '#+END_COMMENT']),
             ('commentblocktree', ['* COMMENT ', (), '\*']),
@@ -68,7 +66,7 @@ def load():
             ('verbexpr', ['~', (), '~', '.']),
             ('newline', ['<br />', '.'])
         ])
-    })
+    )
     # Return signature
     return signature
 

@@ -6,7 +6,7 @@ import collections
 import filters
 
 
-signature = 'moodle foramt', 'ejrbuss', 'Foramt for producing and viewing moodle xml files'
+signature = 'moodle foramt', 'ejrbuss', 'Format for producing and viewing moodle xml files'
 # Plugin signature
 
 fmt_truefalse =  '<answer fraction="{}"><text>true</text><feedback><text>Correct</text></feedback></answer>\n \
@@ -40,16 +40,11 @@ def composer_postprocessor(source):
     return source
 
 def load():
-    formatter.add_format({
-        'extensions': ['moodle', 'xml'],
-        'description': signature[1],
-        # Assign processors
-        'parser_preprocessor': filters.pass_through,
-        'parser_postprocessor': filters.pass_through,
-        'composer_preprocessor': composer_preprocessor,
-        'composer_postprocessor': composer_postprocessor,
-        # Use an OrderedDict to preserve token order
-        'format': collections.OrderedDict([
+    formatter.add_format(
+        name='moodle',
+        extensions=['xml'],
+        description=signature[2],
+        format=collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
             ('$', ['$$', (), '$$', '.']),
             ('questions', ['<?xml version="1.0" ?> <quiz>', (), '</quiz>', '.']),
@@ -81,8 +76,10 @@ def load():
             ('itemnumber', ['<dataset_item><number>', (), '</number>', '.']),
             ('itemvalue', ['<value>', (), '</value></dataset_item>', '.']),
             ('decimal', ['<correctanswerformat>1</correctanswerformat><correctanswerlength>', (), '</correctanswerlength>', '.'])
-        ])
-    })
+        ]),
+        composer_preprocessor=composer_preprocessor,
+        composer_postprocessor=composer_postprocessor,
+    )
     # Return signature
     return signature
 

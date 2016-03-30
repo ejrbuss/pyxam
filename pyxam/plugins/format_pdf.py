@@ -23,25 +23,28 @@ compile_format = ''
 
 def load():
     # Add dummy pdf format
-    formatter.add_format({
-        'extensions': ['pdf', 'pdf'],
-        'description': 'pdf export support',
-        'parser_preprocessor': error,
-        'parser_postprocessor': error,
-        'composer_preprocessor': error,
-        'composer_postprocessor': error,
-        'format': {}
-    })
+    formatter.add_format(
+        name='pdf',
+        extensions=['pdf'],
+        description='pdf export support',
+        parser_preprocessor=error,
+        parser_postprocessor=error,
+        composer_preprocessor=error,
+        composer_postprocessor=error,
+        format={}
+    )
     # Add dummy dvi format
-    formatter.add_format({
-        'extensions': ['dvi', 'dvi'],
-        'description': 'dvi export support',
-        'parser_preprocessor': error,
-        'parser_postprocessor': error,
-        'composer_preprocessor': error,
-        'composer_postprocessor': error,
-        'format': {}
-    })
+    # Add dummy pdf format
+    formatter.add_format(
+        name='dvi',
+        extensions=['dvi'],
+        description='dvi export support',
+        parser_preprocessor=error,
+        parser_postprocessor=error,
+        composer_preprocessor=error,
+        composer_postprocessor=error,
+        format={}
+    )
     # Add bypass
     process_list.run_before('weave', pdf_bypass)
     # Add recompilation option
@@ -73,6 +76,8 @@ def pdf_compile():
     options.state.format(compile_format)
     cwd = options.state.cwd()
     options.state.cwd(options.state.out())
+    if not options.state.api():
+        print('Compiling', len(fileutil.with_extension('.tex')), 'files.')
     for file in fileutil.with_extension('.tex'):
         if compile_format == 'dvi':
             fileutil.write(file, '%&latex\n' + fileutil.read(file))
@@ -85,11 +90,13 @@ def pdf_compile():
                 print('Failed to compile latex file: ' + file)
                 print('Running pdflatex in interactive mode...')
                 call(['pdflatex', '-shell-escape', file], cwd=options.state.out())
-    for extension in ['.aux', '.log']:
-        for file in fileutil.with_extension(extension):
-            fileutil.remove(file)
+    if not options.state.debug():
+        for extension in ['.aux', '.log', '.tex']:
+            for file in fileutil.with_extension(extension):
+                fileutil.remove(file)
     options.state.cwd(cwd)
-    return
+    if not options.state.api():
+        print('Finished compiling.\n')
 
 
 def check_compiled(extensions, file):

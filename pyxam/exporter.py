@@ -13,12 +13,13 @@ extension .mix. These files are then passed to the selector for mixing along wit
 add any necessary .mix files. At this point all .mix files are copied to the out directory with the extension specified
 by the compile format.
 """
-import formatter
-import fileutil
-import logging
-import options
-import csv
+import re
 import os
+import csv
+import options
+import logging
+import fileutil
+import formatter
 
 
 # A map of all currently loaded selectors
@@ -59,7 +60,6 @@ def csv_read(file):
     :param file: The csv file to read
     :return: a list of dictionaries containing `number` and `name` entries
     """
-    #TODO fail-safe if no columns could be identified
     if file is None:
         return []
     file = options.state.cwd() + '/' + file if os.path.exists(options.state.cwd() + '/' + file) else file
@@ -68,15 +68,21 @@ def csv_read(file):
             rows = list(csv.reader(file))
             cols = rows[0]
             name = []
-            id = []
+            number = []
             for i in range(len(cols)):
                 if cols[i].lower().replace(' ', '') in ['firstname', 'surname', 'lastname', 'studentname']:
                     name.append(i)
                 if cols[i].lower().replace(' ', '') in ['studentid', 'id', 'identificatinonumber']:
-                    id.append(i)
+                    number.append(i)
+            if not name and not number:
+                for i in range(len(cols)):
+                    if re.match(r'\d+', cols[i]):
+                        number.append(i)
+                    else:
+                        name.append(i)
             return [{
-                'number': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in name),
-                'name': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in id)
+                'number': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in number),
+                'name': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in name)
             } for i in range(len(rows) - 1)]
     except Exception:
         logging.warning('Unable to parse csv file')
