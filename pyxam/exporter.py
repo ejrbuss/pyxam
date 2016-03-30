@@ -16,6 +16,7 @@ by the compile format.
 import re
 import os
 import csv
+import config
 import options
 import logging
 import fileutil
@@ -70,9 +71,9 @@ def csv_read(file):
             name = []
             number = []
             for i in range(len(cols)):
-                if cols[i].lower().replace(' ', '') in ['firstname', 'surname', 'lastname', 'studentname']:
+                if cols[i].lower().replace(' ', '') in config.name_column_identifiers:
                     name.append(i)
-                if cols[i].lower().replace(' ', '') in ['studentid', 'id', 'identificatinonumber']:
+                if cols[i].lower().replace(' ', '') in config.number_column_identifiers:
                     number.append(i)
             if not name and not number:
                 for i in range(len(cols)):
