@@ -26,14 +26,14 @@ recommendation todo `pip install` for the dependency.
 
 
 import sys
-import process_list
-import options
 import bang
-import plugin_loader
-import fileutil
-import lib_loader
-import formatter
+import options
 import exporter
+import fileutil
+import formatter
+import lib_loader
+import process_list
+import plugin_loader
 
 
 # Module Dependencies
@@ -82,9 +82,10 @@ def goodbye():
 
 def store_args(args=None):
     """
+    Store a list of arguments. Called every time Pyxam is run.
 
-    :param args:
-    :return:
+    :param args: The args to store
+    :return: The most recently stored args or a message saying there are no stored args.
     """
     from pyxam import _args
     if args is not None:

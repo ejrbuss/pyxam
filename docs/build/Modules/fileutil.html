@@ -1,11 +1,11 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <style>
     * {
         line-height: 1.5em;
         font-family: Verdana, sans-serif;
         color: #333333;
         outline: none !important;
-
     }
     body {
         margin: 0;
@@ -17,12 +17,6 @@
     }
     a:hover {
         text-decoration: underline;
-    }
-    h3 {
-
-    }
-    h2 {
-
     }
     h1 {
         color: #3774A6;
@@ -68,9 +62,6 @@
         background: #F0F1F2;
         color: #3774A6;
         width: auto;
-    }
-    .quote {
-
     }
     .doc {
         padding: 4em;
@@ -168,12 +159,17 @@
     $(document).ready(function($) {
         $('.nav').find('.accordion-toggle').click(function(){
             //Expand or collapse this panel
+            $('.nav').find('.accordion-content').not($(this).find('.accordion-content')).slideUp('fast');
             $(this).find('.accordion-content').slideToggle('fast');
         });
-        $('.nav').find('.accordion-content').toggle();
+        // Start with panels closed
+        $('.nav').find('.accordion-content').hide();
+        // Update navigation on search
         $('.search').on('input', function() {
+            // Get search value
             var search_text = $(this).val();
             $('.searchable').each(function(){
+                // For each searchable item check its content ofr a match
                 var content = $($(this).attr('id')).val();
                 if (content.indexOf(search_text) < 0) {
                     $(this).removeClass('match');
@@ -183,6 +179,7 @@
                     $(this).show();
                 }
             });
+            // If section is empty hide it
             $('.accordion-toggle').each(function() {
                 if ($(this).find('.match').length < 1) {
                     $(this).hide();
@@ -191,31 +188,35 @@
                 }
             });
         });
+        // python keywords excluding class as that is needed for the css
         var keywords = [
             'and', 'del', 'from', 'not', 'while', 'as', 'if', 'global', 'or', 'with', 'assert', 'else', 'elif', 'pass',
             'yield', 'break', 'except', 'import', 'exec', 'in', 'raise', 'continue', 'finally', 'is', 'return', 'def',
             'for', 'lambda', 'try'
         ];
+        // For each python block perform basic syntax highlighting
         $('.verb-python').each(function() {
+            // Highlight strings
             $(this).html($(this).html().replace(
                 /(('|")[^'"\n]+('|"))/g,
                 '<span class="hl-string">$1</span>'
             ));
+            // Highlight comments
             $(this).html($(this).html().replace(
                /(#.*)/g,
                '<span class="hl-comment">$1</span>'
             ));
+            // Highlight numbers
             $(this).html($(this).html().replace(
                /(\s[0-9.]+)/g,
                '<span class="hl-num">$1</span>'
             ));
+            // Highlight keywords
             for (var i in keywords) {
                 $(this).html($(this).html().replace(
                     new RegExp('(' + keywords[i] + '\\s)', 'g'),
                     '<span class="hl-keyword">$1</span>'));
             }
-
-
         });
     });
 </script>
@@ -256,25 +257,25 @@ This is the code documentation for the Pyxam Python module. For details on insta
 Pyxam is inspired by the [R exam package](https://cran.r-project.org/web/packages/exams/index.html) which used [Sweave](https://www.statistik.lmu.de/~leisch/Sweave/), a tool for running inline R code in LaTeX documents, to generate exams. Pyxam aims to bring similar functionality to inline Python code using [Pweave](http://mpastell.com/pweave/), a tool that emulates Sweave for Python. Without the great work by these other parties Pyxam would not have been created.
 
 ">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//0_index.html">Overview</a></li>
+<li class="searchable" id="#0_index_md"><a href="/home/ebuss/pyxam/docs/build//0_index.html">Overview</a></li>
 <input type="hidden" id="1_Getting_Started_md" value="">
-<li class="searchable" id="#1_Getting_Started_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//1_Getting_Started.html">Getting Started</a></li>
+<li class="searchable" id="#1_Getting_Started_md"><a href="/home/ebuss/pyxam/docs/build//1_Getting_Started.html">Getting Started</a></li>
 <input type="hidden" id="2_Support_and_Contact_md" value="">
-<li class="searchable" id="#2_Support_and_Contact_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//2_Support_and_Contact.html">Support and Contact</a></li>
+<li class="searchable" id="#2_Support_and_Contact_md"><a href="/home/ebuss/pyxam/docs/build//2_Support_and_Contact.html">Support and Contact</a></li>
 <li class="accordion-toggle"><b><a href="#">Framework</a></b><ul class="nav accordion-content">
 <input type="hidden" id="0_index_md" value=" 
 ">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/0_index.html">Overview</a></li>
+<li class="searchable" id="#0_index_md"><a href="/home/ebuss/pyxam/docs/build/Framework/0_index.html">Overview</a></li>
 <input type="hidden" id="1_Options_md" value="">
-<li class="searchable" id="#1_Options_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/1_Options.html">Options</a></li>
+<li class="searchable" id="#1_Options_md"><a href="/home/ebuss/pyxam/docs/build/Framework/1_Options.html">Options</a></li>
 <input type="hidden" id="2_Process_List_md" value="">
-<li class="searchable" id="#2_Process_List_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/2_Process_List.html">Process List</a></li>
+<li class="searchable" id="#2_Process_List_md"><a href="/home/ebuss/pyxam/docs/build/Framework/2_Process_List.html">Process List</a></li>
 <input type="hidden" id="3_Plugins_md" value="">
-<li class="searchable" id="#3_Plugins_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/3_Plugins.html">Plugins</a></li>
+<li class="searchable" id="#3_Plugins_md"><a href="/home/ebuss/pyxam/docs/build/Framework/3_Plugins.html">Plugins</a></li>
 <input type="hidden" id="4_Formats_md" value="">
-<li class="searchable" id="#4_Formats_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/4_Formats.html">Formats</a></li>
+<li class="searchable" id="#4_Formats_md"><a href="/home/ebuss/pyxam/docs/build/Framework/4_Formats.html">Formats</a></li>
 <input type="hidden" id="5_Selectors_md" value="">
-<li class="searchable" id="#5_Selectors_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/5_Selectors.html">Selectors</a></li>
+<li class="searchable" id="#5_Selectors_md"><a href="/home/ebuss/pyxam/docs/build/Framework/5_Selectors.html">Selectors</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">
 <input type="hidden" id="filters_py" value="
 # Module filters
@@ -512,8 +513,8 @@ def to_calculated(question):
     <br />`question`  The question to transform
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
-<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//filters.py)">
+<li class="searchable" id="#filters_py"><a href="/home/ebuss/pyxam/docs/build/Modules/filters.html">filters</a></li>
 <input type="hidden" id="plugin_loader_py" value="
 # Module plugin_loader
 
@@ -543,8 +544,8 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
     **<br />returns&nbsp;**  None
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugin_loader.py)">
-<li class="searchable" id="#plugin_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugin_loader.py)">
+<li class="searchable" id="#plugin_loader_py"><a href="/home/ebuss/pyxam/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
 <input type="hidden" id="options_py" value="**state **<br /> A Map of all current compile functions
 ***
 **_compiled **<br /> A Map of all current options
@@ -612,8 +613,8 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
     **<br />returns&nbsp;** 
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//options.py)">
-<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//options.py)">
+<li class="searchable" id="#options_py"><a href="/home/ebuss/pyxam/docs/build/Modules/options.html">options</a></li>
 <input type="hidden" id="bang_py" value="
 # Module bang
 
@@ -668,8 +669,8 @@ That last comment was a command
     The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//bang.py)">
-<li class="searchable" id="#bang_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html">bang</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//bang.py)">
+<li class="searchable" id="#bang_py"><a href="/home/ebuss/pyxam/docs/build/Modules/bang.html">bang</a></li>
 <input type="hidden" id="process_list_py" value="
 # Module process_list
 
@@ -730,126 +731,8 @@ list can be changed during runtime via a number of function calls.
     Clears the process list of all waiting processes.
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//process_list.py)">
-<li class="searchable" id="#process_list_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
-<input type="hidden" id="pyxam_py" value="
-# Module pyxam
-
-This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
-mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
-mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
-messages and tracking the Pyxam version number.
-
-
-
-Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
-generating figure images. Failing to meet one of these dependencies will result in an exit statement and a
-recommendation todo `pip install` for the dependency.
-
-***
-**__version__ **<br /> Pyxam Version Number
-***
-**_args **<br /> Copy of original arguments
-***
-**title **<br /> Pyxam Title String
-***
-**welcome**()
-
-    
-    Prints the Pyxam title and version number when not in api mode.
-    
-***
-**goodbye**()
-
-    
-    Prints a goodbye message when not in api mode.
-    
-***
-**store_args**(*args=None*)
-
-
-    
-
-    <br />`args` 
-    **<br />returns&nbsp;** 
-    
-***
-**start**(*args, api=True*)
-
-
-    
-    Start Pyxam with a set of [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html). Start adds the following processes to the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html):
-     - `load_options` loads the command line options
-     - `welcome` displays a welcome message
-     - `load_plugins` loads all available plugins
-     - `build_files` fixes paths and builds all necessary files
-     - `run_commands` prepossesses commands in the template (see [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html))
-     - `weave` runs any inline code within the template
-     - `parse` reads the template document into an intermediate format (see [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.py))
-     - `compose` converts the intermediate format into the output format
-     - `export` moves files from the tmp directory to the final out directory
-     - `cleanup` removes all temporary files
-     - `unload_plugins` unloads all available plugins
-     - `goodbye` display a goodbye message
-    Once added these processes are consumed until there are no more processes.
-
-    <br />`args`  A list of options provided in command line syntax
-    <br />`api`  A flag indicating if Pyxam is being called as an api
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//pyxam.py)">
-<li class="searchable" id="#pyxam_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/pyxam.html">pyxam</a></li>
-<input type="hidden" id="exporter_py" value="
-# Module exporter
-
-This module is responsible for copying files from the tmp directory to the out directory, calling the selector, and
-reading any csv population data associated with this Pyxam call.
-
-
-
-The stages of the export process are managed with file extensions. All files that end with .cmp (short for compiled)
-will be renamed with either a number or letter depending on whether the `alphabetize` flag has been set and the
-extension .mix. These files are then passed to the selector for mixing along with csv data. The selector is expected to
-add any necessary .mix files. At this point all .mix files are copied to the out directory with the extension specified
-by the compile format.
-
-***
-**_selectors **<br /> A map of all currently loaded selectors
-***
-**export**()
-
-    
-    Mix the composed files with the specified selector then copy all mixed files to the out directory with the
-    appropriate names. If any files are in the figure directory they are copied out as well.
-    
-***
-**csv_read**(*file*)
-
-
-    
-    Attempts to read the provided CSV file.
-
-    <br />`file`  The csv file to read
-    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
-    
-***
-**add_selector**(*name, selector*)
-
-
-    
-    Add a selector to the selector list.
-
-    <br />`name`  The name of the selector being added
-    <br />`selector`  The selector to add
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//exporter.py)">
-<li class="searchable" id="#exporter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
-<input type="hidden" id="config_py" value="
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py)">
-<li class="searchable" id="#config_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/config.html">config</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//process_list.py)">
+<li class="searchable" id="#process_list_py"><a href="/home/ebuss/pyxam/docs/build/Modules/process_list.html">process_list</a></li>
 <input type="hidden" id="fileutil_py" value="
 # Module fileutil
 
@@ -948,8 +831,8 @@ This Module provides helper functions to other modules for working with files.
     <br />`timeout`  The maximum time to wait
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py)">
-<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//fileutil.py)">
+<li class="searchable" id="#fileutil_py"><a href="/home/ebuss/pyxam/docs/build/Modules/fileutil.html">fileutil</a></li>
 <input type="hidden" id="lib_loader_py" value="**weave**()
 
     for n in range(options.state.number()):
@@ -974,8 +857,8 @@ def gs(path):
     **<br />returns&nbsp;** 
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//lib_loader.py)">
-<li class="searchable" id="#lib_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//lib_loader.py)">
+<li class="searchable" id="#lib_loader_py"><a href="/home/ebuss/pyxam/docs/build/Modules/lib_loader.html">lib_loader</a></li>
 <input type="hidden" id="formatter_py" value="
 # Module formatter
 
@@ -1116,8 +999,165 @@ def get_extension():
     **<br />returns&nbsp;** 
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//formatter.py)">
-<li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//formatter.py)">
+<li class="searchable" id="#formatter_py"><a href="/home/ebuss/pyxam/docs/build/Modules/formatter.html">formatter</a></li>
+<input type="hidden" id="exporter_py" value="
+# Module exporter
+
+This module is responsible for copying files from the tmp directory to the out directory, calling the selector, and
+reading any csv population data associated with this Pyxam call.
+
+
+
+The stages of the export process are managed with file extensions. All files that end with .cmp (short for compiled)
+will be renamed with either a number or letter depending on whether the `alphabetize` flag has been set and the
+extension .mix. These files are then passed to the selector for mixing along with csv data. The selector is expected to
+add any necessary .mix files. At this point all .mix files are copied to the out directory with the extension specified
+by the compile format.
+
+***
+**_selectors **<br /> A map of all currently loaded selectors
+***
+**export**()
+
+    
+    Mix the composed files with the specified selector then copy all mixed files to the out directory with the
+    appropriate names. If any files are in the figure directory they are copied out as well.
+    
+***
+**csv_read**(*file*)
+
+
+    
+    Attempts to read the provided CSV file.
+
+    <br />`file`  The csv file to read
+    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
+    
+***
+**add_selector**(*name, selector*)
+
+
+    
+    Add a selector to the selector list.
+
+    <br />`name`  The name of the selector being added
+    <br />`selector`  The selector to add
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//exporter.py)">
+<li class="searchable" id="#exporter_py"><a href="/home/ebuss/pyxam/docs/build/Modules/exporter.html">exporter</a></li>
+<input type="hidden" id="pyxam_py" value="
+# Module pyxam
+
+This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
+mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
+mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
+messages and tracking the Pyxam version number.
+
+
+
+Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
+generating figure images. Failing to meet one of these dependencies will result in an exit statement and a
+recommendation todo `pip install` for the dependency.
+
+***
+**__version__ **<br /> Pyxam Version Number
+***
+**_args **<br /> Copy of original arguments
+***
+**title **<br /> Pyxam Title String
+***
+**welcome**()
+
+    
+    Prints the Pyxam title and version number when not in api mode.
+    
+***
+**goodbye**()
+
+    
+    Prints a goodbye message when not in api mode.
+    
+***
+**store_args**(*args=None*)
+
+
+    
+    Store a list of arguments. Called every time Pyxam is run.
+
+    <br />`args`  The args to store
+    **<br />returns&nbsp;**  The most recently stored args or a message saying there are no stored args.
+    
+***
+**start**(*args, api=True*)
+
+
+    
+    Start Pyxam with a set of [options](/home/ebuss/pyxam/docs/build/Modules/options.html). Start adds the following processes to the
+    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html):
+     - `load_options` loads the command line options
+     - `welcome` displays a welcome message
+     - `load_plugins` loads all available plugins
+     - `build_files` fixes paths and builds all necessary files
+     - `run_commands` prepossesses commands in the template (see [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html))
+     - `weave` runs any inline code within the template
+     - `parse` reads the template document into an intermediate format (see [formatter](/home/ebuss/pyxam/docs/build/Modules/formatter.py))
+     - `compose` converts the intermediate format into the output format
+     - `export` moves files from the tmp directory to the final out directory
+     - `cleanup` removes all temporary files
+     - `unload_plugins` unloads all available plugins
+     - `goodbye` display a goodbye message
+    Once added these processes are consumed until there are no more processes.
+
+    <br />`args`  A list of options provided in command line syntax
+    <br />`api`  A flag indicating if Pyxam is being called as an api
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//pyxam.py)">
+<li class="searchable" id="#pyxam_py"><a href="/home/ebuss/pyxam/docs/build/Modules/pyxam.html">pyxam</a></li>
+<input type="hidden" id="config_py" value="**pyxam_directory **<br /> Source directory
+***
+**plugin_directory **<br /> Plugin directory
+***
+**lib_directory **<br /> Library directory
+***
+**template_directory **<br /> HTML template directory
+***
+**local_docs **<br /> Local docs directory
+***
+**git_docs **<br /> Git docs directory
+***
+**name_column_identifiers **<br /> Strings used to identify columns in a csv files that match a student name
+***
+**number_column_identifiers **<br /> Strings used to identify columns in a csv files that match a student number
+***
+**default_logging **<br /> Default logging level
+***
+**out **<br /> Default out directory
+***
+**tmp **<br /> Default tmp directory
+***
+**fig **<br /> Default figure directory
+***
+**number **<br /> Default number of exam versions
+***
+**title **<br /> Default exam title
+***
+**format **<br /> Default output format
+***
+**shell **<br /> Default code shell
+***
+**method **<br /> Default CSV mixing method
+***
+**alphabetize **<br /> Alphabetize rather than enumerate exams flag
+***
+**debug **<br /> Debug flag
+***
+**solutions **<br /> Solutions falg
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//config.py)">
+<li class="searchable" id="#config_py"><a href="/home/ebuss/pyxam/docs/build/Modules/config.html">config</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
 <input type="hidden" id="format_latex_py" value="**end **<br /> Regex for recognizing the end of a question
 ***
@@ -1140,8 +1180,8 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
     **<br />returns&nbsp;**  A modified intermediate
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_latex.py)">
-<li class="searchable" id="#format_latex_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_latex.html">format_latex</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_latex.py)">
+<li class="searchable" id="#format_latex_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_latex.html">format_latex</a></li>
 <input type="hidden" id="_random_py" value="
 # Plugin _random
 
@@ -1158,14 +1198,14 @@ This plugin allows the random seed to be set.
 **load**()
 
     
-    Adds the following [option](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
+    Adds the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
      - `random -rnd` Set the seed for rng
 
     **<br />returns&nbsp;**  plugin signature
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_random.py)">
-<li class="searchable" id="#_random_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_random.html">_random</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_random.py)">
+<li class="searchable" id="#_random_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_random.html">_random</a></li>
 <input type="hidden" id="format_moodle_py" value="**composer_preprocessor**(*intermediate*)
 
 
@@ -1175,20 +1215,20 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
     **<br />returns&nbsp;**  A modified intermediate
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_moodle.py)">
-<li class="searchable" id="#format_moodle_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_moodle.py)">
+<li class="searchable" id="#format_moodle_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
 <input type="hidden" id="format_html_py" value="
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_html.py)">
-<li class="searchable" id="#format_html_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_html.py)">
+<li class="searchable" id="#format_html_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_html.html">format_html</a></li>
 <input type="hidden" id="format_org_py" value="
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_org.py)">
-<li class="searchable" id="#format_org_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_org.py)">
+<li class="searchable" id="#format_org_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_org.html">format_org</a></li>
 <input type="hidden" id="commands_py" value="
 # Plugin commands
 
-Defines a default set of [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html) commands to be used when prepossessing a template.
+Defines a default set of [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html) commands to be used when prepossessing a template.
 
 ***
 **signature **<br /> command config by ejrbuss: The default command set
@@ -1272,63 +1312,8 @@ Defines a default set of [bang](https://rawgit.com/balancededge/pyxam/master/doc
     Define a constant
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/commands.py)">
-<li class="searchable" id="#commands_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/commands.html">commands</a></li>
-<input type="hidden" id="_options_py" value="
-# Plugin _options
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-
-This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
-also manages a few commands:
- - `solutions` if provided will cause _options to hook a rerun function to the end of the process list
- - `version` if provided will cause _options to print the version number then exit
- - `list` if provided will cause _options to print all formats then exit
- - `help` if provided will cause _options to pritn all options then exit
-The [plugin_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader) will always load _options last so that other Plugins that add formats or
-options can be seen by _options.
-
-
-***
-**signature **<br /> option config by ejrbuss: The default options for pyxam
-***
-**load**()
-
-    
-    Loads the following [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `out -o` Set the output directory
-     - `tmp -tmp` Set the temporary directory
-     - `figure -fig` Set the figure directory
-     - `number -n` Set the number of exams to generate
-     - `title -t` Set the title of the exam
-     - `format -f` Set the format of the exam
-     - `shell -shl` Set the shell used to weave the exam
-     - `method -m` Set the selection method for population mixing
-     - `population -p` Set the class list
-     - `alphabetize -a` Enable lettered versioning
-     - `debug -d` Disable file cleanup
-     - `solutions -s` Enable solutions
-     - `version -v` Show the version number
-     - `list -ls` List all available formats
-     - `help -h` Show a help message
-     Manages the `solutions`, `version`, `list`, and `help` commands as explained above.
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-**rerun**()
-
-    
-    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
-    one with solutions and one without. This function exits on close.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_options.py)">
-<li class="searchable" id="#_options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/commands.py)">
+<li class="searchable" id="#commands_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/commands.html">commands</a></li>
 <input type="hidden" id="format_pdf_py" value="**error**()
 
     raise plugin_loader.PluginError('This format is only for output!')
@@ -1392,8 +1377,8 @@ def pdf_bypass():
     **<br />returns&nbsp;**  None
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_pdf.py)">
-<li class="searchable" id="#format_pdf_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_pdf.py)">
+<li class="searchable" id="#format_pdf_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
 <input type="hidden" id="_logging_py" value="
 # Plugin _logging
 
@@ -1401,9 +1386,8 @@ This plugin is considered a core plugin (indicated by the underscore in its name
 if the user knows what they are doing.
 
 
-
 This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
-option is added to allow the user to set the logging level at runtime. The [plugin_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader) will
+option is added to allow the user to set the logging level at runtime. The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will
 always load _logging first so that other Plugins can use logging
 in their load functions.
 
@@ -1415,19 +1399,74 @@ in their load functions.
 **load**()
 
     
-    Loads the following [option](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
+    Loads the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
      - `logging -l` Set the logging level for pyxam
     Sets logging.basicConfig with a default format and sets it to the option value.
 
     **<br />returns&nbsp;**  plugin signature
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_logging.py)">
-<li class="searchable" id="#_logging_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_logging.html">_logging</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_logging.py)">
+<li class="searchable" id="#_logging_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_logging.html">_logging</a></li>
+<input type="hidden" id="_options_py" value="
+# Plugin _options
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+
+This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
+also manages a few commands:
+ - `solutions` if provided will cause _options to hook a rerun function to the end of the process list
+ - `version` if provided will cause _options to print the version number then exit
+ - `list` if provided will cause _options to print all formats then exit
+ - `help` if provided will cause _options to pritn all options then exit
+The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will always load _options last so that other Plugins that add formats or
+options can be seen by _options.
+
+
+***
+**signature **<br /> option config by ejrbuss: The default options for pyxam
+***
+**load**()
+
+    
+    Loads the following [options](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `out -o` Set the output directory
+     - `tmp -tmp` Set the temporary directory
+     - `figure -fig` Set the figure directory
+     - `number -n` Set the number of exams to generate
+     - `title -t` Set the title of the exam
+     - `format -f` Set the format of the exam
+     - `shell -shl` Set the shell used to weave the exam
+     - `method -m` Set the selection method for population mixing
+     - `population -p` Set the class list
+     - `alphabetize -a` Enable lettered versioning
+     - `debug -d` Disable file cleanup
+     - `solutions -s` Enable solutions
+     - `version -v` Show the version number
+     - `list -ls` List all available formats
+     - `help -h` Show a help message
+     Manages the `solutions`, `version`, `list`, and `help` commands as explained above.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+**rerun**()
+
+    
+    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
+    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
+    one with solutions and one without. This function exits on close.
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_options.py)">
+<li class="searchable" id="#_options_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_options.html">_options</a></li>
 <input type="hidden" id="format_markdown_py" value="
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_markdown.py)">
-<li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_markdown.py)">
+<li class="searchable" id="#format_markdown_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
 <input type="hidden" id="selector_sequence_py" value="**mix**(*files, data*)
 
 
@@ -1435,8 +1474,8 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
     Selects exams in round robin sequence
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/selector_sequence.py)">
-<li class="searchable" id="#selector_sequence_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/selector_sequence.html">selector_sequence</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/selector_sequence.py)">
+<li class="searchable" id="#selector_sequence_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/selector_sequence.html">selector_sequence</a></li>
 <input type="hidden" id="docs_py" value="
 # Plugin docs
 
@@ -1444,7 +1483,7 @@ The docs plugin is used to build the documentation for Pyxam quickly and easily 
 source files and python docstrings. All documentation is written in markdown and then converted to HTML by this plugin.
 
 ***
-**url **<br /> Base url
+**signature **<br /> Docs builder by ejrbuss: Builder for Pyxam's documentation
 ***
 **nav **<br /> Navigation javascript
 ***
@@ -1551,8 +1590,8 @@ def load_docs(docs, name=''):
     <br />`doc`  The file to compile
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/docs.py)">
-<li class="searchable" id="#docs_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/docs.html">docs</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/docs.py)">
+<li class="searchable" id="#docs_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/docs.html">docs</a></li>
 </ul></li>
         </ul>
         <div style='height:2em'></div>
@@ -1561,28 +1600,20 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
         <h1>Module fileutil</h1>This Module provides helper functions to other modules for working with files.<hr /><br /><b>build_files</b>()<br />    
     Find the absolute file path for the template, tmp directory, and out directory and update thir options to point to
     their absolute path. Create the tmp and out directories if necessary. Warns user if tmp is going to be overridden
-    as this may delete files. Changes the current working directory to tmp.<hr /><br /><b>cleanup</b>(<i>forced=False</i>)<br />
-    
-    When not in debug mode remove all temporary folders.<hr /><br /><b>with_extension</b>(<i>extension</i>)<br />
-    
-    Find all files in the current working directory that match the given extension.<br />    <br /><pre class="verb-expr">extension</pre>The extension to match<br /><b><br />returns&nbsp;</b>a list of files that end in the provided extension<hr /><br /><b>read</b>(<i>file</i>)<br />
-    
-    Read a string from a file.<br />    <br /><pre class="verb-expr">file</pre>The relative or absolute path to the file to read<br /><b><br />returns&nbsp;</b>The string contents of the file<hr /><br /><b>write</b>(<i>file, src</i>)<br />
-    
+    as this may delete files. Changes the current working directory to tmp.<hr /><br /><b>cleanup</b>(<i>forced=False</i>)<br /><br />    
+    When not in debug mode remove all temporary folders.<hr /><br /><b>with_extension</b>(<i>extension</i>)<br /><br />    
+    Find all files in the current working directory that match the given extension.<br />    <br /><pre class="verb-expr">extension</pre>The extension to match<br /><b><br />returns&nbsp;</b>a list of files that end in the provided extension<hr /><br /><b>read</b>(<i>file</i>)<br /><br />    
+    Read a string from a file.<br />    <br /><pre class="verb-expr">file</pre>The relative or absolute path to the file to read<br /><b><br />returns&nbsp;</b>The string contents of the file<hr /><br /><b>write</b>(<i>file, src</i>)<br /><br />    
     Write a string to a file.<br />    <br /><pre class="verb-expr">file</pre>The relative or absolute path to the file to write to
     <br /><pre class="verb-expr">src</pre>The string to write to the file<hr /><br /><b>copy_figure</b>()<br />    
-    Copy the figure directory to the out directory along with its children.<hr /><br /><b>remove</b>(<i>file</i>)<br />
-    
-    Remove a file or directory. If removing a directory all contents of that directory will also be removed.<br />    <br /><pre class="verb-expr">file</pre>The relative or absolute path for the file or directory or directory to remove<hr /><br /><b>mv</b>(<i>src, dest</i>)<br />
-    
+    Copy the figure directory to the out directory along with its children.<hr /><br /><b>remove</b>(<i>file</i>)<br /><br />    
+    Remove a file or directory. If removing a directory all contents of that directory will also be removed.<br />    <br /><pre class="verb-expr">file</pre>The relative or absolute path for the file or directory or directory to remove<hr /><br /><b>mv</b>(<i>src, dest</i>)<br /><br />    
     Moves a file from src to destination.<br />    <br /><pre class="verb-expr">src</pre>The relative or absolute path for the file or directory to move
-    <br /><pre class="verb-expr">dest</pre>The relative or absolute path for the file's destination<hr /><br /><b>is_bin</b>(<i>file</i>)<br />
-    
-    Check if a file is a binary file.<br />    <br /><pre class="verb-expr">file</pre>The file to check<br /><b><br />returns&nbsp;</b>True if the file is a binary file<hr /><br /><b>wait_on_io</b>(<i>fn, timeout=5</i>)<br />
-    
+    <br /><pre class="verb-expr">dest</pre>The relative or absolute path for the file's destination<hr /><br /><b>is_bin</b>(<i>file</i>)<br /><br />    
+    Check if a file is a binary file.<br />    <br /><pre class="verb-expr">file</pre>The file to check<br /><b><br />returns&nbsp;</b>True if the file is a binary file<hr /><br /><b>wait_on_io</b>(<i>fn, timeout=5</i>)<br /><br />    
     Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
     False.<br />    <br /><pre class="verb-expr">fn</pre>The io function to wait on
-    <br /><pre class="verb-expr">timeout</pre>The maximum time to wait<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py">source</a>
+    <br /><pre class="verb-expr">timeout</pre>The maximum time to wait<hr />View the <a href="/home/ebuss/pyxam/docs/build/../../pyxam//fileutil.py">source</a>
         <hr />
         <div class='credits'>
             &copy; Copyright Eric Buss

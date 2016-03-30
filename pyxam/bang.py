@@ -62,7 +62,7 @@ def run_commands():
     """
     try:
         # Try and find an appropriate parser
-        parser = formatter.formats[options.state.template().split('.')[-1]]
+        parser = formatter.get_format(options.state.template())
     except:
         raise formatter.FormatError('Unknown format')
     logging.info('Using ' + parser['name'] + ' format to process pyxam! in ' + options.state.template())
@@ -71,24 +71,24 @@ def run_commands():
     # Look through tokens and find all comment tokens
     for comment_token in [token for token in parser['format'].values() if 'comment' in token.name]:
         # Find all token matches within the template source irregardless of starting point
-        for comment in re.findall(comment_token.regex.replace('^', ''), buffer, re.DOTALL):
-            # Check if it is a pyxam! command
-            if comment[1].strip().startswith('pyxam!'):
-                # Parse the args
-                args = comment[1].strip().replace('pyxam!', '')
-                # Check if command is in command list
-                for name, command in commands.items():
-                    if args.startswith(name):
-                        if not options.state.api():
-                            print('Processed', name, 'command.\n')
-                        buffer = buffer.replace(comment[0], ' ' + command(args.replace(name, '', 1).strip()))
-                        break;
+        for comment in re.findall(comment_token.regex, buffer, re.DOTALL):
+            result = run_command(comment[1])
+            buffer = buffer if result is None else buffer.replace(comment[0], result)
     # Move template
-    options.state.template(options.state.tmp() + '/template/' + os.path.basename(options.state.template()))
-    if not os.path.exists(options.state.cwd() + '/template'):
-        os.mkdir(options.state.cwd() + '/template')
+    fileutil.move_template(options.state.tmp() + '/template/' + os.path.basename(options.state.template()))
     # Write result to new template
     fileutil.write(options.state.template(), buffer)
-    logging.info('Finished preprocessing commands')
+
+
+def run_command(block):
+    if not block.strip().startswith('pyxam!'):
+        return None
+    args = block.strip().replace('pyxam!', '')
+    # Check if command is in command list
+    for name, command in commands.items():
+        if args.startswith(name):
+            if not options.state.api():
+                print('Processed', name, 'command.\n')
+            return command(args.replace(name, '', 1).strip())
 
 

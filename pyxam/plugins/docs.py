@@ -7,15 +7,14 @@ source files and python docstrings. All documentation is written in markdown and
 """
 import fileutil
 import options
+import config
 import pyxam
 import os
 import re
 
-
+# Docs builder by ejrbuss: Builder for Pyxam's documentation
 signature = 'docs builder', 'ejrbuss', 'Builder for Pyxam\'s documentation'
 
-# Base url
-url = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/build')
 # Navigation javascript
 nav = ''
 # Table of contents
@@ -59,7 +58,9 @@ def load():
     options.add_option('gitdocs', '-gdocs', 'Generate documentation for use on github', False, bool)
     if options.state.docs() or options.state.gitdocs():
         if options.state.gitdocs():
-            url = 'https://rawgit.com/balancededge/pyxam/master/docs/build'
+            url = config.git_docs
+        else:
+            url = config.local_docs
         # Get paths, use the full path each time in case abspath changes / to \\ on windows
         plugins = os.path.abspath(__file__.replace('docs.py', ''))
         modules = os.path.abspath(__file__.replace('docs.py', '') + '..')
@@ -77,11 +78,11 @@ def load():
 
 def load_source(name, directory, build):
     """
+    Loads the documentation from a source directory.
 
-    :param name:
-    :param directory:
-    :param build:
-    :return:
+    :param name: The name of the navigation section
+    :param directory: The directory to load documentation from
+    :param build: The build directory
     """
     global nav, table
     nav += nav_sec_start.format(name)
@@ -106,6 +107,12 @@ def load_source(name, directory, build):
 
 
 def parse_docstring(docstring):
+    """
+    Parses and formats a docstring.
+
+    :param docstring: The docstring to parse
+    :return: A documentation ready string
+    """
     if re.match(r'\n#[^\n]*\n[^\n]* =', docstring, re.DOTALL):
         docstring = re.sub(r'\n#(.*?)\n(.*?)=', r'**\2**<br />\1', docstring)
         return docstring
@@ -132,10 +139,10 @@ def parse_docstring(docstring):
 
 def load_docs(docs, name=''):
     """
+    Load a documentation file.
 
-    :param docs:
-    :param name:
-    :return:
+    :param docs: The directory to load documentation from
+    :param name: The name of the navigation section
     """
     global nav, table
     directories = []
@@ -169,7 +176,6 @@ def compile_docs(build):
     recursively.
 
     :param docs: The documentation directory to compile
-    :return: test
     """
     for file in os.listdir(build):
         path = build + '/' + file
@@ -190,7 +196,7 @@ def compile_doc(build, doc):
         '-f', 'html',
         '-o', build,
         '-t', 'doc',
-        '-htt', os.path.abspath(os.path.dirname(__file__) + '/../templates/docs.html'), doc
+        '-htt', config.template_directory + '/docs.html', doc
     ])
     buffer = fileutil.read(build + '/doc_1.html')
     fileutil.remove(doc)

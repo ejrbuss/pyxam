@@ -4,13 +4,13 @@
 
 Defines a default set of [bang](%/Modules/bang.html) commands to be used when prepossessing a template.
 """
-import logging
-import random
-import fileutil
-import options
+import os
 import bang
 import shlex
-import os
+import config
+import random
+import logging
+import options
 
 # command config by ejrbuss: The default command set
 signature = 'command config', 'ejrbuss', 'the default command set'
@@ -125,15 +125,11 @@ def load():
     bang.add_command('fig', figure)
     bang.add_command('import', question_import)
     bang.add_command('def', define)
-
+    define('studentname "{}"'.format(config.student_name))
+    define('studentnumber "{}"'.format(config.student_number))
     if options.add_option('commands', '-cmd', 'Display all available commands', False, bool):
         print('\n'.join('pyxam!' + name + str(fn.__doc__).replace('\n', '\n    ') for name, fn in bang.commands.items()))
         exit()
-
-    define('studentname "$tudent__name"')
-    define('studentnumber "$tudent__number"')
-
-    # Return signature
     return signature
 
 

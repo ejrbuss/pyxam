@@ -97,11 +97,12 @@ def copy_figure():
     """
     Copy the figure directory to the out directory along with its children.
     """
-    logging.info('Copying figures out')
-    figure = options.state.out() + '/' + os.path.basename(options.state.figure())
-    if not os.path.exists(figure):
-        os.mkdir(figure)
-    distutils.dir_util.copy_tree(options.state.figure(), figure)
+    if os.path.isdir(options.state.figure()) and os.listdir(options.state.figure()):
+        logging.info('Copying figures out')
+        figure = options.state.out() + '/' + os.path.basename(options.state.figure())
+        if not os.path.exists(figure):
+            os.mkdir(figure)
+        distutils.dir_util.copy_tree(options.state.figure(), figure)
 
 
 def remove(file):
@@ -117,7 +118,20 @@ def remove(file):
         shutil.rmtree(file)
 
 
-def mv(src, dest):
+def move_template(dest):
+    """
+
+    :param dest:
+    :return:
+    """
+    logging.info('Moving template from' + options.state.template() + ' to ' + dest)
+    if not os.path.exists(os.path.dirname(dest)):
+        os.mkdir(os.path.dirname(dest))
+    write(dest, read(options.state.template()))
+    options.state.template(dest)
+
+
+def move(src, dest):
     """
     Moves a file from src to destination.
 
@@ -125,6 +139,8 @@ def mv(src, dest):
     :param dest: The relative or absolute path for the file's destination
     """
     logging.info('Moving ' + src + ' to ' + dest)
+    if not os.path.exists(os.path.dirname(dest)):
+        os.mkdir(os.path.dirname(dest))
     os.rename(src, dest)
 
 

@@ -155,7 +155,7 @@ def wrap_lists(ast):
     Wraps consecutive listitem tokens in a list token. Applied recursively.
 
     :param ast: The tree to be modified
-    :return: The modifed tree
+    :return: The modified tree
     """
     new_ast = []
     buffer = []

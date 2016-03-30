@@ -3,6 +3,7 @@
 # Module formatter
 """
 import logging
+import config
 import re
 import filters
 import collections
@@ -45,6 +46,15 @@ def get_extension():
     return formats[options.state.format()]['extensions'][0]
 
 
+def get_format(file):
+    """
+
+    :param file:
+    :return:
+    """
+    return formats[file.split('.')[-1]]
+
+
 def parse():
     """
     source to ast
@@ -53,23 +63,17 @@ def parse():
     global formats
     intermediates = []
     try:
-        parser = formats[options.state.template().split('.')[-1]]
+        parser = get_format(options.state.template())
     except:
         raise FormatError('Unknown format')
+    # TODO So ugly it looks like Java code
     for file in fileutil.with_extension('.tex'):
         logging.info('Using ' + parser['name'] + ' format to parse ' + options.state.template())
         intermediate = libs.map.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
-
-        intermediate.ast = resolve(intermediate.src, parser)
+        intermediate.ast = parse_tokens(intermediate.src, parser)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
-        # Remove comments
-        intermediate.ast = filters.remove_partial(intermediate.ast, 'comment')
-        # Pop unknowns
-        intermediate.ast = filters.pop_unknowns(intermediate.ast)
-        # Homogenize strings
-        intermediate.ast = filters.homogenize_strings(intermediate.ast)
-        # Transform questions
-        intermediate.ast = filters.transform_questions(intermediate.ast)
+        for default_filter in config.default_filters:
+            intermediate.ast = default_filter(intermediate.ast)
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
@@ -189,10 +193,10 @@ def unpack(token, fmt, tail=False):
             regex += unpack(fmt[symbol[0]], fmt, tail=True)
         else:
             raise FormatError('Cannot unpack token: ' + token)
-    return regex if tail else (r'(^\s*' + regex + ')(?=\s*(' + token[-1] + ')|$)').replace('\ ', '\s*')
+    return regex if tail else (r'(\s*' + regex + ')(?=\s*(' + token[-1] + ')|$)').replace('\ ', '\s*')
 
 
-def resolve(src, fmt):
+def parse_tokens(src, fmt):
     """
     Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
     tokens must be provided. Any string sequences that cannot be matched will be returned as
@@ -203,12 +207,12 @@ def resolve(src, fmt):
     """
     ast, unmatched = [], src
     while unmatched:
-        token, unmatched = determine(unmatched, fmt)
+        token, unmatched = match_token(unmatched, fmt)
         ast.append(token)
     return ast
 
 
-def determine(src, fmt):
+def match_token(src, fmt):
     """
     Determine what token a specific string sequence begins with. If no token can be found in the given
     template a raw character is returned off the top.
@@ -217,13 +221,13 @@ def determine(src, fmt):
     :return: The matched token, The unmatched sequence
     """
     for token in fmt['format'].values():
-        matched, unmatched = check(token, src, fmt)
+        matched, unmatched = build_token(token, src, fmt)
         if matched is not None:
             return matched, unmatched
     return src[0], src[1:]
 
 
-def check(token, src, fmt, debug=False):
+def build_token(token, src, fmt, debug=False):
     """
 
     :param token:
@@ -251,11 +255,11 @@ def check(token, src, fmt, debug=False):
                 elif isinstance(symbol, list):
                     for sub_token in symbol:
                         if debug: print('\t\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
-                        child, unmatched = check(fmt['format'][sub_token], unmatched, fmt)
+                        child, unmatched = build_token(fmt['format'][sub_token], unmatched, fmt)
                         if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t\t'))
                         if child is not None:
                             if debug: print('\t\tEND OF POST',child)
-                            definition += resolve(matched, fmt)
+                            definition += parse_tokens(matched, fmt)
                             definition.append(child)
                             post = False
                             break
@@ -285,7 +289,7 @@ def check(token, src, fmt, debug=False):
                         '$' in token.name or \
                         'verb' in token.name or \
                         'comment' in token.name in token.name \
-                        else resolve(matched, fmt)
+                        else parse_tokens(matched, fmt)
                     unmatched = unmatched[len(symbol):]
                     post = False
                 # If not at the end of content
@@ -305,7 +309,7 @@ def check(token, src, fmt, debug=False):
         elif isinstance(symbol, list):
             for sub_token in symbol:
                 if debug: print('\t\tCHECKING SUBTOKEN: [', sub_token, ']')
-                child, unmatched = check(fmt['format'][sub_token], unmatched, fmt)
+                child, unmatched = build_token(fmt['format'][sub_token], unmatched, fmt)
                 if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t'))
                 if child is not None:
                     definition.append(child)
@@ -330,7 +334,7 @@ def check(token, src, fmt, debug=False):
         while post:
             # End of string
             if len(unmatched) == 0:
-                definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else resolve(matched, fmt)
+                definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else parse_tokens(matched, fmt)
                 post = False
             # Move down a parentheses lvel
             elif fmt['left_paren'] is not None and unmatched.startswith(fmt['left_paren']):
@@ -352,7 +356,7 @@ def check(token, src, fmt, debug=False):
                         '$' in token.name or \
                         'verb' in token.name or \
                         'comment' in token.name in token.name \
-                        else resolve(matched, fmt)
+                        else parse_tokens(matched, fmt)
                 post = False
             # If not at the end of content
             else:

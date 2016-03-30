@@ -1,11 +1,11 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <style>
     * {
         line-height: 1.5em;
         font-family: Verdana, sans-serif;
         color: #333333;
         outline: none !important;
-
     }
     body {
         margin: 0;
@@ -17,12 +17,6 @@
     }
     a:hover {
         text-decoration: underline;
-    }
-    h3 {
-
-    }
-    h2 {
-
     }
     h1 {
         color: #3774A6;
@@ -68,9 +62,6 @@
         background: #F0F1F2;
         color: #3774A6;
         width: auto;
-    }
-    .quote {
-
     }
     .doc {
         padding: 4em;
@@ -168,12 +159,17 @@
     $(document).ready(function($) {
         $('.nav').find('.accordion-toggle').click(function(){
             //Expand or collapse this panel
+            $('.nav').find('.accordion-content').not($(this).find('.accordion-content')).slideUp('fast');
             $(this).find('.accordion-content').slideToggle('fast');
         });
-        $('.nav').find('.accordion-content').toggle();
+        // Start with panels closed
+        $('.nav').find('.accordion-content').hide();
+        // Update navigation on search
         $('.search').on('input', function() {
+            // Get search value
             var search_text = $(this).val();
             $('.searchable').each(function(){
+                // For each searchable item check its content ofr a match
                 var content = $($(this).attr('id')).val();
                 if (content.indexOf(search_text) < 0) {
                     $(this).removeClass('match');
@@ -183,6 +179,7 @@
                     $(this).show();
                 }
             });
+            // If section is empty hide it
             $('.accordion-toggle').each(function() {
                 if ($(this).find('.match').length < 1) {
                     $(this).hide();
@@ -191,31 +188,35 @@
                 }
             });
         });
+        // python keywords excluding class as that is needed for the css
         var keywords = [
             'and', 'del', 'from', 'not', 'while', 'as', 'if', 'global', 'or', 'with', 'assert', 'else', 'elif', 'pass',
             'yield', 'break', 'except', 'import', 'exec', 'in', 'raise', 'continue', 'finally', 'is', 'return', 'def',
             'for', 'lambda', 'try'
         ];
+        // For each python block perform basic syntax highlighting
         $('.verb-python').each(function() {
+            // Highlight strings
             $(this).html($(this).html().replace(
                 /(('|")[^'"\n]+('|"))/g,
                 '<span class="hl-string">$1</span>'
             ));
+            // Highlight comments
             $(this).html($(this).html().replace(
                /(#.*)/g,
                '<span class="hl-comment">$1</span>'
             ));
+            // Highlight numbers
             $(this).html($(this).html().replace(
                /(\s[0-9.]+)/g,
                '<span class="hl-num">$1</span>'
             ));
+            // Highlight keywords
             for (var i in keywords) {
                 $(this).html($(this).html().replace(
                     new RegExp('(' + keywords[i] + '\\s)', 'g'),
                     '<span class="hl-keyword">$1</span>'));
             }
-
-
         });
     });
 </script>

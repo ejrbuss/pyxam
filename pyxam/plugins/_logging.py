@@ -6,7 +6,6 @@ This plugin is considered a core plugin (indicated by the underscore in its name
 if the user knows what they are doing.
 
 
-
 This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
 option is added to allow the user to set the logging level at runtime. The [plugin_loader](%/Modules/plugin_loader) will
 always load _logging first so that other Plugins can use logging
@@ -35,7 +34,7 @@ def load():
     """
     options.add_option('logging', '-l', description, config.default_logging, int)
     # Set logging configuration
-    logging.basicConfig(format='%(levelname)s@%(module)s.%(funcName)s(): %(message)s', level=options.state.logging())
+    logging.basicConfig(format=config.logging_format, level=options.state.logging())
     # Log configuration
     logging.info('Logging configured with level {}'.format(logging.getLevelName(options.state.logging())))
     # Return signature
