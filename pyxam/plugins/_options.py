@@ -101,6 +101,7 @@ def rerun_without_solutions():
         args.remove('-solutions')
     if '-s' in args:
         args.remove('-s')
+    # TODO Remove CSV files
     pyxam.start(args, options.state.api())
     exit()
 

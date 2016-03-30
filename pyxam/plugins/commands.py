@@ -11,6 +11,7 @@ import config
 import random
 import logging
 import options
+import fileutil
 
 # command config by ejrbuss: The default command set
 signature = 'command config', 'ejrbuss', 'the default command set'
