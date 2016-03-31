@@ -1,3 +1,4 @@
+#TODO finish
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Plugin _logging
@@ -15,7 +16,6 @@ import config
 import logging
 import options
 
-# logging config by ejrbuss: The default logging configuration for pyxam
 signature = 'logging config', 'ejrbuss', 'The default logging configuration for pyxam'
 
 # Logging option description

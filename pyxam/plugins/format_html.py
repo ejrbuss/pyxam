@@ -5,6 +5,7 @@ Plugin format_html
 """
 import os
 import re
+import xml
 import options
 import filters
 import fileutil
@@ -12,11 +13,11 @@ import formatter
 import collections
 
 
-# Html format by ejrbuss: Format for exporting html files
+# HTML format by ejrbuss: Format for exporting HTML files
 signature = 'html format', 'ejrbuss', 'Format for exporting html files'
 
 
-# Map of LaTeX math symbols to their html code counterparts
+# Map of LaTeX math symbols to their HTML code counterparts
 math = {
     '\\theta':      '&theta;',
     '\\pi':         '&pi;',
@@ -33,8 +34,9 @@ math = {
 def composer_preprocessor(intermediate):
     """
     Performs two modifications to the intermediate.
-     - Html requires listitem tokens be wrapped in a containing element. [filters.wrap_lists](%/Modules/fitlers.html) is
+     - HTML requires listitem tokens be wrapped in a containing element. [filters.wrap_lists](%/Modules/fitlers.html) is
      called to place a list token around all consecutive listitem tokens.
+     - Converts images to a base64 encoded string to appear directly in the HTML source.
      - Verbatim blocks have leading whitespaced evenly removed to help formatting in the case where verbatim blocks are
      being read in from formatted source
 
@@ -42,9 +44,10 @@ def composer_preprocessor(intermediate):
     :return: The processed intermediate
     """
     intermediate.ast = filters.wrap_lists(intermediate.ast)
+    intermediate.ast = filters.img64(intermediate.ast)
     intermediate.ast = filters.untab_verb(intermediate.ast)
     return intermediate
-
+#TODO finish
 
 def composer_postprocessor(src):
     """
@@ -62,7 +65,7 @@ def composer_postprocessor(src):
     src = re.sub(r'\\sqrt\{(.*?)\}', r'&radic;\1', src)
     # String replacements
     for symbol in math:
-        src = symbol
+        src = src.replace(symbol, math[symbol])
     src = re.sub(r'\[img]\((.*?)\)', r'<img src="\1">', src)
     src = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', src)
     src = re.sub(r'\n{3}', '<br /><br />', src)
@@ -72,7 +75,7 @@ def composer_postprocessor(src):
         src = src.replace('display:visible', 'display:none')
     return fileutil.read(
         options.state.htmltemplate()
-     ).replace('<!-- content -->', src)
+     ).replace('<!-- content -->','<div class="content">' + src + '</div>')
 
 
 def load():
@@ -110,6 +113,7 @@ def load():
             ('list', ['<ul>', (), '</ul>', '.']),
             ('listitem', ['<li>', (), '</li>']),
             ('hr', ['<hr />', '.']),
+            ('center', ['<div class="center">', (), '</div>', '.']),
             ('emphasis3', ['<i><b>', (), '</b></i>', '.']),
             ('emphasis2', ['<br /><b>', (), '</b>', '.']),
             ('emphasis1', ['<i>', (), '</i>', '.']),

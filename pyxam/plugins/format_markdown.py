@@ -6,7 +6,7 @@ import filters
 
 signature = 'markdown format', 'ejrbuss', 'Format for producing and viewing files in markdown'
 
-
+#TODO finish
 def load():
     formatter.add_format(
         name='markdown',

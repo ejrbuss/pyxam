@@ -6,12 +6,12 @@ import collections
 import filters
 
 
-signature = 'moodle foramt', 'ejrbuss', 'Format for producing and viewing moodle xml files'
+signature = 'moodle format', 'ejrbuss', 'Format for producing and viewing moodle xml files'
 # Plugin signature
 
 fmt_truefalse =  '<answer fraction="{}"><text>true</text><feedback><text>Correct</text></feedback></answer>\n \
                     <answer fraction="{}"><text>false</text><feedback><text>Incorrect</text></feedback></answer>'
-
+#TODO finish
 
 def composer_preprocessor(intermediate):
     """
@@ -32,12 +32,6 @@ def composer_preprocessor(intermediate):
     intermediate.ast = filters.apply_function(intermediate.ast, fix_solutions, 'solution')
     return intermediate
 
-
-def composer_postprocessor(source):
-    source = xml.dom.minidom.parseString(source).toprettyxml()
-    source = re.sub(r'\t', '     ', source)
-    source = re.sub(r'(\n *\n)', '\n', source)
-    return source
 
 def load():
     formatter.add_format(
@@ -77,8 +71,7 @@ def load():
             ('itemvalue', ['<value>', (), '</value></dataset_item>', '.']),
             ('decimal', ['<correctanswerformat>1</correctanswerformat><correctanswerlength>', (), '</correctanswerlength>', '.'])
         ]),
-        composer_preprocessor=composer_preprocessor,
-        composer_postprocessor=composer_postprocessor,
+        composer_preprocessor=composer_preprocessor
     )
     # Return signature
     return signature

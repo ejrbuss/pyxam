@@ -78,6 +78,7 @@ def run_commands():
     fileutil.move_template(options.state.tmp() + '/template/' + os.path.basename(options.state.template()))
     # Write result to new template
     fileutil.write(options.state.template(), buffer)
+    options.post()
 
 
 def run_command(block):
@@ -87,8 +88,8 @@ def run_command(block):
     # Check if command is in command list
     for name, command in commands.items():
         if args.startswith(name):
-            if not options.state.api():
-                print('Processed', name, 'command.\n')
+            options.post('Processed', name, 'command.')
             return command(args.replace(name, '', 1).strip())
 
 
+#TODO finish

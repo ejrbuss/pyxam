@@ -126,14 +126,14 @@ def load():
     bang.add_command('fig', figure)
     bang.add_command('import', question_import)
     bang.add_command('def', define)
+    # Define constants
     define('studentname "{}"'.format(config.student_name))
     define('studentnumber "{}"'.format(config.student_number))
     define('version "{}"'.format(config.version_number))
+    # Add display option
     if options.add_option('commands', '-cmd', 'Display all available commands', False, bool):
         print('\n'.join('pyxam!' + name + str(fn.__doc__).replace('\n', '\n    ') for name, fn in bang.commands.items()))
         exit()
     return signature
 
-
-def unload():
-    pass
+#TODO finish

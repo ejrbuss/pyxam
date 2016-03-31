@@ -10,7 +10,7 @@ import logging
 import base64
 import re
 
-
+#TODO finish
 def remove_name(ast, name):
     """
     Remove all tokens with a given name along with all their sub tokens. Tokens will be removed recursively from the
@@ -81,6 +81,8 @@ def pop_unknowns(ast):
     :param ast: The tree whose unknowns are being popped
     :return: the modified tree
     """
+    if ast is None:
+        return
     new_ast = []
     for token in ast:
         if hasattr(token, 'name') and 'unknown' in token.name:
@@ -90,7 +92,7 @@ def pop_unknowns(ast):
             new_ast += [token]
         else:
             new_ast += [token]
-    if new_ast != ast:
+    if new_ast != ast and new_ast:
         return pop_unknowns(new_ast)
     return new_ast
 

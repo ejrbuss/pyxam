@@ -46,12 +46,14 @@ def parser_postprocessor(intermediate):
     return intermediate
 
 
-def composer_postprocessor(composed):
+def composer_postprocessor(source):
+    if not source.strip().startswith('\\documentclass'):
+        source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
-        composed = re.sub(r'(?:^|[^\\%])\\documentclass\[', r'\documentclass[answers,', composed)
-        composed = re.sub(r'(?:^|[^\\%])\\documentclass{', r'\documentclass[answers]{', composed)
-    return composed
-
+        source = re.sub(r'\\documentclass\[', r'\documentclass[answers,', source)
+        source = re.sub(r'\\documentclass{', r'\documentclass[answers]{', source)
+    return source
+#TODO finish
 
 def load():
     formatter.add_format(
@@ -81,8 +83,11 @@ def load():
             ('truefalse', [['title'], (), ['choices'], '$']),
             ('essay', [['title'], (), '$']),
             ('title', ['question{', (), '}', '.']),
+            ('center', ['\\begin{center}', (), '\\end{center}', '.']),
+            ('emphasis2', ['\\textbf{', (), '}', '.']),
+            ('emphasis1', ['\\textit{', (), '}', '.']),
             ('unknownarg', ['{', (), '}', '.']),
-            ('unknown', ['\\', (), '\\s+']),
+            ('unknown', ['\\', (), '\\s+'])
         ])
     )
     # Return signature

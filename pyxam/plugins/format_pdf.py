@@ -1,123 +1,83 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
-import os
-import process_list
-import filters
-from subprocess import call
-from subprocess import check_output
-import formatter
-import fileutil
+"""
+# Plugin format_pdf
+
+Allows for files to be exported to PDF or DVI. Uses [lib_loader](%/Modules/lib_loader.html) to call `pdflatex` from
+the command line and compile LaTeX files. Example usage:
+```
+$ ./pyxam.py -f pdf my_file.tex
+```
+"""
+import config
 import options
-import plugin_loader
-
-# TODO cleanup
-
-signature = 'pdf support', 'ejrbuss', 'pdf export support for LaTeX documents'
-
-
-def error():
-    raise plugin_loader.PluginError('This format is only for output!')
+import fileutil
+import formatter
+import lib_loader
+import process_list
 
 
+signature = 'PDF support', 'ejrbuss', 'PDF export support'
+
+# Saves the originally specified format
 compile_format = ''
 
 
 def load():
-    # Add dummy pdf format
+    """
+    Adds two dummy formats to the formatter, `pdf` and `dvi`. Hooks `pdf_bypass` to after `post_status` in the
+    [process_list](%/Modules/process_list.html) to ensure that arguments from the command line and from the template
+    file are both loaded. The bypass function checks to see if either PDF or DVI formats have been requested. Loads the
+    following [options](%/Modules/options.html):
+     - `recomps -r` The number of LaTeX recompilations
+
+    :return: plugin signature
+    """
     formatter.add_format(
         name='pdf',
         extensions=['pdf'],
-        description='pdf export support',
-        parser_preprocessor=error,
-        parser_postprocessor=error,
-        composer_preprocessor=error,
-        composer_postprocessor=error,
+        description='PDF export support',
         format={}
     )
-    # Add dummy dvi format
-    # Add dummy pdf format
     formatter.add_format(
         name='dvi',
         extensions=['dvi'],
-        description='dvi export support',
-        parser_preprocessor=error,
-        parser_postprocessor=error,
-        composer_preprocessor=error,
-        composer_postprocessor=error,
+        description='DVI export support',
         format={}
     )
-    # Add bypass
-    process_list.run_before('weave', pdf_bypass)
-    # Add recompilation option
-    options.add_option('recomps', '-r', 'The number of LaTeX recompilations',  1, int)
+    process_list.run_after('post_status', pdf_bypass)
+    options.add_option('recomps', '-r', 'The number of LaTeX recompilations',  config.recomps, int)
     return signature
 
 
 def pdf_bypass():
     """
-    Bypass formatter steps
-    :return:
+    Saves the originally specified format and then checks if either the PDF or DVI format have been requested. When
+    selected the format is changed to tex and `pdf_compile` hooks to after `export` to compile the final set of tex
+    files.
     """
     global compile_format
-    if options.state.format() == 'pdf':
-        compile_format = 'pdf'
-        options.state.format('tex')
-        process_list.run_after('export', pdf_compile)
-    if options.state.format() == 'dvi':
-        compile_format = 'dvi'
+    compile_format = options.state.format()
+    if options.state.format() in ['pdf', 'dvi']:
         options.state.format('tex')
         process_list.run_after('export', pdf_compile)
 
 
 def pdf_compile():
     """
-    Compile to pdf or dvi
-    :return:
+    Compiles any tex files in the out directory to PDF or DVI depending on what `compile_format` is set to. All
+    additional files (aux, log, tex) are removed once compilation completes.
     """
-    options.state.format(compile_format)
-    cwd = options.state.cwd()
     options.state.cwd(options.state.out())
-    if not options.state.api():
-        print('Compiling', len(fileutil.with_extension('.tex')), 'files.')
+    options.post('Compiling', len(fileutil.with_extension('.tex')), 'files.')
     for file in fileutil.with_extension('.tex'):
         if compile_format == 'dvi':
             fileutil.write(file, '%&latex\n' + fileutil.read(file))
         for i in range(options.state.recomps()):
-            try:
-                with open(os.devnull, 'r') as stdin:
-                    check_output(['pdflatex', '-shell-escape', file], stdin=stdin, cwd=options.state.out())
-                check_compiled(['pdf', 'dvi'], file)
-            except:
-                print('Failed to compile latex file: ' + file)
-                print('Running pdflatex in interactive mode...')
-                call(['pdflatex', '-shell-escape', file], cwd=options.state.out())
-    if not options.state.debug():
-        for extension in ['.aux', '.log', '.tex']:
-            for file in fileutil.with_extension(extension):
-                fileutil.remove(file)
-    options.state.cwd(cwd)
-    if not options.state.api():
-        print('Finished compiling.\n')
+            lib_loader.pdflatex(file)
+    fileutil.remove(fileutil.with_extension(['.aux', '.log', '.tex']))
+    options.post('Finished compiling.\n')
 
 
-def check_compiled(extensions, file):
-    """
-    Check that a file with file compiled to one of the specified extensions. If the file does not compile it is
-    recompiled in interactive mode
-    :param extensions: The extensions to look for
-    :param file: The original file
-    :return: None
-    """
-    compiled = False
-    for extension in extensions:
-        compiled = compiled or os.path.isfile(file[:-3] + extension)
-    if not compiled:
-        print('Failed to compile latex file: ' + file)
-        print('Running pdflatex in interactive mode...')
-        call(['pdflatex', '-shell-escape', file], cwd=options.state.out())
-
-
-def unload():
-    pass
 
 
 

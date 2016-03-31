@@ -11,30 +11,18 @@ messages and tracking the Pyxam version number.
 
 
 Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
-generating figure images. Failing to meet one of these dependencies will result in an exit statement and a
-recommendation todo `pip install` for the dependency.
+generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
+these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
 """
 
 # TODO finish docs
 # TODO tests
-# TODO move pweave to dependency
 # TODO cleanup
 # TODO test html
 # TODO org mode
 # TODO markdown
 # TODO calculated
 # TODO pick from a list example
-
-
-import sys
-import bang
-import options
-import exporter
-import fileutil
-import formatter
-import lib_loader
-import process_list
-import plugin_loader
 
 
 # Module Dependencies
@@ -46,6 +34,21 @@ try:
     import numpy
 except ImportError:
     exit('numpy is required for Pyxam. Please run:\n\t pip install numpy')
+try:
+    import pweave
+except ImportError:
+    exit('pweave is required for Pyxam. Please run:\n\t pip install pweave')
+
+
+import sys
+import bang
+import options
+import exporter
+import fileutil
+import formatter
+import lib_loader
+import process_list
+import plugin_loader
 
 
 # Pyxam Version Number
@@ -67,18 +70,16 @@ title = '    ____                           \n' \
 
 def welcome():
     """
-    Prints the Pyxam title and version number when not in api mode.
+    Posts the Pyxam title and version number
     """
-    if not options.state.api():
-        print(title, '\n\n\tLatex Exam Generation.', __version__, '\n\n')
+    options.post(title, '\n\n\tLatex Exam Generation.', __version__, '\n\n')
 
 
 def goodbye():
     """
-    Prints a goodbye message when not in api mode.
+    Posts a goodbye message
     """
-    if not options.state.api():
-        print('Thanks for using Pyxam, have a nice day!')
+    options.post('Thanks for using Pyxam, have a nice day!')
 
 
 def store_args(args=None):
@@ -93,7 +94,7 @@ def store_args(args=None):
         _args.append(args)
     return _args[-1]
 
-
+#TODO finish
 def start(args, api=True):
     """
     Start Pyxam with a set of [options](%/Modules/options.html). Start adds the following processes to the
@@ -103,6 +104,7 @@ def start(args, api=True):
      - `load_plugins` loads all available plugins
      - `build_files` fixes paths and builds all necessary files
      - `run_commands` prepossesses commands in the template (see [bang](%/Modules/bang.html))
+     - `post_status` posts the current state of all options
      - `weave` runs any inline code within the template
      - `parse` reads the template document into an intermediate format (see [formatter](%/Modules/formatter.py))
      - `compose` converts the intermediate format into the output format
@@ -128,7 +130,7 @@ def start(args, api=True):
         options.load_template,
         fileutil.build_files,
         bang.run_commands,
-        options.status,
+        options.post_status,
         lib_loader.weave,
         formatter.parse,
         formatter.compose,

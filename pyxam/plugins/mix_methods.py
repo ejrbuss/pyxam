@@ -1,22 +1,20 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Plugin mix_methods
-
+Adds mixing methods to the [exporter](%/Modules/exporter.html).
 """
 import random
 import exporter
 
 
-# Mix methods by ejrbuss: adds sequence and random mixing methods
 signature = 'mix methods', 'ejrbuss', 'adds sequence and random mixing methods'
 
 
 def sequence_mix(versions, data):
     """
-
-    :param versions:
-    :param data:
-    :return:
+    Repeatedly loops through the versions alongside the data until every student is assigned an exam.
+    :param versions: The number of exam versions
+    :param data: An array of student data
     """
     # Mix data
     for n, row in enumerate(data):
@@ -25,10 +23,9 @@ def sequence_mix(versions, data):
 
 def random_mix(versions, data):
     """
-
-    :param versions:
-    :param data:
-    :return:
+    Selects a random exam for each row of data.
+    :param versions: The number of exam versions
+    :param data: An array of student data
     """
     # Mix data
     for row in data:
@@ -36,6 +33,11 @@ def random_mix(versions, data):
 
 
 def load():
+    """
+    Adds the sequence and random mixing methods to the exporter.
+
+    :return: plugin signature
+    """
     # Add sequence method
     exporter.add_method('sequence', sequence_mix)
     # Add random mix

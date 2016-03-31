@@ -2,7 +2,7 @@
 """
 # Module fileutil
 
-This Module provides helper functions to other modules for working with files.
+This Module provides helper functions for working with files.
 """
 import distutils.dir_util
 import logging
@@ -14,9 +14,9 @@ import os
 
 def build_files():
     """
-    Find the absolute file path for the template, tmp directory, and out directory and update thir options to point to
-    their absolute path. Create the tmp and out directories if necessary. Warns user if tmp is going to be overridden
-    as this may delete files. Changes the current working directory to tmp.
+    Finds the absolute file path for the template, tmp directory, and out directory and updates their options to point
+    to their absolute path. Also creates the tmp and out directories if necessary. Warns user if tmp is going to be
+    overridden as this will delete any leftover files. Finally changes the current working directory to tmp.
     """
     # Get absolute paths
     options.state.template(os.path.abspath(options.state.template()))
@@ -37,7 +37,7 @@ def build_files():
     if not os.path.exists(options.state.tmp()):
         os.mkdir(options.state.tmp())
     else:
-        cleanup(True)
+        cleanup()
         os.mkdir(options.state.tmp())
     # Build out directory
     if not os.path.exists(options.state.out()):
@@ -47,26 +47,35 @@ def build_files():
     logging.info('Built directories')
 
 
-def cleanup(forced=False):
+def cleanup():
     """
-    When not in debug mode remove all temporary folders.
+    Removes the temporary directory and resets the current working directory.
     """
-    if not options.state.debug() or forced:
-        remove(options.state.tmp())
-        wait_on_io(lambda: os.path.exists(options.state.tmp()))
+    remove(options.state.tmp())
+    wait_on_io(lambda: os.path.exists(options.state.tmp()))
     # Reset current working directory so plugins can be unloaded
     options.state.cwd(os.curdir)
 
 
-def with_extension(extension):
+def get_extension(file):
     """
-    Find all files in the current working directory that match the given extension.
-
-    :param extension: The extension to match
-
-    :return: a list of files that end in the provided extension
+    Get the file extension for a file.
+    :param file: The path of the file to get the extension of
+    :return: The extension
     """
-    return [options.state.cwd() + '/' + file for file in os.listdir(options.state.cwd()) if file.endswith(extension)]
+    return file.split('.')[-1]
+
+
+def with_extension(ext):
+    """
+    Find all files in the current working directory that match the given extension or extensions.
+
+    :param ext: The extension or extensions to match
+    :return: a list of files that end in the provided extension or extensions
+    """
+    if type(ext) == str:
+        return [options.state.cwd() + '/' + file for file in os.listdir(options.state.cwd()) if file.endswith(ext)]
+    return sum((with_extension(e) for e in ext), [])
 
 
 def read(file):
@@ -107,22 +116,29 @@ def copy_figure():
 
 def remove(file):
     """
-    Remove a file or directory. If removing a directory all contents of that directory will also be removed.
+    Remove a list of files or individual file. If removing a directory all contents of that directory will also be
+    removed. When the debug flag is set no files will be removed.
 
-    :param file: The relative or absolute path for the file or directory or directory to remove
+    :param file: The file or files to remove
     """
-    logging.info('Removing file or directory: ' + file)
-    if os.path.isfile(file):
-        os.remove(file)
+    if options.state.debug():
+        return
+    if type(file) == str:
+        logging.info('Removing file or directory: ' + file)
+        if os.path.isfile(file):
+            os.remove(file)
+        else:
+            shutil.rmtree(file)
     else:
-        shutil.rmtree(file)
+        [remove(f) for f in file]
 
 
 def move_template(dest):
     """
+    Copy the template file to a specified destination. This will update the option and create a new directory if
+    necessary.
 
-    :param dest:
-    :return:
+    :param dest: The new template file destination
     """
     logging.info('Moving template from' + options.state.template() + ' to ' + dest)
     if not os.path.exists(os.path.dirname(dest)):
@@ -166,9 +182,13 @@ def wait_on_io(fn, timeout=5):
     :param fn: The io function to wait on
     :param timeout: The maximum time to wait
     """
+    if options.state.debug():
+        logging.info('io skipped while in debug')
+        return
     logging.info('Waiting on io...')
     start = time.time()
     while fn():
         if time.time() - start > timeout:
             raise TimeoutError('Timed out while waiting on io')
     logging.info('io finished')
+

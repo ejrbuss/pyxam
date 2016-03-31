@@ -9,7 +9,7 @@ list can be changed during runtime via a number of function calls.
 # Core Process List
 _process_list = []
 
-
+#TODO finish
 def ready():
     """
     :return: True as long as there are items in the process list

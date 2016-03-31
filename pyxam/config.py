@@ -31,7 +31,7 @@ default_filters=[
 ]
 
 # CSV
-
+#TODO finish
 # Strings used to identify columns in a csv files that match a student name
 name_column_identifiers = ['firstname', 'surname', 'lastname', 'studentname']
 # Strings used to identify columns in a csv files that match a student number
@@ -39,11 +39,11 @@ number_column_identifiers = ['studentid', 'id', 'identificationnumber']
 # csv file name format
 csv_filename = '{n}_{name}_{number}.mix'
 # Default string to replace with student name
-student_name = '$tudent__name'
+student_name = '@student__name'
 # Default string to replace with student number
-student_number = '$tudent__number'
+student_number = '@student__number'
 # Default string to replace test version
-version_number = '$est__version'
+version_number = '@test__version'
 # Logging
 
 # Default logging level
@@ -73,7 +73,8 @@ method = 'sequence'
 alphabetize = False
 # Debug flag
 debug = False
-# Solutions falg
+# Solutions flag
 solutions = False
-
+# Default number of recompilations
+recomps = 1
 

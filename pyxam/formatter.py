@@ -32,7 +32,7 @@ class Token:
             self.definition = []
 
     def __repr__(self):
-        return '\n' + self.name + ':\n\t' + ''.join(str(child).replace('\n', '\n\t') for child in self.definition) + '\n'
+        return '\n' + self.name + ':\n     ' + ''.join(str(child).replace('\n', '\n     ') for child in self.definition) + '\n'
 
 
 formats = {}
@@ -52,8 +52,8 @@ def get_format(file):
     :param file:
     :return:
     """
-    return formats[file.split('.')[-1]]
-
+    return formats[fileutil.get_extension(file)]
+#TODO finish
 
 def parse():
     """
@@ -66,7 +66,8 @@ def parse():
         parser = get_format(options.state.template())
     except:
         raise FormatError('Unknown format')
-    # TODO So ugly it looks like Java code
+    if not parser['format']:
+        raise FormatError('This format is export only!')
     for file in fileutil.with_extension('.tex'):
         logging.info('Using ' + parser['name'] + ' format to parse ' + options.state.template())
         intermediate = libs.map.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
@@ -77,8 +78,7 @@ def parse():
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
-    if not options.state.api():
-        print('Successfully parsed', parser['name'] + '.\n')
+    options.post('Successfully parsed', parser['name'] + '.\n')
     return intermediates
 
 
@@ -102,8 +102,7 @@ def compose(intermediates):
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
         fileutil.write(options.state.cwd() + '/composed_' + str(n) + '.cmp', composed)
-    if not options.state.api():
-        print('Successfully composed', composer['name'] + '.\n')
+    options.post('Successfully composed', composer['name'] + '.\n')
 
 
 def pack(token, fmt):

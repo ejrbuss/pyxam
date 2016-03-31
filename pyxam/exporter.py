@@ -38,8 +38,7 @@ def export():
         fileutil.move(file, options.state.cwd() + '/' + (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
     # Get files and data
     files, data = fileutil.with_extension('.mix'), csv_read(options.state.population())
-    if not options.state.api():
-        print('Performing', options.state.method(), 'mixing of', len(files), 'exam versions among', len(data), 'students.\n')
+    options.post('Performing', options.state.method(), 'mixing of', len(files), 'exam versions among', len(data), 'students.\n')
     # Mix files
     _methods[options.state.method()](len(files), data)
     # Remove constants fro mthe unmixed files
@@ -49,6 +48,7 @@ def export():
             fileutil.read(file)
                 .replace(config.student_name, '')
                 .replace(config.student_number, '')
+                .replace(config.version_number, '')
         )
     # Export files
     for file in fileutil.with_extension('.mix'):
@@ -119,6 +119,7 @@ def mix(n, row):
         fileutil.read(options.state.cwd() + '/' + n + '.mix')
             .replace(config.student_name, ' ' + row['name'])
             .replace(config.student_number, ' ' + row['number'])
+            .replace(config.version_number, ' ' + n)
     )
 
 
@@ -131,3 +132,4 @@ def add_method(name, method):
     """
     _methods[name] = method
 
+#TODO finish

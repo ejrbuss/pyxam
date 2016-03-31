@@ -88,7 +88,7 @@ def load_template():
             exit('No template file, type -h for help')
         raise OptionError('No template file')
     add_option('template', '', 'template file', _hanging.pop(0), str)
-
+#TODO finish
 
 def get_help():
     """
@@ -106,6 +106,16 @@ def get_help():
     ) for key, option in _compiled.items() if key.startswith('--')))
 
 
+def post(*args, **kwargs):
+    """
+
+    :param o:
+    :return:
+    """
+    if not state.api():
+        print(*args, **kwargs)
+
+
 def status():
     """
 
@@ -118,5 +128,13 @@ def status():
         compile_(option),
         name=name,
     ) for key, option in _compiled.items() if key.startswith('--')))
-    if not state.api():
-        print('OPTIONS TABLE'.center(name + value, '='), '\n Name', ' ' * (name - 6), 'Value', '\n' + '=' * (name + value), '\n' + out + '\n')
+    return 'OPTIONS TABLE'.center(name + value, '=') + '\n Name{}Value\n{}\n{}\n{}\n'.format(
+        ' ' * (name - len('Name')),
+        '=' * (name + value),
+        out,
+        '=' * (name + value)
+    )
+
+
+def post_status():
+    post(status())

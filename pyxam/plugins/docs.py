@@ -11,7 +11,7 @@ import config
 import pyxam
 import os
 import re
-
+#TODO finish
 # Docs builder by ejrbuss: Builder for Pyxam's documentation
 signature = 'docs builder', 'ejrbuss', 'Builder for Pyxam\'s documentation'
 
@@ -118,6 +118,8 @@ def parse_docstring(docstring):
         return docstring
     # Remove comment quotes
     docstring = re.sub(r'"{3}', '', docstring)
+    # Remove *args and **kwargs
+    docstring = re.sub(r'\*args, \*\*kwargs', 'args, kwargs', docstring)
     # Format function signature
     docstring = re.sub(r'^def\s+(.*?)\((.*?)\):', r'**\1**(*\2*)\n\n', docstring, 1, re.DOTALL)
     # Remove empty parameters
