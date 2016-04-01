@@ -13,7 +13,6 @@ import random
 import options
 
 
-# random config by ejrbuss: Set the seed for Python random
 signature = 'random config', 'ejrbuss', 'Set the seed for Python random'
 
 
@@ -27,6 +26,4 @@ def load():
     # Set seed to option value
     if options.add_option('random', '-rng', 'Set the seed for rng', 0, int):
         random.seed(options.state.random())
-    # Return signature
     return signature
-#TODO finish

@@ -21,12 +21,12 @@ Some more text
 That last comment was a command
 ```
 """
-import fileutil
-import formatter
+import os
+import re
 import options
 import logging
-import re
-import os
+import fileutil
+import formatter
 
 
 # A dictionary containing all currently loaded name command pairs
@@ -60,36 +60,20 @@ def run_commands():
     Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
     The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
     """
-    try:
-        # Try and find an appropriate parser
-        parser = formatter.get_format(options.state.template())
-    except:
-        raise formatter.FormatError('Unknown format')
+    parser = formatter.get_format(options.state.template())
     logging.info('Using ' + parser['name'] + ' format to process pyxam! in ' + options.state.template())
-    # Read the template
     buffer = fileutil.read(options.state.template())
-    # Look through tokens and find all comment tokens
     for comment_token in [token for token in parser['format'].values() if 'comment' in token.name]:
-        # Find all token matches within the template source irregardless of starting point
         for comment in re.findall(comment_token.regex, buffer, re.DOTALL):
             result = run_command(comment[1])
             buffer = buffer if result is None else buffer.replace(comment[0], result)
-    # Move template
     fileutil.move_template(options.state.tmp() + '/template/' + os.path.basename(options.state.template()))
-    # Write result to new template
     fileutil.write(options.state.template(), buffer)
-    options.post()
 
 
 def run_command(block):
-    if not block.strip().startswith('pyxam!'):
-        return None
-    args = block.strip().replace('pyxam!', '')
     # Check if command is in command list
     for name, command in commands.items():
-        if args.startswith(name):
+        if block.strip().startswith('pyxam!' + name):
             options.post('Processed', name, 'command.')
-            return command(args.replace(name, '', 1).strip())
-
-
-#TODO finish
+            return command(block.strip().replace('pyxam!' + name, '', 1).strip())

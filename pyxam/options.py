@@ -1,27 +1,40 @@
-#!/usr/bin/env python3
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
+"""
+# Module options
+
+This module handles the command line arguments for Pyxam which act as global state for the entire program.
+"""
+import util
 import functools
-import libs.map
 
 
 class OptionError(Exception):
+    """
+    Error wrapper for Exceptions that occur within the options module.
+    """
     pass
 
 # A Map of all current compile functions
-state = libs.map.Map()
+state = util.Map()
+
 # A Map of all current options
 _compiled = {}
-# A list of not compiled options
+
+# A map of all unique current options
+_unique = {}
+
+# A list of yet to be compiled options
 _hanging = []
 
 
 def clear():
     """
-    Clear all compiled and hanging options.
+    Clear all compiled, unique, and hanging options.
     """
-    global state, _compiled, _hanging
-    state = libs.map.Map()
+    global state, _compiled, _unique, _hanging
+    state = util.Map()
     _compiled = {}
+    _unique = {}
     _hanging = []
 
 
@@ -29,6 +42,7 @@ def compile_(option, value=None):
     """
     Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
     The compiled value is the default if no value hs been provided by the current or past callers.
+
     :param option: The option to compile
     :param value: The value to try and set, when None the value is not set
     :return: The compiled value
@@ -45,6 +59,7 @@ def compile_(option, value=None):
 def add_option(name, flag, description, default, type_, value=None):
     """
     Add an option.
+
     :param name: The name of the option
     :param flag: The flag for the option
     :param description: A description of the option
@@ -53,9 +68,17 @@ def add_option(name, flag, description, default, type_, value=None):
     :param value: A value, defaults to None
     :return: The value of the option after parsing any hanging options
     """
-    option = libs.map.Map({'name': name, 'flag': flag, 'description': description, 'default': default, 'type_':type_, 'value': value})
+    option = util.Map({
+        'name': name,
+        'flag': flag,
+        'description': description,
+        'default': default,
+        'type_':type_,
+        'value': value
+    })
     state.update({name: functools.partial(compile_, option)})
     _compiled.update({flag: option, '-' + name: option, '--' + name: option})
+    _unique.update({name: option})
     # Load any hanging options
     load_options([])
     return state[name]()
@@ -64,8 +87,8 @@ def add_option(name, flag, description, default, type_, value=None):
 def load_options(options):
     """
     Load options provided as a list in command line syntax.
+
     :param options: A list of options to load
-    :return: None
     """
     global _hanging
     _hanging, collector = _hanging + options, []
@@ -81,60 +104,64 @@ def load_options(options):
 def load_template():
     """
     Load the template option. Expects to be the last option loaded.
-    :return: None
     """
     if len(_hanging) != 1:
         if not state.api():
             exit('No template file, type -h for help')
         raise OptionError('No template file')
     add_option('template', '', 'template file', _hanging.pop(0), str)
-#TODO finish
+
 
 def get_help():
     """
     Get a string representing the help message for all options currently added.
+
     :return: The help string
     """
-    name = max([len(v.name) for k, v in _compiled.items() if k.startswith('--')])
-    flag = max([len(v.flag) for k, v in _compiled.items() if k.startswith('--')])
+    name = max([len(v.name) for k, v in _unique.items()])
+    flag = max([len(v.flag) for k, v in _unique.items()])
     return '\n'.join((' {0:<{name}}{1:<{flag}} {2:<{arg}}{3} '.format(
         option.name,
         option.flag,
   '[' + option.name + ']' if option.type_ is not bool else '',
         option.description.replace('\n', '\n' + ' ' * (2 * name + flag + 7)),
         name=name, flag=flag, arg=name + 2
-    ) for key, option in _compiled.items() if key.startswith('--')))
-
-
-def post(*args, **kwargs):
-    """
-
-    :param o:
-    :return:
-    """
-    if not state.api():
-        print(*args, **kwargs)
+    ) for key, option in _unique.items()))
 
 
 def status():
     """
+    Get a string with a table showing all options and their current value.
 
-    :return:
+    :return: The status table
     """
-    name = max([len(v.name) for k, v in _compiled.items() if k.startswith('--')]) + 1
-    value = max([len(str(compile_(v))) for k, v in _compiled.items() if k.startswith('--')])
+    name = max([len(v.name) for k, v in _unique.items()]) + 1
+    value = max([len(str(compile_(v))) for k, v in _unique.items()])
     out = '\n'.join((' {0:<{name}}{1} '.format(
         option.name,
         compile_(option),
         name=name,
-    ) for key, option in _compiled.items() if key.startswith('--')))
-    return 'OPTIONS TABLE'.center(name + value, '=') + '\n Name{}Value\n{}\n{}\n{}\n'.format(
+    ) for key, option in _unique.items()))
+    return 'STATUS TABLE'.center(name + value + 2, '=') + '\n Name{}Value\n{}\n{}\n{}'.format(
         ' ' * (name - len('Name')),
-        '=' * (name + value),
+        '=' * (name + value + 2),
         out,
-        '=' * (name + value)
+        '=' * (name + value + 2)
     )
 
 
+def post(*args, **kwargs):
+    """
+    Send a string to be printed if in api mode. Will add a newline between different callers.
+    """
+    if not state.api():
+        if not util.same_caller():
+            print()
+        print(*args, **kwargs)
+
+
 def post_status():
+    """
+    Post the status table.
+    """
     post(status())

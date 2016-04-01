@@ -29,15 +29,15 @@ these dependencies will result in an exit statement and a recommendation todo `p
 try:
     import matplotlib
 except ImportError:
-    exit('matplotlib is required for Pyxam. Please run:\n\t pip install matplotlib')
+    exit('matplotlib is required for Pyxam. Please run:\n\n\t$ pip install matplotlib')
 try:
     import numpy
 except ImportError:
-    exit('numpy is required for Pyxam. Please run:\n\t pip install numpy')
+    exit('numpy is required for Pyxam. Please run:\n\n\t$ pip install numpy')
 try:
     import pweave
 except ImportError:
-    exit('pweave is required for Pyxam. Please run:\n\t pip install pweave')
+    exit('pweave is required for Pyxam. Please run:\n\n\t$ pip install pweave')
 
 
 import sys
@@ -72,7 +72,7 @@ def welcome():
     """
     Posts the Pyxam title and version number
     """
-    options.post(title, '\n\n\tLatex Exam Generation.', __version__, '\n\n')
+    options.post(title, '\n\n\tLatex Exam Generation.', __version__, '\n')
 
 
 def goodbye():
@@ -94,7 +94,7 @@ def store_args(args=None):
         _args.append(args)
     return _args[-1]
 
-#TODO finish
+
 def start(args, api=True):
     """
     Start Pyxam with a set of [options](%/Modules/options.html). Start adds the following processes to the

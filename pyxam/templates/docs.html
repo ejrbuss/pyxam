@@ -208,7 +208,7 @@
             ));
             // Highlight numbers
             $(this).html($(this).html().replace(
-               /(\s[0-9.]+)/g,
+               /([0-9.]+)/g,
                '<span class="hl-num">$1</span>'
             ));
             // Highlight keywords
@@ -246,8 +246,6 @@
         <!-- content -->
         <hr />
         <div class='credits'>
-            &copy; Copyright Eric Buss
-            <br /><br />
             Built with <a href='https://github.com/balancededge/pyxam'>Pyxam</a>
         </div>
     </div>

@@ -13,6 +13,8 @@ import logging
 import options
 import fileutil
 
+#TODO Finish
+
 # command config by ejrbuss: The default command set
 signature = 'command config', 'ejrbuss', 'the default command set'
 
@@ -135,5 +137,3 @@ def load():
         print('\n'.join('pyxam!' + name + str(fn.__doc__).replace('\n', '\n    ') for name, fn in bang.commands.items()))
         exit()
     return signature
-
-#TODO finish

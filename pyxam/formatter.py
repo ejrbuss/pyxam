@@ -2,14 +2,15 @@
 """
 # Module formatter
 """
-import logging
-import config
-import re
-import filters
 import collections
-import libs
-import options
+import logging
+import re
+import util
+import config
 import fileutil
+import filters
+import options
+
 
 # TODO cleanup
 
@@ -52,7 +53,10 @@ def get_format(file):
     :param file:
     :return:
     """
-    return formats[fileutil.get_extension(file)]
+    try:
+        return formats[fileutil.get_extension(file)]
+    except:
+        raise FormatError('Unknown format')
 #TODO finish
 
 def parse():
@@ -62,15 +66,12 @@ def parse():
     """
     global formats
     intermediates = []
-    try:
-        parser = get_format(options.state.template())
-    except:
-        raise FormatError('Unknown format')
+    parser = get_format(options.state.template())
     if not parser['format']:
         raise FormatError('This format is export only!')
     for file in fileutil.with_extension('.tex'):
         logging.info('Using ' + parser['name'] + ' format to parse ' + options.state.template())
-        intermediate = libs.map.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
+        intermediate = util.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
         intermediate.ast = parse_tokens(intermediate.src, parser)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
         for default_filter in config.default_filters:
@@ -78,7 +79,7 @@ def parse():
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
-    options.post('Successfully parsed', parser['name'] + '.\n')
+    options.post('Successfully parsed', parser['name'] + '.')
     return intermediates
 
 
@@ -102,7 +103,7 @@ def compose(intermediates):
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
         fileutil.write(options.state.cwd() + '/composed_' + str(n) + '.cmp', composed)
-    options.post('Successfully composed', composer['name'] + '.\n')
+    options.post('Successfully composed', composer['name'] + '.')
 
 
 def pack(token, fmt):

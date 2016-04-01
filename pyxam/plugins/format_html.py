@@ -67,7 +67,7 @@ def composer_postprocessor(src):
     for symbol in math:
         src = src.replace(symbol, math[symbol])
     src = re.sub(r'\[img]\((.*?)\)', r'<img src="\1">', src)
-    src = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', src)
+    src = re.sub(r'\[([^\[\]\n]+)\]\(([^()\n]+)\)', r'<a href="\2">\1</a>', src)
     src = re.sub(r'\n{3}', '<br /><br />', src)
     src = re.sub(r'\n{2}', '<br />', src)
     if options.state.solutions():

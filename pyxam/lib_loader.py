@@ -27,13 +27,13 @@ def weave():
         path = options.state.cwd() + '/template_' + str(n) + '.' + extension
         fileutil.write(path, fileutil.read(options.state.template()))
         try:
+            options.post('Weaving ' + str(n + 1) + ' of ' + str(options.state.number()))
+            logging.info('Weaving ' + str(n + 1) + ' of ' + str(options.state.number()))
             pweave.weave(path, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
-            options.post()
-            logging.info('Weaved ' + str(n + 1) + ' of ' + str(options.state.number()))
         except:
             raise LibError('Failed to Pweave file: ' + options.state.tmp() + '/' + str(n))
     if not options.state.api():
-        print('Template successfully weaved.\n')
+        print('Template successfully weaved.')
 
 
 def gs(file):

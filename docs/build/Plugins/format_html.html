@@ -208,7 +208,7 @@
             ));
             // Highlight numbers
             $(this).html($(this).html().replace(
-               /(\s[0-9.]+)/g,
+               /([0-9.]+)/g,
                '<span class="hl-num">$1</span>'
             ));
             // Highlight keywords
@@ -257,26 +257,278 @@ This is the code documentation for the Pyxam Python module. For details on insta
 Pyxam is inspired by the [R exam package](https://cran.r-project.org/web/packages/exams/index.html) which used [Sweave](https://www.statistik.lmu.de/~leisch/Sweave/), a tool for running inline R code in LaTeX documents, to generate exams. Pyxam aims to bring similar functionality to inline Python code using [Pweave](http://mpastell.com/pweave/), a tool that emulates Sweave for Python. Without the great work by these other parties Pyxam would not have been created.
 
 ">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//0_index.html">Overview</a></li>
+<li class="searchable" id="#0_index_md"><a href="/home/ebuss/pyxam/docs/build//0_index.html">Overview</a></li>
 <input type="hidden" id="1_Getting_Started_md" value="">
-<li class="searchable" id="#1_Getting_Started_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//1_Getting_Started.html">Getting Started</a></li>
-<input type="hidden" id="2_Support_and_Contact_md" value="">
-<li class="searchable" id="#2_Support_and_Contact_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//2_Support_and_Contact.html">Support and Contact</a></li>
+<li class="searchable" id="#1_Getting_Started_md"><a href="/home/ebuss/pyxam/docs/build//1_Getting_Started.html">Getting Started</a></li>
+<input type="hidden" id="2_Support_and_Contact_md" value="# Support and Contact
+
+Pyxam is currently maintained by Eric Buss at the University of Alberta.
+**email**: ebuss@ualberta.ca ">
+<li class="searchable" id="#2_Support_and_Contact_md"><a href="/home/ebuss/pyxam/docs/build//2_Support_and_Contact.html">Support and Contact</a></li>
 <li class="accordion-toggle"><b><a href="#">Framework</a></b><ul class="nav accordion-content">
+<input type="hidden" id="0_index_md" value="# The Pyxam Framework
+
+Pyxam is built on top of a set of structures that follow a consistent design pattern. Each of the following structures
+takes ownership over a collection of implementations. Similar to interfaces in object oriented programming the primary
+function of these structures is to call a function provided by their children.
+
+This design model is implemented to allow for easy extensibility whilst maintaining a consistent set of core tools and
+design principles. All of these structures can be added to via plugins which are loaded dynamically at runtime.
+">
+<li class="searchable" id="#0_index_md"><a href="/home/ebuss/pyxam/docs/build/Framework/0_index.html">Overview</a></li>
+<input type="hidden" id="2_Process_List_md" value="# The Process List 
+The process list is the highest level of the Pyxam process. The process list is simply a list of functions that are run
+one after the other until the list is empty. Once empty Pyxam is finished and the program exits. This process list can be
+changed at any time. You can add new functions to the list, remove functino, and reorder them at any point when Pyxam is
+running. Additionally the return value of a function in the process list is used as the arguments for the next function
+allowing information to be easily passed from one function to the next or transformed in between.  
+
+The base process list along with a short description of each function is provided below:
+ - `load_options` loads the command line options
+ - `welcome` displays a welcome message
+ - `load_plugins` loads all available plugins
+ - `build_files` fixes paths and builds all necessary files
+ - `run_commands` prepossesses commands in the template (see [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html))
+ - `post_status` posts the current state of all options
+ - `weave` runs any inline code within the template
+ - `parse` reads the template document into an intermediate format (see [formatter](/home/ebuss/pyxam/docs/build/Modules/formatter.py))
+ - `compose` converts the intermediate format into the output format
+ - `export` moves files from the tmp directory to the final out directory
+ - `cleanup` removes all temporary files
+ - `unload_plugins` unloads all available plugins
+ - `goodbye` display a goodbye message
+
+In order to hook into the process list there are three helper functions provided. These functions use the name of
+processes to identify where you want to insert into the process list.
+```python
+# Run after another function
+process_list.run_after('welcome', my_function)
+# Run before another function
+process_list.run_before('export', my_function)
+# Inserting relative to your already inserted function will insert relative the first occurence
+proces_list.run_before('my_function', my_function)
+# Append a process or a list of processes to the end of the process list
+process_list.append(my_function)
+process_list.append([my_function, my_function])
+```">
+<li class="searchable" id="#2_Process_List_md"><a href="/home/ebuss/pyxam/docs/build/Framework/2_Process_List.html">Process List</a></li>
+<input type="hidden" id="3_Plugins_md" value="# Plugins
+
+Plugins are python files that are loaded dynamically during the `load_plugin` process and can run whatever code they
+like during that time. To add a plugin simply add a `.py` file to the `plugins` folder. In order for the plugin to load
+however it needs to have the proper signature. All plugins must have a `load` and `unload` function nd their `load`
+function must return a signature with some meta information. This is to help ensure that only plugins are in the plugins
+folder and automatically build documentation and command line options. An example of a simple plugin:
+```python
+# Plugin signature
+plugin = {
+        'name': 'example plugin',
+        'author': 'ejrbuss',
+        'description': 'An example plugin'
+}
+
+def load():
+    # Put your plugin code here
+    return plugin
+    
+def unload():
+    pass
+```">
+<li class="searchable" id="#3_Plugins_md"><a href="/home/ebuss/pyxam/docs/build/Framework/3_Plugins.html">Plugins</a></li>
+<input type="hidden" id="6_Commands_md" value="# Commands
+
+Commands are special strings that appear after `pyxam!` in comments of template files. These commands are written in
+comments so that their appearance is universal regardless of the format they appear in. When a command is found the
+entire comment is replaced with the return value of the command. Creating your own function is easy:
+```python
+# Create a command function
+def hello_world_command():
+    
+    Command description
+    
+    print('Hello World')
+    return ''
+# Add the command
+bang.add_command('hello_world', hello_world_command)
+```
+Usage in a file would look something like:
+```
+# pyxam!hello_world
+```">
+<li class="searchable" id="#6_Commands_md"><a href="/home/ebuss/pyxam/docs/build/Framework/6_Commands.html">Commands</a></li>
+<input type="hidden" id="4_Formats_md" value="# Formats
+
+Pyxam uses formats to parse files and compose them. They are simultanesouly the most complex and most powerful structure
+in Pyxam. When parsing a format will be matched based on a provided list of compatible file extensions.Then the file will
+have tokenized based off a set of tokens provided by the format. When exporting a tree of tokens is converted into raw
+text by writing out your provided tokens. This means that a format specification allows that format to be imported into
+any other format and exported into from any other format. An example of what a basic formatter looks like:
+```python
+# Add a format
+formatter.add_format({
+    # The name of the format
+    'name': 'Format name',
+    # A list of compatible extensions
+    'extensions': ['extension'],
+    # A set of processors that are run before and after the parsing/composing processes
+    # They pass_through filter is a filter that does nothing to the input
+    'parser_preprocessor': filter.pass_through,
+    'parser_postprocessor': filter.pass_through,
+    'composer_preprocessor': filter.pass_through,
+    'composer_postprocessor': filter.pass_through,
+    # Optional arguments that specify a right and left parentheses to respect when parsing
+    'left_paren': '{',
+    'right_paren': '}',
+    # The list of tokens that specify this format
+    # This is often specified with an OrderedDict if the order in parsing attempts are made 
+    # is important.
+    'format': collections.OrderedDict([
+        # A token is composed of a name and a list which defines it.
+        # This definition can contain strings. These will be matched directly.
+        # The last item in the definition is a regex that speicifies the end of the token.
+        # Whatever matches this regex will not be considered part of the token.
+        ('basic token', ['Matches this string', '.']),
+        # An empty tuple matches arbitrary content.
+        # This content could be other tokens or just a pure string
+        ('input', ['<tag denoting start of input>', (), '<tag denoting end>', '.']),
+        # A token can reference other tokens and require they be a part of their content.
+        # This reference is denoted by placing the token name inside a list.
+        ('basic token and input', [['basic token'], ['input'], '.']),
+        # If multiple token names are given in a list this acts as an or statement
+        ('basic token or input' [['basic token', 'input'], '.']),
+        # The tokens $ and verbatim are special because their contents are always raw strings
+        # even if their content matches another token.
+        ('$', ['The Following string will be raw', (), '.'])
+    ])
+})
+```
+Once a format is specified it can be used to construct an AST. The parsed and composed AST are viewable if the `-d`
+debug option is given. They appear in the temporary folder. An example AST:
+```
+[
+questions:
+	question:
+		multichoice:
+			title:
+				question
+			prompt:
+				Which of the following are even?
+			choices:
+				correctchoice:
+					0
+				choice:
+					-45
+				correctchoice:
+					12
+]
+```
+The `filters.py` file contains functions for working with the AST to prepare if for other formats.">
+<li class="searchable" id="#4_Formats_md"><a href="/home/ebuss/pyxam/docs/build/Framework/4_Formats.html">Formats</a></li>
+<input type="hidden" id="5_Selectors_md" value="# Selectors 
+
+Selectors are used to mix a CSV file with various versions of an exam. They're details will be added later. Currently
+there is only one selector.">
+<li class="searchable" id="#5_Selectors_md"><a href="/home/ebuss/pyxam/docs/build/Framework/5_Selectors.html">Selectors</a></li>
+<input type="hidden" id="1_Options_md" value="# Options
+
+Pyxam command line options are flexible and dynamic. All command line options added prior to the `_options.py` file will
+be shown in the help message, and all options are parsed the moment they are available. This means you can add an option
+in the same line of code where you test to see if the user has specified the option. In fact this is an intended usage
+as the `add_option` function returns the value of the option. Below is an example of this design pattern:
+```python
+# The last two arguments are the default value and the type
+if options.add_option('option_name', '-flag', 'A description', False, bool):
+    # Run your plugin
+```
+In addition to parsing command line arguments options can also be overriden at anytime by accessing them through the
+`state` object. This object maps the name of the option to a function that can be used to set the option and retrieve
+its value. For example:
+```python
+# Add an option that gets a string from the user
+options.add_option('your_name', '-yn', 'Please provide your name', 'N/A', str)
+# An example of retrieving that string
+name = options.state.your_name()
+# An example of setting that string
+options.state.your_name('Bob')
+```
+Options are extremely useful when trying to modify Pyxam's behavior with a plugin. Not only can you create your own and
+use them as global variables, but by hooking into the process list before and after a function you can change the option
+state that function runs in. This technique is used in the `format_pdf.py` plugin for example to make sure the template
+file is composed as a LaTeX file despite the user specifying pdf as their output format.">
+<li class="searchable" id="#1_Options_md"><a href="/home/ebuss/pyxam/docs/build/Framework/1_Options.html">Options</a></li>
+</ul></li><li class="accordion-toggle"><b><a href="#">Changelog</a></b><ul class="nav accordion-content">
 <input type="hidden" id="0_index_md" value=" 
 ">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/0_index.html">Overview</a></li>
-<input type="hidden" id="1_Options_md" value="">
-<li class="searchable" id="#1_Options_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/1_Options.html">Options</a></li>
-<input type="hidden" id="2_Process_List_md" value="">
-<li class="searchable" id="#2_Process_List_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/2_Process_List.html">Process List</a></li>
-<input type="hidden" id="3_Plugins_md" value="">
-<li class="searchable" id="#3_Plugins_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/3_Plugins.html">Plugins</a></li>
-<input type="hidden" id="4_Formats_md" value="">
-<li class="searchable" id="#4_Formats_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/4_Formats.html">Formats</a></li>
-<input type="hidden" id="5_Selectors_md" value="">
-<li class="searchable" id="#5_Selectors_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/5_Selectors.html">Selectors</a></li>
+<li class="searchable" id="#0_index_md"><a href="/home/ebuss/pyxam/docs/build/Changelog/0_index.html">Overview</a></li>
+<input type="hidden" id="1_0_4_0_md" value=" 
+">
+<li class="searchable" id="#1_0_4_0_md"><a href="/home/ebuss/pyxam/docs/build/Changelog/1_0.4.0.html">0.4.0</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">
+<input type="hidden" id="util_py" value="
+# Module util_classes
+
+Provides utility classes and functinos to other Modules.
+
+***
+**Map**(*dict*)
+
+
+    
+    A custom dictionary which can be accessed with index notation and function notation. Taken from a
+    [stackoverflow](http://stackoverflow.com/questions/2352181/how-to-use-a-dot-to-access-members-of-dictionary)
+    post by [epool](http://stackoverflow.com/users/845296/epool). Example usage:
+    ```python
+        # Can construct using a dictionary/named args
+        m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
+        # Access using function notation
+        assert(m.firstname() == 'Eduardo')
+        # Access using index notation
+        assert(m['lastname'] == 'Pool')
+    ```
+
+    
+***
+**__init__**(*self, args, kwargs*)
+
+
+        super(Map, self).__init__(args, kwargs)
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v in arg.items():
+                    self[k] = v
+        if kwargs:
+            for k, v in kwargs.items():
+                self[k] = v
+
+    # Magic
+
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, key, value):
+        self.__setitem__(key, value)
+
+    def __setitem__(self, key, value):
+        super(Map, self).__setitem__(key, value)
+        self.__dict__.update({key: value})
+
+    def __delattr__(self, item):
+        self.__delitem__(item)
+
+    def __delitem__(self, key):
+        super(Map, self).__delitem__(key)
+        del self.__dict__[key]
+
+
+def same_caller(cache={}):
+    
+
+    <br />`cache` 
+    **<br />returns&nbsp;** 
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//util.py)">
+<li class="searchable" id="#util_py"><a href="/home/ebuss/pyxam/docs/build/Modules/util.html">util</a></li>
 <input type="hidden" id="exporter_py" value="
 # Module exporter
 
@@ -331,8 +583,178 @@ by the compile format.
     <br />`method`  The method to add
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//exporter.py)">
-<li class="searchable" id="#exporter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//exporter.py)">
+<li class="searchable" id="#exporter_py"><a href="/home/ebuss/pyxam/docs/build/Modules/exporter.html">exporter</a></li>
+<input type="hidden" id="pyxam_py" value="
+# Module pyxam
+
+This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
+mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
+mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
+messages and tracking the Pyxam version number.
+
+
+
+Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
+generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
+these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
+
+***
+**__version__ **<br /> Pyxam Version Number
+***
+**_args **<br /> Copy of original arguments
+***
+**title **<br /> Pyxam Title String
+***
+**welcome**()
+
+    
+    Posts the Pyxam title and version number
+    
+***
+**goodbye**()
+
+    
+    Posts a goodbye message
+    
+***
+**store_args**(*args=None*)
+
+
+    
+    Store a list of arguments. Called every time Pyxam is run.
+
+    <br />`args`  The args to store
+    **<br />returns&nbsp;**  The most recently stored args or a message saying there are no stored args.
+    
+***
+**start**(*args, api=True*)
+
+
+    
+    Start Pyxam with a set of [options](/home/ebuss/pyxam/docs/build/Modules/options.html). Start adds the following processes to the
+    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html):
+     - `load_options` loads the command line options
+     - `welcome` displays a welcome message
+     - `load_plugins` loads all available plugins
+     - `build_files` fixes paths and builds all necessary files
+     - `run_commands` prepossesses commands in the template (see [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html))
+     - `post_status` posts the current state of all options
+     - `weave` runs any inline code within the template
+     - `parse` reads the template document into an intermediate format (see [formatter](/home/ebuss/pyxam/docs/build/Modules/formatter.py))
+     - `compose` converts the intermediate format into the output format
+     - `export` moves files from the tmp directory to the final out directory
+     - `cleanup` removes all temporary files
+     - `unload_plugins` unloads all available plugins
+     - `goodbye` display a goodbye message
+    Once added these processes are consumed until there are no more processes.
+
+    <br />`args`  A list of options provided in command line syntax
+    <br />`api`  A flag indicating if Pyxam is being called as an api
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//pyxam.py)">
+<li class="searchable" id="#pyxam_py"><a href="/home/ebuss/pyxam/docs/build/Modules/pyxam.html">pyxam</a></li>
+<input type="hidden" id="options_py" value="
+# Module options
+
+This module handles the command line arguments for Pyxam which act as global state for the entire program.
+
+***
+**OptionError**(*Exception*)
+
+
+    
+    Error wrapper for Exceptions that occur within the options module.
+    
+***
+**state **<br /> A Map of all current compile functions
+***
+**_compiled **<br /> A Map of all current options
+***
+**_unique **<br /> A map of all unique current options
+***
+**_hanging **<br /> A list of yet to be compiled options
+***
+**clear**()
+
+    
+    Clear all compiled, unique, and hanging options.
+    
+***
+**compile_**(*option, value=None*)
+
+
+    
+    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
+    The compiled value is the default if no value hs been provided by the current or past callers.
+
+    <br />`option`  The option to compile
+    <br />`value`  The value to try and set, when None the value is not set
+    **<br />returns&nbsp;**  The compiled value
+    
+***
+**add_option**(*name, flag, description, default, type_, value=None*)
+
+
+    
+    Add an option.
+
+    <br />`name`  The name of the option
+    <br />`flag`  The flag for the option
+    <br />`description`  A description of the option
+    <br />`default`  The default value of the option
+    <br />`type_`  The type of the option
+    <br />`value`  A value, defaults to None
+    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
+    
+***
+**load_options**(*options*)
+
+
+    
+    Load options provided as a list in command line syntax.
+
+    <br />`options`  A list of options to load
+    
+***
+**load_template**()
+
+    
+    Load the template option. Expects to be the last option loaded.
+    
+***
+**get_help**()
+
+    
+    Get a string representing the help message for all options currently added.
+
+    **<br />returns&nbsp;**  The help string
+    
+***
+**status**()
+
+    
+    Get a string with a table showing all options and their current value.
+
+    **<br />returns&nbsp;**  The status table
+    
+***
+**post**(*args, kwargs*)
+
+
+    
+    Send a string to be printed if in api mode. Will add a newline between different callers.
+    
+***
+**post_status**()
+
+    
+    Post the status table.
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//options.py)">
+<li class="searchable" id="#options_py"><a href="/home/ebuss/pyxam/docs/build/Modules/options.html">options</a></li>
 <input type="hidden" id="filters_py" value="
 # Module filters
 
@@ -569,186 +991,21 @@ def to_calculated(question):
     <br />`question`  The question to transform
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
-<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
-<input type="hidden" id="process_list_py" value="
-# Module process_list
-
-This module manages the Pyxam process list which is a consecutive set of functions that are run in order. This process
-list can be changed during runtime via a number of function calls.
-
-***
-**_process_list **<br /> Core Process List
-***
-**ready**()
-
-    
-    **<br />returns&nbsp;**  True as long as there are items in the process list
-    
-***
-**append**(*process*)
-
-
-    
-    Append a process to the end of the process list, or if the provided argument is a list, append all the items to
-    the process list.
-    <br />`process` 
-    **<br />returns&nbsp;**  None
-    
-***
-**run_after**(*process, hook*)
-
-
-    
-    Add a hook to run after a given process.
-    <br />`process`  The string name of the process to hook
-    <br />`hook`  A function to run
-    **<br />returns&nbsp;**  None
-    
-***
-**run_before**(*process, hook*)
-
-
-    
-    Add a hook to run before a given process.
-    <br />`process`  The string name of the process to hook
-    <br />`hook`  A function to run
-    **<br />returns&nbsp;**  None
-    
-***
-**consume**(*arg=None*)
-
-
-    
-    Run the next process in the process list with any provided arguments.
-    <br />`arg`  Arguments
-    **<br />returns&nbsp;**  Arguments for the next process
-    
-***
-**clear**()
-
-    
-    Clears the process list of all waiting processes.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//process_list.py)">
-<li class="searchable" id="#process_list_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
-<input type="hidden" id="options_py" value="**state **<br /> A Map of all current compile functions
-***
-**_compiled **<br /> A Map of all current options
-***
-**_hanging **<br /> A list of not compiled options
-***
-**clear**()
-
-    
-    Clear all compiled and hanging options.
-    
-***
-**compile_**(*option, value=None*)
-
-
-    
-    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
-    The compiled value is the default if no value hs been provided by the current or past callers.
-    <br />`option`  The option to compile
-    <br />`value`  The value to try and set, when None the value is not set
-    **<br />returns&nbsp;**  The compiled value
-    
-***
-**add_option**(*name, flag, description, default, type_, value=None*)
-
-
-    
-    Add an option.
-    <br />`name`  The name of the option
-    <br />`flag`  The flag for the option
-    <br />`description`  A description of the option
-    <br />`default`  The default value of the option
-    <br />`type_`  The type of the option
-    <br />`value`  A value, defaults to None
-    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
-    
-***
-**load_options**(*options*)
-
-
-    
-    Load options provided as a list in command line syntax.
-    <br />`options`  A list of options to load
-    **<br />returns&nbsp;**  None
-    
-***
-**load_template**()
-
-    
-    Load the template option. Expects to be the last option loaded.
-    **<br />returns&nbsp;**  None
-    
-***
-**get_help**()
-
-    
-    Get a string representing the help message for all options currently added.
-    **<br />returns&nbsp;**  The help string
-    
-***
-**post**(*args, kwargs*)
-
-
-    
-
-    <br />`o` 
-    **<br />returns&nbsp;** 
-    
-***
-**status**()
-
-    
-
-    **<br />returns&nbsp;** 
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//options.py)">
-<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
-<input type="hidden" id="plugin_loader_py" value="
-# Module plugin_loader
-
-***
-**_plugins **<br /> A map of all currently loaded plugins
-***
-**load_plugins**()
-
-    
-    Call the load function on all plugins in the appropriate order.
-    **<br />returns&nbsp;**  None
-    
-***
-**unload_plugins**()
-
-    
-    Call the unload function on all plugins.
-    **<br />returns&nbsp;**  None
-    
-***
-**load**(*signature*)
-
-
-    
-    Called on the return value of a plugin. Should return a valid signature.
-    <br />`signature`  The return value of the plugin's load function
-    **<br />returns&nbsp;**  None
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugin_loader.py)">
-<li class="searchable" id="#plugin_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//filters.py)">
+<li class="searchable" id="#filters_py"><a href="/home/ebuss/pyxam/docs/build/Modules/filters.html">filters</a></li>
 <input type="hidden" id="formatter_py" value="
 # Module formatter
 
 ***
-**__init__**(*self, name, definition, fmt, regex=None*)
+**FormatError**(*Exception*)
 
 
+    pass
+
+
+class Token:
+
+    def __init__(self, name, definition, fmt, regex=None):
         self.name = name
         self.definition = definition
         self.regex = unpack(definition, fmt) if regex is None else regex
@@ -891,78 +1148,211 @@ def get_extension():
     **<br />returns&nbsp;** 
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//formatter.py)">
-<li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
-<input type="hidden" id="pyxam_py" value="
-# Module pyxam
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//formatter.py)">
+<li class="searchable" id="#formatter_py"><a href="/home/ebuss/pyxam/docs/build/Modules/formatter.html">formatter</a></li>
+<input type="hidden" id="lib_loader_py" value="
+# Module lib_loader
 
-This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
-mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
-mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
-messages and tracking the Pyxam version number.
-
-
-
-Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
-generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
-these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
+Module for interacting with external modules and libraries.
 
 ***
-**__version__ **<br /> Pyxam Version Number
-***
-**_args **<br /> Copy of original arguments
-***
-**title **<br /> Pyxam Title String
-***
-**welcome**()
+**LibError**(*Exception*)
 
+
+    pass
+
+
+def weave():
     
-    Posts the Pyxam title and version number
+    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
+    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
+    version number.
     
 ***
-**goodbye**()
-
-    
-    Posts a goodbye message
-    
-***
-**store_args**(*args=None*)
+**gs**(*file*)
 
 
     
-    Store a list of arguments. Called every time Pyxam is run.
-
-    <br />`args`  The args to store
-    **<br />returns&nbsp;**  The most recently stored args or a message saying there are no stored args.
+    Calls ghostscript on a pdf image file to convert it to png.
+    <br />`file`  The path to the pdf image file
+    **<br />returns&nbsp;**  The new new path to the png file
     
 ***
-**start**(*args, api=True*)
+**pdflatex**(*file*)
 
 
     
-    Start Pyxam with a set of [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html). Start adds the following processes to the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html):
-     - `load_options` loads the command line options
-     - `welcome` displays a welcome message
-     - `load_plugins` loads all available plugins
-     - `build_files` fixes paths and builds all necessary files
-     - `run_commands` prepossesses commands in the template (see [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html))
-     - `post_status` posts the current state of all options
-     - `weave` runs any inline code within the template
-     - `parse` reads the template document into an intermediate format (see [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.py))
-     - `compose` converts the intermediate format into the output format
-     - `export` moves files from the tmp directory to the final out directory
-     - `cleanup` removes all temporary files
-     - `unload_plugins` unloads all available plugins
-     - `goodbye` display a goodbye message
-    Once added these processes are consumed until there are no more processes.
-
-    <br />`args`  A list of options provided in command line syntax
-    <br />`api`  A flag indicating if Pyxam is being called as an api
+    Calls pdflatex on a LaTeX file to compile it. By default no output is shown and no user input is allowed. If this
+    fails the compilation is attempted again but this time pdflatex is run in interactive mode to allow the user to see
+    what issues there may be.
+    <br />`file`  The path to the LaTeX file to compile
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//pyxam.py)">
-<li class="searchable" id="#pyxam_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/pyxam.html">pyxam</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//lib_loader.py)">
+<li class="searchable" id="#lib_loader_py"><a href="/home/ebuss/pyxam/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+<input type="hidden" id="plugin_loader_py" value="
+# Module plugin_loader
+
+***
+**PluginError**(*Exception*)
+
+
+    pass
+
+
+# A map of all currently loaded plugins
+_plugins = {}
+
+#TODO finish
+def load_plugins():
+    
+    Call the load function on all plugins in the appropriate order.
+    **<br />returns&nbsp;**  None
+    
+***
+**unload_plugins**()
+
+    
+    Call the unload function on all plugins.
+    **<br />returns&nbsp;**  None
+    
+***
+**load**(*signature*)
+
+
+    
+    Called on the return value of a plugin. Should return a valid signature.
+    <br />`signature`  The return value of the plugin's load function
+    **<br />returns&nbsp;**  None
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugin_loader.py)">
+<li class="searchable" id="#plugin_loader_py"><a href="/home/ebuss/pyxam/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
+<input type="hidden" id="bang_py" value="
+# Module bang
+
+This module prepossesses the template file runs all inline commands prior to weaving.
+
+Commands can be thought of in the same way as preprocessor directives in c. Commands appear in comments. When a command
+name is recognized the contents of the comment are replaced with the result of a function that corresponds to that
+command. Commands can have arguments but importantly are not reprocessed. All commands should appear in a comment block
+of the format being worked with and must be preceded with the `pyxam!` prefix to avoid confusion.
+
+
+
+An example usage of a mock comman        x = 3d named `cmd`:
+
+```
+This is template file
+# This is a normal comment
+Some more text
+# pyxam!cmd
+That last comment was a command
+```
+
+***
+**commands **<br /> A dictionary containing all currently loaded name command pairs
+***
+**add_command**(*name, command*)
+
+
+    
+    Add a name, command pair to commands. This function is meant to be used by plugin files in order to add commands.
+    Commands must take an argument which is whatever portion of the comment was not part of the command call. Here is an
+    example implementation of a mock command `Hello World` which replaces all instances of `pyxam!hello world` with
+    `Hello World!!!`:
+
+    ```python
+    import bang
+
+    def hello_world(args):
+        return 'Hello World!!!'
+
+    bang.add_command('hello world', hello_world)
+    ```
+
+    <br />`name`  The name of the command
+    <br />`command`  The command function
+    
+***
+**run_commands**()
+
+    
+    Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
+    The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//bang.py)">
+<li class="searchable" id="#bang_py"><a href="/home/ebuss/pyxam/docs/build/Modules/bang.html">bang</a></li>
+<input type="hidden" id="process_list_py" value="
+# Module process_list
+
+This module manages the Pyxam process list which is a consecutive set of functions that are run in order. This process
+list can be changed during runtime via a number of function calls.
+
+***
+**_process_list **<br /> Core Process List
+***
+**ready**()
+
+    
+    **<br />returns&nbsp;**  True as long as there are items in the process list
+    
+***
+**append**(*process*)
+
+
+    
+    Append a process to the end of the process list, or if the provided argument is a list, append all the items to
+    the process list.
+
+    <br />`process`  the process or processes to append
+    
+***
+**run_after**(*process, hook*)
+
+
+    
+    Add a hook to run after a given process.
+
+    <br />`process`  The string name of the process to hook
+    <br />`hook`  The function to run
+    
+***
+**run_before**(*process, hook*)
+
+
+    
+    Add a hook to run before a given process.
+
+    <br />`process`  The string name of the process to hook
+    <br />`hook`  The function to run
+    
+***
+**consume**(*arg=None*)
+
+
+    
+    Run the next process in the process list with any provided arguments.
+
+    <br />`arg`  Arguments
+    **<br />returns&nbsp;**  Arguments for the next process
+    
+***
+**skip**()
+
+    
+    Skips the next process in the process list.
+    
+***
+**clear**()
+
+    
+    Clears the process list of all waiting processes.
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//process_list.py)">
+<li class="searchable" id="#process_list_py"><a href="/home/ebuss/pyxam/docs/build/Modules/process_list.html">process_list</a></li>
 <input type="hidden" id="fileutil_py" value="
 # Module fileutil
 
@@ -1079,64 +1469,8 @@ This Module provides helper functions for working with files.
     <br />`timeout`  The maximum time to wait
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py)">
-<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
-<input type="hidden" id="bang_py" value="
-# Module bang
-
-This module prepossesses the template file runs all inline commands prior to weaving.
-
-Commands can be thought of in the same way as preprocessor directives in c. Commands appear in comments. When a command
-name is recognized the contents of the comment are replaced with the result of a function that corresponds to that
-command. Commands can have arguments but importantly are not reprocessed. All commands should appear in a comment block
-of the format being worked with and must be preceded with the `pyxam!` prefix to avoid confusion.
-
-
-
-An example usage of a mock comman        x = 3d named `cmd`:
-
-```
-This is template file
-# This is a normal comment
-Some more text
-# pyxam!cmd
-That last comment was a command
-```
-
-***
-**commands **<br /> A dictionary containing all currently loaded name command pairs
-***
-**add_command**(*name, command*)
-
-
-    
-    Add a name, command pair to commands. This function is meant to be used by plugin files in order to add commands.
-    Commands must take an argument which is whatever portion of the comment was not part of the command call. Here is an
-    example implementation of a mock command `Hello World` which replaces all instances of `pyxam!hello world` with
-    `Hello World!!!`:
-
-    ```python
-    import bang
-
-    def hello_world(args):
-        return 'Hello World!!!'
-
-    bang.add_command('hello world', hello_world)
-    ```
-
-    <br />`name`  The name of the command
-    <br />`command`  The command function
-    
-***
-**run_commands**()
-
-    
-    Parses the template, runs all matched commands. The result of the command replaces the command call in the template.
-    The resulting string is copied to the tmp directory and the template option is pointed towards the new file.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//bang.py)">
-<li class="searchable" id="#bang_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html">bang</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//fileutil.py)">
+<li class="searchable" id="#fileutil_py"><a href="/home/ebuss/pyxam/docs/build/Modules/fileutil.html">fileutil</a></li>
 <input type="hidden" id="config_py" value="
 # Module config
 
@@ -1191,345 +1525,9 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
 ***
 **recomps **<br /> Default number of recompilations
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py)">
-<li class="searchable" id="#config_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/config.html">config</a></li>
-<input type="hidden" id="lib_loader_py" value="
-# Module lib_loader
-
-Module for interacting with external modules and libraries.
-
-***
-**weave**()
-
-    
-    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
-    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
-    version number.
-    
-***
-**gs**(*file*)
-
-
-    
-    Calls ghostscript on a pdf image file to convert it to png.
-    <br />`file`  The path to the pdf image file
-    **<br />returns&nbsp;**  The new new path to the png file
-    
-***
-**pdflatex**(*file*)
-
-
-    
-    Calls pdflatex on a LaTeX file to compile it. By default no output is shown and no user input is allowed. If this
-    fails the compilation is attempted again but this time pdflatex is run in interactive mode to allow the user to see
-    what issues there may be.
-    <br />`file`  The path to the LaTeX file to compile
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//lib_loader.py)">
-<li class="searchable" id="#lib_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//config.py)">
+<li class="searchable" id="#config_py"><a href="/home/ebuss/pyxam/docs/build/Modules/config.html">config</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
-<input type="hidden" id="_options_py" value="
-# Plugin _options
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-
-This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
-also manages a few commands:
- - `solutions` if provided will cause _options to hook a rerun function to the end of the process list
- - `version` if provided will cause _options to print the version number then exit
- - `list` if provided will cause _options to print all formats then exit
- - `help` if provided will cause _options to pritn all options then exit
-The [plugin_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader) will always load _options last so that other Plugins that add formats or
-options can be seen by _options.
-
-
-***
-**signature **<br /> option config by ejrbuss: The default options for pyxam
-***
-**load**()
-
-    
-    Loads the following [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `out -o` Set the output directory
-     - `tmp -tmp` Set the temporary directory
-     - `figure -fig` Set the figure directory
-     - `number -n` Set the number of exams to generate
-     - `title -t` Set the title of the exam
-     - `format -f` Set the format of the exam
-     - `shell -shl` Set the shell used to weave the exam
-     - `method -m` Set the selection method for population mixing
-     - `population -p` Set the class list
-     - `alphabetize -a` Enable lettered versioning
-     - `debug -d` Disable file cleanup
-     - `solutions -s` Enable solutions
-     - `version -v` Show the version number
-     - `list -ls` List all available formats
-     - `help -h` Show a help message
-     Manages the `solutions`, `version`, `list`, and `help` commands as explained above.
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-**rerun_without_solutions**()
-
-    
-    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
-    one with solutions and one without. This function exits on close.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_options.py)">
-<li class="searchable" id="#_options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
-<input type="hidden" id="format_markdown_py" value="
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_markdown.py)">
-<li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
-<input type="hidden" id="format_moodle_py" value="**composer_preprocessor**(*intermediate*)
-
-
-    
-    Promote questions to top level of the ast
-    <br />`intermediate`  An intermediate parse object
-    **<br />returns&nbsp;**  A modified intermediate
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_moodle.py)">
-<li class="searchable" id="#format_moodle_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
-<input type="hidden" id="format_pdf_py" value="
-# Plugin format_pdf
-
-Allows for files to be exported to PDF or DVI. Uses [lib_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html) to call `pdflatex` from
-the command line and compile LaTeX files. Example usage:
-```
-$ ./pyxam.py -f pdf my_file.tex
-```
-
-***
-**compile_format **<br /> Saves the originally specified format
-***
-**load**()
-
-    
-    Adds two dummy formats to the formatter, `pdf` and `dvi`. Hooks `pdf_bypass` to after `post_status` in the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html) to ensure that arguments from the command line and from the template
-    file are both loaded. The bypass function checks to see if either PDF or DVI formats have been requested. Loads the
-    following [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `recomps -r` The number of LaTeX recompilations
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-**pdf_bypass**()
-
-    
-    Saves the originally specified format and then checks if either the PDF or DVI format have been requested. When
-    selected the format is changed to tex and `pdf_compile` hooks to after `export` to compile the final set of tex
-    files.
-    
-***
-**pdf_compile**()
-
-    
-    Compiles any tex files in the out directory to PDF or DVI depending on what `compile_format` is set to. All
-    additional files (aux, log, tex) are removed once compilation completes.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_pdf.py)">
-<li class="searchable" id="#format_pdf_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
-<input type="hidden" id="mix_methods_py" value="
-# Plugin mix_methods
-Adds mixing methods to the [exporter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html).
-
-***
-**sequence_mix**(*versions, data*)
-
-
-    
-    Repeatedly loops through the versions alongside the data until every student is assigned an exam.
-    <br />`versions`  The number of exam versions
-    <br />`data`  An array of student data
-    
-***
-**random_mix**(*versions, data*)
-
-
-    
-    Selects a random exam for each row of data.
-    <br />`versions`  The number of exam versions
-    <br />`data`  An array of student data
-    
-***
-**load**()
-
-    
-    Adds the sequence and random mixing methods to the exporter.
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/mix_methods.py)">
-<li class="searchable" id="#mix_methods_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/mix_methods.html">mix_methods</a></li>
-<input type="hidden" id="format_org_py" value="
-# Plugin format_org
-
-Adds support import export format support for org mode files
-
-***
-**composer_preprocessor**(*intermediate*)
-
-
-    
-    Applies the following filters to the tree:
-     - Promotes the questions token
-
-    <br />`intermediate` 
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**composer_postprocessor**(*source*)
-
-
-    
-    Performs a number of formatting changes to the output org file:
-     - Capital blocks are moved to a newline
-     - Capital blocks with whitespace other than newlines and then content have their content moved to newlines
-     - Consecutive newlines are reduced to a single newlines
-     - Any newlines that appear at the start of the src are removed
-     - Newlines followed by whitespace are changed to just newlines
-
-    <br />`source`  The source to format
-    **<br />returns&nbsp;**  The formatted source
-    
-***
-**load**()
-
-    
-    Adds the org format to the [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/Formatter.html).
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_org.py)">
-<li class="searchable" id="#format_org_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
-<input type="hidden" id="format_html_py" value="
-Plugin format_html
-
-
-***
-**signature **<br /> HTML format by ejrbuss: Format for exporting HTML files
-***
-**math **<br /> Map of LaTeX math symbols to their HTML code counterparts
-***
-**composer_preprocessor**(*intermediate*)
-
-
-    
-    Performs two modifications to the intermediate.
-     - HTML requires listitem tokens be wrapped in a containing element. [filters.wrap_lists](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fitlers.html) is
-     called to place a list token around all consecutive listitem tokens.
-     - Converts images to a base64 encoded string to appear directly in the HTML source.
-     - Verbatim blocks have leading whitespaced evenly removed to help formatting in the case where verbatim blocks are
-     being read in from formatted source
-
-    <br />`intermediate`  The intermediate to process
-    **<br />returns&nbsp;**  The processed intermediate
-    
-***
-**composer_postprocessor**(*src*)
-
-
-    
-    Performs a number of transformations to the source to create a more comprehensive appearance in html:
-     - Converts LaTeX symbols to html codes
-     - Convers markdown images [img](url) into `img` tags
-     - Converts markdown links [label](url) into `a` tags
-     - Converts two consecutive newlines into a `br` tag
-     - Converts three consecutive newlines into two `br` tags
-    Additionally the provided source is loaded into a template and solutions are made visible if the flag is set.
-    <br />`src`  The source to process
-    **<br />returns&nbsp;**  The processed source
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_html.py)">
-<li class="searchable" id="#format_html_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
-<input type="hidden" id="format_latex_py" value="**end **<br /> Regex for recognizing the end of a question
-***
-**parser_preprocessor**(*src*)
-
-
-    
-    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
-    <br />`src`  The template source
-    **<br />returns&nbsp;**  The modified source
-    
-***
-**parser_postprocessor**(*intermediate*)
-
-
-    
-    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
-    prompt Token.
-    <br />`intermediate`  An intermediate parse object
-    **<br />returns&nbsp;**  A modified intermediate
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_latex.py)">
-<li class="searchable" id="#format_latex_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_latex.html">format_latex</a></li>
-<input type="hidden" id="_random_py" value="
-# Plugin _random
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-
-This plugin allows the random seed to be set.
-
-***
-**signature **<br /> random config by ejrbuss: Set the seed for Python random
-***
-**load**()
-
-    
-    Adds the following [option](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `random -rnd` Set the seed for rng
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_random.py)">
-<li class="searchable" id="#_random_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_random.html">_random</a></li>
-<input type="hidden" id="_logging_py" value="
-# Plugin _logging
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
-option is added to allow the user to set the logging level at runtime. The [plugin_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader) will
-always load _logging first so that other Plugins can use logging
-in their load functions.
-
-***
-**description **<br /> Logging option description
-***
-**load**()
-
-    
-    Loads the following [option](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `logging -l` Set the logging level for pyxam
-    Sets logging.basicConfig with a default format and sets it to the option value.
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_logging.py)">
-<li class="searchable" id="#_logging_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_logging.html">_logging</a></li>
 <input type="hidden" id="docs_py" value="
 # Plugin docs
 
@@ -1598,9 +1596,28 @@ source files and python docstrings. All documentation is written in markdown and
     **<br />returns&nbsp;**  A documentation ready string
     
 ***
-**load_docs**(*docs, name=''*)
+**signature
+    docstring = re.sub**(*r'^((def)|(class))\s+(.*?)\((.*?)\*)
+
+', r'**\4**(*\5*)\n\n', docstring, 1, re.DOTALL)
+    # Remove empty parameters
+    docstring = re.sub(r'\(\*\*\)\n', '()', docstring)
+    # Format param
+    docstring = re.sub(r'<br />`\s*(.*?)` (.*?)', r'<br />`\1` \2', docstring)
+    # Format return
+    docstring = re.sub(r'**<br />returns&nbsp;** (.*?)', r'**<br />returns&nbsp;** \1', docstring)
+    # Format single line comments
+    lines = docstring.split('\n')
+    overwrite = False
+    while not overwrite:
+        for line in lines:
+            overwrite = overwrite or (len(line) < 1 or line[0] != ' ')
+        if not overwrite:
+            lines = [line[1:] for line in lines]
+    return '\n'.join(lines)
 
 
+def load_docs(docs, name=''):
     
     Load a documentation file.
 
@@ -1628,12 +1645,258 @@ source files and python docstrings. All documentation is written in markdown and
     <br />`doc`  The file to compile
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/docs.py)">
-<li class="searchable" id="#docs_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/docs.html">docs</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/docs.py)">
+<li class="searchable" id="#docs_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/docs.html">docs</a></li>
+<input type="hidden" id="format_markdown_py" value="
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_markdown.py)">
+<li class="searchable" id="#format_markdown_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
+<input type="hidden" id="format_moodle_py" value="**composer_preprocessor**(*intermediate*)
+
+
+    
+    Promote questions to top level of the ast
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_moodle.py)">
+<li class="searchable" id="#format_moodle_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
+<input type="hidden" id="format_pdf_py" value="
+# Plugin format_pdf
+
+Allows for files to be exported to PDF or DVI. Uses [lib_loader](/home/ebuss/pyxam/docs/build/Modules/lib_loader.html) to call `pdflatex` from
+the command line and compile LaTeX files. Example usage:
+```
+$ ./pyxam.py -f pdf my_file.tex
+```
+
+***
+**compile_format **<br /> Saves the originally specified format
+***
+**load**()
+
+    
+    Adds two dummy formats to the formatter, `pdf` and `dvi`. Hooks `pdf_bypass` to after `post_status` in the
+    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html) to ensure that arguments from the command line and from the template
+    file are both loaded. The bypass function checks to see if either PDF or DVI formats have been requested. Loads the
+    following [options](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `recomps -r` The number of LaTeX recompilations
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+**pdf_bypass**()
+
+    
+    Saves the originally specified format and then checks if either the PDF or DVI format have been requested. When
+    selected the format is changed to tex and `pdf_compile` hooks to after `export` to compile the final set of tex
+    files.
+    
+***
+**pdf_compile**()
+
+    
+    Compiles any tex files in the out directory to PDF or DVI depending on what `compile_format` is set to. All
+    additional files (aux, log, tex) are removed once compilation completes.
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_pdf.py)">
+<li class="searchable" id="#format_pdf_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
+<input type="hidden" id="mix_methods_py" value="
+# Plugin mix_methods
+Adds mixing methods to the [exporter](/home/ebuss/pyxam/docs/build/Modules/exporter.html).
+
+***
+**sequence_mix**(*versions, data*)
+
+
+    
+    Repeatedly loops through the versions alongside the data until every student is assigned an exam.
+    <br />`versions`  The number of exam versions
+    <br />`data`  An array of student data
+    
+***
+**random_mix**(*versions, data*)
+
+
+    
+    Selects a random exam for each row of data.
+    <br />`versions`  The number of exam versions
+    <br />`data`  An array of student data
+    
+***
+**load**()
+
+    
+    Adds the sequence and random mixing methods to the exporter.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/mix_methods.py)">
+<li class="searchable" id="#mix_methods_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/mix_methods.html">mix_methods</a></li>
+<input type="hidden" id="format_org_py" value="
+# Plugin format_org
+
+Adds support import export format support for org mode files
+
+***
+**composer_preprocessor**(*intermediate*)
+
+
+    
+    Applies the following filters to the tree:
+     - Promotes the questions token
+
+    <br />`intermediate` 
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**composer_postprocessor**(*source*)
+
+
+    
+    Performs a number of formatting changes to the output org file:
+     - Capital blocks are moved to a newline
+     - Capital blocks with whitespace other than newlines and then content have their content moved to newlines
+     - Consecutive newlines are reduced to a single newlines
+     - Any newlines that appear at the start of the src are removed
+     - Newlines followed by whitespace are changed to just newlines
+
+    <br />`source`  The source to format
+    **<br />returns&nbsp;**  The formatted source
+    
+***
+**load**()
+
+    
+    Adds the org format to the [formatter](/home/ebuss/pyxam/docs/build/Modules/Formatter.html).
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_org.py)">
+<li class="searchable" id="#format_org_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_org.html">format_org</a></li>
+<input type="hidden" id="format_latex_py" value="**end **<br /> Regex for recognizing the end of a question
+***
+**parser_preprocessor**(*src*)
+
+
+    
+    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
+    <br />`src`  The template source
+    **<br />returns&nbsp;**  The modified source
+    
+***
+**parser_postprocessor**(*intermediate*)
+
+
+    
+    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
+    prompt Token.
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_latex.py)">
+<li class="searchable" id="#format_latex_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_latex.html">format_latex</a></li>
+<input type="hidden" id="format_html_py" value="
+Plugin format_html
+
+
+***
+**signature **<br /> HTML format by ejrbuss: Format for exporting HTML files
+***
+**math **<br /> Map of LaTeX math symbols to their HTML code counterparts
+***
+**composer_preprocessor**(*intermediate*)
+
+
+    
+    Performs two modifications to the intermediate.
+     - HTML requires listitem tokens be wrapped in a containing element. [filters.wrap_lists](/home/ebuss/pyxam/docs/build/Modules/fitlers.html) is
+     called to place a list token around all consecutive listitem tokens.
+     - Converts images to a base64 encoded string to appear directly in the HTML source.
+     - Verbatim blocks have leading whitespaced evenly removed to help formatting in the case where verbatim blocks are
+     being read in from formatted source
+
+    <br />`intermediate`  The intermediate to process
+    **<br />returns&nbsp;**  The processed intermediate
+    
+***
+**composer_postprocessor**(*src*)
+
+
+    
+    Performs a number of transformations to the source to create a more comprehensive appearance in html:
+     - Converts LaTeX symbols to html codes
+     - Convers markdown images [img](url) into `img` tags
+     - Converts markdown links [label](url) into `a` tags
+     - Converts two consecutive newlines into a `br` tag
+     - Converts three consecutive newlines into two `br` tags
+    Additionally the provided source is loaded into a template and solutions are made visible if the flag is set.
+    <br />`src`  The source to process
+    **<br />returns&nbsp;**  The processed source
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_html.py)">
+<li class="searchable" id="#format_html_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_html.html">format_html</a></li>
+<input type="hidden" id="_random_py" value="
+# Plugin _random
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+
+This plugin allows the random seed to be set.
+
+***
+**signature **<br /> random config by ejrbuss: Set the seed for Python random
+***
+**load**()
+
+    
+    Adds the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `random -rnd` Set the seed for rng
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_random.py)">
+<li class="searchable" id="#_random_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_random.html">_random</a></li>
+<input type="hidden" id="_logging_py" value="
+# Plugin _logging
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
+option is added to allow the user to set the logging level at runtime. The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will
+always load _logging first so that other Plugins can use logging
+in their load functions.
+
+***
+**description **<br /> Logging option description
+***
+**load**()
+
+    
+    Loads the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `logging -l` Set the logging level for pyxam
+    Sets logging.basicConfig with a default format and sets it to the option value.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_logging.py)">
+<li class="searchable" id="#_logging_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_logging.html">_logging</a></li>
 <input type="hidden" id="commands_py" value="
 # Plugin commands
 
-Defines a default set of [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html) commands to be used when prepossessing a template.
+Defines a default set of [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html) commands to be used when prepossessing a template.
 
 ***
 **signature **<br /> command config by ejrbuss: The default command set
@@ -1717,21 +1980,106 @@ Defines a default set of [bang](https://rawgit.com/balancededge/pyxam/master/doc
     Define a constant
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/commands.py)">
-<li class="searchable" id="#commands_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/commands.html">commands</a></li>
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/commands.py)">
+<li class="searchable" id="#commands_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/commands.html">commands</a></li>
+<input type="hidden" id="_options_py" value="
+# Plugin _options
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+
+This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
+also manages a few commands:
+ - `solutions` if provided will cause _options to hook a rerun function to the end of the process list
+ - `version` if provided will cause _options to print the version number then exit
+ - `list` if provided will cause _options to print all formats then exit
+ - `help` if provided will cause _options to pritn all options then exit
+The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will always load _options last so that other Plugins that add formats or
+options can be seen by _options.
+
+
+***
+**signature **<br /> option config by ejrbuss: The default options for pyxam
+***
+**load**()
+
+    
+    Loads the following [options](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `out -o` Set the output directory
+     - `tmp -tmp` Set the temporary directory
+     - `figure -fig` Set the figure directory
+     - `number -n` Set the number of exams to generate
+     - `title -t` Set the title of the exam
+     - `format -f` Set the format of the exam
+     - `shell -shl` Set the shell used to weave the exam
+     - `method -m` Set the selection method for population mixing
+     - `population -p` Set the class list
+     - `alphabetize -a` Enable lettered versioning
+     - `debug -d` Disable file cleanup
+     - `solutions -s` Enable solutions
+     - `version -v` Show the version number
+     - `list -ls` List all available formats
+     - `help -h` Show a help message
+     Manages the `solutions`, `version`, `list`, and `help` commands as explained above.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+**list',                      None,               str)
+    options.add_option**(*'alphabetize',  '-a',   'Enable lettered versioning',          config.alphabetize, bool)
+    options.add_option('debug',        '-d',   'Disable file cleanup',                config.debug,       bool)
+    options.add_option('solutions',    '-s',   'Enable soultions',                    config.solutions,   bool)
+    options.add_option('version',      '-v',  'Show the version number',             False,              bool)
+    options.add_option('list',         '-ls', 'List all available formats',          False,              bool)
+    options.add_option('help',         '-h',  'Show a help message',                 False,              bool)
+    # Run once and produce solutions then run again widthout solutions
+    if options.state.solutions(*)
+
+
+        options.state.population('')
+        process_list.run_before('goodbye', rerun_without_solutions)
+    # Display version number via the welcome message then exit
+    if options.state.version():
+        if options.state.api():
+            pyxam.welcome()
+    # Display a list of all available formats then exit
+    elif options.state.list():
+        formats = set(fmt['extensions'][0] for key, fmt in formatter.formats.items())
+        for fmt in set(formats):
+            print(formatter.formats[fmt]['extensions'][0] + ':\n\t' + formatter.formats[fmt]['description'])
+    # Display a help message then exit
+    elif options.state.help():
+        div = '-' * max(len(line) for line in options.get_help().split('\n'))
+        print('\n'.join([div, 'Pyxam Options'.center(len(div)), div, options.get_help(), div]))
+    # Return signature
+    else:
+        return signature
+    # Exit
+    exit()
+
+
+def rerun_without_solutions():
+    
+    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
+    [process_list](/home/ebuss/pyxam/docs/build/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
+    one with solutions and one without. =
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_options.py)">
+<li class="searchable" id="#_options_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_options.html">_options</a></li>
 </ul></li>
         </ul>
         <div style='height:2em'></div>
     </div>
     <div class='doc'>
         <div class="content">Plugin format_html<hr /><br /><b>signature</b><br /> HTML format by ejrbuss: Format for exporting HTML files<hr /><br /><b>math</b><br /> Map of LaTeX math symbols to their HTML code counterparts<hr /><br /><b>composer_preprocessor</b>(<i>intermediate</i>)<br /><br />    
-    Performs two modifications to the intermediate.<ul><li>HTML requires listitem tokens be wrapped in a containing element. <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fitlers.html">filters.wrap_lists</a> is</ul>called to place a list token around all consecutive listitem tokens.<ul><li>Converts images to a base64 encoded string to appear directly in the HTML source.<li>Verbatim blocks have leading whitespaced evenly removed to help formatting in the case where verbatim blocks are</ul>being read in from formatted source<br />    <br /><pre class="verb-expr">intermediate</pre>The intermediate to process<br /><b><br />returns&nbsp;</b>The processed intermediate<hr /><br /><b>composer_postprocessor</b>(<i>src</i>)<br /><br />    
+    Performs two modifications to the intermediate.<ul><li>HTML requires listitem tokens be wrapped in a containing element. <a href="/home/ebuss/pyxam/docs/build/Modules/fitlers.html">filters.wrap_lists</a> is</ul>called to place a list token around all consecutive listitem tokens.<ul><li>Converts images to a base64 encoded string to appear directly in the HTML source.<li>Verbatim blocks have leading whitespaced evenly removed to help formatting in the case where verbatim blocks are</ul>being read in from formatted source<br />    <br /><pre class="verb-expr">intermediate</pre>The intermediate to process<br /><b><br />returns&nbsp;</b>The processed intermediate<hr /><br /><b>composer_postprocessor</b>(<i>src</i>)<br /><br />    
     Performs a number of transformations to the source to create a more comprehensive appearance in html:<ul><li>Converts LaTeX symbols to html codes<li>Convers markdown images <img src="url"> into<pre class="verb-expr">img</pre>tags<li>Converts markdown links <a href="url">label</a> into<pre class="verb-expr">a</pre>tags<li>Converts two consecutive newlines into a<pre class="verb-expr">br</pre>tag<li>Converts three consecutive newlines into two<pre class="verb-expr">br</pre>tags</ul>Additionally the provided source is loaded into a template and solutions are made visible if the flag is set.
-    <br /><pre class="verb-expr">src</pre>The source to process<br /><b><br />returns&nbsp;</b>The processed source<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_html.py">source</a></div>
+    <br /><pre class="verb-expr">src</pre>The source to process<br /><b><br />returns&nbsp;</b>The processed source<hr />View the <a href="/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_html.py">source</a></div>
         <hr />
         <div class='credits'>
-            &copy; Copyright Eric Buss
-            <br /><br />
             Built with <a href='https://github.com/balancededge/pyxam'>Pyxam</a>
         </div>
     </div>

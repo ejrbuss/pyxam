@@ -38,7 +38,7 @@ def export():
         fileutil.move(file, options.state.cwd() + '/' + (chr(n + ord('A')) if options.state.alphabetize() else str(n + 1)) + '.mix')
     # Get files and data
     files, data = fileutil.with_extension('.mix'), csv_read(options.state.population())
-    options.post('Performing', options.state.method(), 'mixing of', len(files), 'exam versions among', len(data), 'students.\n')
+    options.post('Performing', options.state.method(), 'mixing of', len(files), 'exam versions among', len(data), 'students.')
     # Mix files
     _methods[options.state.method()](len(files), data)
     # Remove constants fro mthe unmixed files
