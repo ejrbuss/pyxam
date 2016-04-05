@@ -1528,6 +1528,33 @@ View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//fileutil.py)">
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//config.py)">
 <li class="searchable" id="#config_py"><a href="/home/ebuss/pyxam/docs/build/Modules/config.html">config</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
+<input type="hidden" id="_logging_py" value="
+# Plugin _logging
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
+option is added to allow the user to set the logging level at runtime. The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will
+always load _logging first so that other Plugins can use logging
+in their load functions.
+
+***
+**description **<br /> Logging option description
+***
+**load**()
+
+    
+    Loads the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `logging -l` Set the logging level for pyxam
+    Sets logging.basicConfig with a default format and sets it to the option value.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_logging.py)">
+<li class="searchable" id="#_logging_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_logging.html">_logging</a></li>
 <input type="hidden" id="docs_py" value="
 # Plugin docs
 
@@ -1647,6 +1674,117 @@ def load_docs(docs, name=''):
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/docs.py)">
 <li class="searchable" id="#docs_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/docs.html">docs</a></li>
+<input type="hidden" id="_random_py" value="
+# Plugin _random
+
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
+
+
+
+This plugin allows the random seed to be set.
+
+***
+**load**()
+
+    
+    Adds the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
+     - `random -rnd` Set the seed for rng
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_random.py)">
+<li class="searchable" id="#_random_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_random.html">_random</a></li>
+<input type="hidden" id="commands_py" value="
+# Plugin commands
+
+Defines a default set of [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html) commands to be used when prepossessing a template.
+
+***
+**signature **<br /> command config by ejrbuss: The default command set
+***
+**arguments**(*args*)
+
+
+    
+    Load args as though they were command line options. These take priority over command line options. This command will
+    be replaced with an empty string. An example where the output format is set to pdf and the debug flag is enabled:
+    ```
+    # pyxam!args -f pdf -d
+    ```
+    
+***
+**expression**(*args*)
+
+
+    
+    Run a python expression and echo the result. An example hello world program:
+    ```
+    # pyxam!expr 'Hello World'
+    ```
+    
+***
+**silent_expression**(*args*)
+
+
+    
+    Run a python expression silently. This can be used to set variables that are used later. An example:
+    ```
+    # pyxam!sexpr x = 3
+    ```
+    
+***
+**verbatim**(*args*)
+
+
+    
+    Run a python block and return a verbatim copy of the code. An example:
+    ```
+    /** pyxam!verb
+        import time
+        x = time.time()
+    */
+    ```
+    Would be turned into:
+    ```python
+    verb:
+        import time()
+        x = time.time()
+    ```
+    And x would now store the current time which could be used by other commands.
+    
+***
+**block**(*args*)
+
+
+    
+    Run a python block silently
+    
+***
+**figure**(*args*)
+
+
+    
+    Insert a python figure
+    
+***
+**question_import**(*args*)
+
+
+    
+    Insert a question
+    
+***
+**define**(*args*)
+
+
+    
+    Define a constant
+    
+***
+View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/commands.py)">
+<li class="searchable" id="#commands_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/commands.html">commands</a></li>
 <input type="hidden" id="format_markdown_py" value="
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_markdown.py)">
@@ -1842,146 +1980,6 @@ Plugin format_html
 ***
 View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/format_html.py)">
 <li class="searchable" id="#format_html_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/format_html.html">format_html</a></li>
-<input type="hidden" id="_random_py" value="
-# Plugin _random
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-
-This plugin allows the random seed to be set.
-
-***
-**signature **<br /> random config by ejrbuss: Set the seed for Python random
-***
-**load**()
-
-    
-    Adds the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
-     - `random -rnd` Set the seed for rng
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_random.py)">
-<li class="searchable" id="#_random_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_random.html">_random</a></li>
-<input type="hidden" id="_logging_py" value="
-# Plugin _logging
-
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
-
-
-This plugin sets the logging configuration for Pyxam. The default value for logging is hardcoded but a command line
-option is added to allow the user to set the logging level at runtime. The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will
-always load _logging first so that other Plugins can use logging
-in their load functions.
-
-***
-**description **<br /> Logging option description
-***
-**load**()
-
-    
-    Loads the following [option](/home/ebuss/pyxam/docs/build/Modules/options.html):
-     - `logging -l` Set the logging level for pyxam
-    Sets logging.basicConfig with a default format and sets it to the option value.
-
-    **<br />returns&nbsp;**  plugin signature
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/_logging.py)">
-<li class="searchable" id="#_logging_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/_logging.html">_logging</a></li>
-<input type="hidden" id="commands_py" value="
-# Plugin commands
-
-Defines a default set of [bang](/home/ebuss/pyxam/docs/build/Modules/bang.html) commands to be used when prepossessing a template.
-
-***
-**signature **<br /> command config by ejrbuss: The default command set
-***
-**arguments**(*args*)
-
-
-    
-    Load args as though they were command line options. These take priority over command line options. This command will
-    be replaced with an empty string. An example where the output format is set to pdf and the debug flag is enabled:
-    ```
-    # pyxam!args -f pdf -d
-    ```
-    
-***
-**expression**(*args*)
-
-
-    
-    Run a python expression and echo the result. An example hello world program:
-    ```
-    # pyxam!expr 'Hello World'
-    ```
-    
-***
-**silent_expression**(*args*)
-
-
-    
-    Run a python expression silently. This can be used to set variables that are used later. An example:
-    ```
-    # pyxam!sexpr x = 3
-    ```
-    
-***
-**verbatim**(*args*)
-
-
-    
-    Run a python block and return a verbatim copy of the code. An example:
-    ```
-    /** pyxam!verb
-        import time
-        x = time.time()
-    */
-    ```
-    Would be turned into:
-    ```python
-    verb:
-        import time()
-        x = time.time()
-    ```
-    And x would now store the current time which could be used by other commands.
-    
-***
-**block**(*args*)
-
-
-    
-    Run a python block silently
-    
-***
-**figure**(*args*)
-
-
-    
-    Insert a python figure
-    
-***
-**question_import**(*args*)
-
-
-    
-    Insert a question
-    
-***
-**define**(*args*)
-
-
-    
-    Define a constant
-    
-***
-View the [source](/home/ebuss/pyxam/docs/build/../../pyxam//plugins/commands.py)">
-<li class="searchable" id="#commands_py"><a href="/home/ebuss/pyxam/docs/build/Plugins/commands.html">commands</a></li>
 <input type="hidden" id="_options_py" value="
 # Plugin _options
 
@@ -2000,8 +1998,6 @@ The [plugin_loader](/home/ebuss/pyxam/docs/build/Modules/plugin_loader) will alw
 options can be seen by _options.
 
 
-***
-**signature **<br /> option config by ejrbuss: The default options for pyxam
 ***
 **load**()
 

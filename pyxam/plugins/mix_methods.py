@@ -1,10 +1,10 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Plugin mix_methods
-Adds mixing methods to the [exporter](%/Modules/exporter.html).
+Adds mixing methods to the [mixer](%/Modules/mixer.html).
 """
+import mixer
 import random
-import exporter
 
 
 signature = 'mix methods', 'ejrbuss', 'adds sequence and random mixing methods'
@@ -18,7 +18,7 @@ def sequence_mix(versions, data):
     """
     # Mix data
     for n, row in enumerate(data):
-        exporter.mix(n % versions, row)
+        mixer.mix(n % versions, row)
 
 
 def random_mix(versions, data):
@@ -29,18 +29,18 @@ def random_mix(versions, data):
     """
     # Mix data
     for row in data:
-        exporter.mix(random.randint(versions), row)
+        mixer.mix(random.randint(versions), row)
 
 
 def load():
     """
-    Adds the sequence and random mixing methods to the exporter.
+    Adds the sequence and random mixing methods to the mixer.
 
     :return: plugin signature
     """
     # Add sequence method
-    exporter.add_method('sequence', sequence_mix)
+    mixer.add_method('sequence', sequence_mix)
     # Add random mix
-    exporter.add_method('random', random_mix)
+    mixer.add_method('random', random_mix)
     # Return signature
     return signature

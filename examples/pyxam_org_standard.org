@@ -1,0 +1,126 @@
+* ?
+** ?Essay Question
+This is the simplest question possible. It is just a prompt and has no solution.
+** ?Short Answer
+Short answer questions are composed of a prompt and solution. When importing the question to Moodle the solution will be
+matched character for character.
+*** Solution
+Place your solution in a solution block.
+** ?Multiple Choice
+Multiple choice questions are made up of choices and correct choices. You can have as many of each as you need. All
+choices should appear in a choices block. By default multiple choice questions will be scrambled when imported to
+Moodle.
+- [ ] A
+- [ ] B
+- [ ] C
+- [X] D
+** ?Multi Select
+Multi select questions are a slight variation on multiple choice questions. By including multiple correct choices the
+Moodle format will automatically allow the user to select multiple answers.
+- [ ] A
+- [X] B
+- [ ] C
+- [X] D
+** ?True or False
+True or False questions are a variation of multiple choice questions where the only choices are True or False.
+- [ ] True
+- [X] False
+** ?Numerical Question
+Numerical questions look like short answer questions except they use the format $var=solution$ in the solution block.
+These questions will be automatically be converted to numerical questions when importing to moodle making the solution
+part of the format the answer.
+*** Solution
+$y=4$
+** ?Numerical Question With Absolute Tolerance
+Numerical questions can be given a tolerance which allows the user to enter a value within $\pm$ the tolerance of the
+solution.
+*** Solution
+$y=4 tolerance 0.1$
+** ?Numerical Question With Percent Tolerance
+Tolerance for numerical questions can also pe specified in percent.
+*** Solution
+$y=4 tolerance 1\%$
+** ?Using a Plot in a Question
+Plots can be added to any question by setting the figure flag option.
+<<echo=False, fig=True>>=
+import matplotlib.pyplot
+# To add a dataset we use the pyplot module in matplotlib and provide a dataset to the plot function
+matplotlib.pyplot.plot([1,2,3,4])
+# The axis of the plot can be labeled using the ylabel and xlabel functions
+matplotlib.pyplot.ylabel('Y axis')
+matplotlib.pyplot.xlabel('X axis')
+# A title can be added using the title function
+matplotlib.pyplot.title('A Simple Graph')
+# Use the show function to finalize the figure and display it in the question
+matplotlib.pyplot.show()
+@
+** ?Using Random Parameters
+You can define parameters in a python equation using random values in order to create a randomized question.
+<%
+# Set our parameters
+a = random.randint(0, 10)
+b = random.randint(0, 10)
+# Calculate our solution
+c = a + b
+%>
+Now that we've set up the question we can ask what is <%= a %> + <%= b %>?
+*** Solution
+$<%= a %> + <%= b %> = <%= c %>$
+** ?Picking Parameters From a List
+You can use python to pick random parameters from a defined list.
+<%
+# Define the lists for our parameters
+list_a = [1, 2, 3, 4]
+list_b = [1, 2, 3, 4]
+# Use the choice function to select random parameters
+a = random.choice(list_a)
+b = random.choice(list_b)
+# Calculate our solution
+c = a + b
+%>
+What is <%= a %> + <%= b %>?
+*** Solution
+$<%= a %> + <%= b %> = <%= c %>$
+** ?Picking Random Items From a List
+For questions with solutions that are too difficulat to calculate in Python you can pick a dictionary from a list.
+<%
+# Define our list as list of dictionaries containing our parameters and solution
+params = [{'a':1, 'b':2, 'c':3}, {'a':5, 'b':9, 'c':14}, {'a':0, 'b':7, 'c':7}]
+# Select our parameters and solutions
+param = random.choice(params)
+# Set our parameters and solution
+%>
+What is <%= a %> + <%= b %>?
+*** Solution
+$<%= a %> + <%= b %> = <%= c %>$
+** ?Using the Exam Version to Pick Items From a List
+If you want to pick a specific item in a list for the exam version you can use the pyxam object to access the exam
+number.
+<%
+# Define the lists for our parameters
+list_a = [1, 2, 3, 4]
+list_b = [4, 3, 2, 1]
+# Use the exam number to select our parameters
+a = list_a[pyxam.examnumber % len(list_a)]
+b = list_b[pyxam.examnumber % len(list_b)]
+# Calculate our solution
+c = a + b
+%>
+What is <%= a %> + <%= b %>?
+*** Solution
+$<%= a %> + <%= b %> = <%= c %>$
+** ?Moodle Pick From a List
+In order to generate a pick from a list question in Moodle you have to use a sepcific format. Variables have to be
+surrounded by curly brackets. You solution has to be given as an equation so here {a} + {b} can be written out verbatim.
+To provide potential parameters you need to provide items with the format where ${variable} [list of solutions]$ These
+questions still support tolerance.
+*** Solution
+${a} + {b} = {a} + {b} tolerance 0.01$
+where ${a} [1.0, 7.5, 6.0]$
+where ${b} [2.5, 4.0, 9.8]$
+** ?Constants
+Constants can be referened in comments using the following commands.
+<%= pyxam.examnumber %> will be replaced with the exam number.
+<%= pyxam.examversion %> will be replaced with the exam version.
+<%= pyxam.studentname %> will be replaced with the student name if available.
+<%= pyxam.studentnumber %> will be replaced with the student number if available.

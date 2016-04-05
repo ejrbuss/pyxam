@@ -60,6 +60,7 @@ def load():
     options.add_option('method',       '-m',   'Set selection method for CSVs',       config.method,      str)
     options.add_option('population',   '-p',   'Set class list',                      None,               str)
     options.add_option('alphabetize',  '-a',   'Enable lettered versioning',          config.alphabetize, bool)
+    options.add_option('noweave',      '-w',   'Disable pweave',                      config.weave,        bool)
     options.add_option('debug',        '-d',   'Disable file cleanup',                config.debug,       bool)
     options.add_option('solutions',    '-s',   'Enable soultions',                    config.solutions,   bool)
     options.add_option('version',      '-v',  'Show the version number',             False,              bool)

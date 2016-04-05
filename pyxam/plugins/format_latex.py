@@ -31,18 +31,19 @@ def parser_postprocessor(intermediate):
     :return: A modified intermediate
     """
     def def_prompt(token):
-        if token.name != 'question':
-            return
-        definition = token.definition[0].definition
-        title, prompt = definition.pop(0), []
-        while len(definition) > 0 and (not hasattr(definition[0], 'name') or definition[0].name in ['$', 'img', 'verbatim']):
-            prompt.append(definition.pop(0))
-        definition.insert(0, formatter.Token('prompt', prompt, None, ''))
-        definition.insert(0, title)
-        return token
+        try:
+            definition = token.definition[0].definition
+            title, prompt = definition.pop(0), []
+            while len(definition) > 0 and (not hasattr(definition[0], 'name') or definition[0].name in ['$', 'img', 'verbatim']):
+                prompt.append(definition.pop(0))
+            definition.insert(0, formatter.Token('prompt', prompt, None, ''))
+            definition.insert(0, title)
+            return token
+        except AttributeError:
+            raise(formatter.FormatError('Malformed question token definition:' + str(token)))
 
     # Run inner function recursively on the ast
-    filters.apply_function(intermediate.ast, def_prompt, 'question')
+    filters.apply_function(intermediate.ast, def_prompt, 'question', exact=True)
     return intermediate
 
 

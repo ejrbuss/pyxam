@@ -1972,32 +1972,14 @@ class pyxam:
         options.load_options(shlex.split(args))<br />import random
 import config
 random.seed(pyxam.examnumber + config.seed)
-%><h1>Plugin _options</h1>This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.<br /><br />
-This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
-also manages a few commands:<ul><li><pre class="verb-expr">solutions</pre>if provided will cause _options to hook a rerun function to the end of the process list<li><pre class="verb-expr">version</pre>if provided will cause _options to print the version number then exit<li><pre class="verb-expr">list</pre>if provided will cause _options to print all formats then exit<li><pre class="verb-expr">help</pre>if provided will cause _options to pritn all options then exit</ul>The <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader">plugin_loader</a> will always load _options last so that other Plugins that add formats or
-options can be seen by _options.<hr /><br /><b>load</b>()<br />    
-    Loads the following <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a>:<ul><li><pre class="verb-expr">out -o</pre>Set the output directory<li><pre class="verb-expr">tmp -tmp</pre>Set the temporary directory<li><pre class="verb-expr">figure -fig</pre>Set the figure directory<li><pre class="verb-expr">number -n</pre>Set the number of exams to generate<li><pre class="verb-expr">title -t</pre>Set the title of the exam<li><pre class="verb-expr">format -f</pre>Set the format of the exam<li><pre class="verb-expr">shell -shl</pre>Set the shell used to weave the exam<li><pre class="verb-expr">method -m</pre>Set the selection method for population mixing<li><pre class="verb-expr">population -p</pre>Set the class list<li><pre class="verb-expr">alphabetize -a</pre>Enable lettered versioning<li><pre class="verb-expr">debug -d</pre>Disable file cleanup<li><pre class="verb-expr">solutions -s</pre>Enable solutions<li><pre class="verb-expr">version -v</pre>Show the version number<li><pre class="verb-expr">list -ls</pre>List all available formats<li><pre class="verb-expr">help -h</pre>Show a help message</ul>Manages the<pre class="verb-expr">solutions</pre>,<pre class="verb-expr">version</pre>,<pre class="verb-expr">list</pre>, and<pre class="verb-expr">help</pre>commands as explained above.<br /><b><br />returns&nbsp;</b>plugin signature<hr /><br /><b>list',                      None,               str)
-    options.add_option</b>(<i>'alphabetize',  '-a',   'Enable lettered versioning',          config.alphabetize, bool)
-    options.add_option('noweave',      '-w',   'Disable pweave',                      config.weave,        bool)
-    options.add_option('debug',        '-d',   'Disable file cleanup',                config.debug,       bool)
-    options.add_option('solutions',    '-s',   'Enable soultions',                    config.solutions,   bool)
-    options.add_option('version',      '-v',  'Show the version number',             False,              bool)
-    options.add_option('list',         '-ls', 'List all available formats',          False,              bool)
-    options.add_option('help',         '-h',  'Show a help message',                 False,              bool)<h1>Run once and produce solutions then run again widthout solutions</h1>if options.state.solutions(</i>)<br /><br />        options.state.population('')
-        process_list.run_before('goodbye', rerun_without_solutions)<h1>Display version number via the welcome message then exit</h1>if options.state.version():
-        if options.state.api():
-            pyxam.welcome()<h1>Display a list of all available formats then exit</h1>elif options.state.list():
-        formats = set(fmt['extensions'][0] for key, fmt in formatter.formats.items())
-        for fmt in set(formats):
-            print(formatter.formats[fmt]['extensions'][0] + ':\n\t' + formatter.formats[fmt]['description'])<h1>Display a help message then exit</h1>elif options.state.help():
-        div = '-'<i>max(len(line) for line in options.get_help().split('\n'))
-        print('\n'.join([div, 'Pyxam Options'.center(len(div)), div, options.get_help(), div]))<h1>Return signature</h1>else:
-        return signature<h1>Exit</h1>exit()<br /><br />def rerun_without_solutions():
-    
-    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
-    <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a> when the solutions flag is set so that two sets of exams are produced,
-    one with solutions and one without. =</i><i></i>View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_options.py">source</a></div>
+%><h1>Plugin mix_methods</h1>Adds mixing methods to the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html">mixer</a>.<hr /><br /><b>sequence_mix</b>(<i>versions, data</i>)<br /><br />    
+    Repeatedly loops through the versions alongside the data until every student is assigned an exam.
+    <br /><pre class="verb-expr">versions</pre>The number of exam versions
+    <br /><pre class="verb-expr">data</pre>An array of student data<hr /><br /><b>random_mix</b>(<i>versions, data</i>)<br /><br />    
+    Selects a random exam for each row of data.
+    <br /><pre class="verb-expr">versions</pre>The number of exam versions
+    <br /><pre class="verb-expr">data</pre>An array of student data<hr /><br /><b>load</b>()<br />    
+    Adds the sequence and random mixing methods to the mixer.<br /><b><br />returns&nbsp;</b>plugin signature<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/mix_methods.py">source</a></div>
         <hr />
         <div class='credits'>
             Built with <a href='https://github.com/balancededge/pyxam'>Pyxam</a>

@@ -14,15 +14,10 @@ Prior to launching however script checks Python dependencies for `matplotlib` an
 generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
 these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
 """
-
-# TODO finish docs
-# TODO tests
-# TODO cleanup
-# TODO test html
-# TODO org mode
-# TODO markdown
-# TODO calculated
-# TODO pick from a list example
+# TODO Fix org -> latex/pdf
+# TODO Finish docs
+# TODO Tests & cleanup
+# TODO Website
 
 
 # Module Dependencies
@@ -41,7 +36,7 @@ except ImportError:
 
 
 import sys
-import bang
+import mixer
 import options
 import exporter
 import fileutil
@@ -52,7 +47,7 @@ import plugin_loader
 
 
 # Pyxam Version Number
-__version__ = 'v0.3.4'
+__version__ = 'v0.3.5'
 
 
 # Copy of original arguments
@@ -129,7 +124,7 @@ def start(args, api=True):
         plugin_loader.load_plugins,
         options.load_template,
         fileutil.build_files,
-        bang.run_commands,
+        mixer.setup,
         options.post_status,
         lib_loader.weave,
         formatter.parse,

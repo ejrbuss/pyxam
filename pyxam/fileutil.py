@@ -38,7 +38,8 @@ def build_files():
         os.mkdir(options.state.tmp())
     else:
         cleanup()
-        os.mkdir(options.state.tmp())
+        if not os.path.exists(options.state.tmp()):
+            os.mkdir(options.state.tmp())
     # Build out directory
     if not os.path.exists(options.state.out()):
         os.mkdir(options.state.out())

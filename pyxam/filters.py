@@ -10,23 +10,13 @@ import logging
 import base64
 import re
 
+
 #TODO finish
-def remove_name(ast, name):
-    """
-    Remove all tokens with a given name along with all their sub tokens. Tokens will be removed recursively from the
-    provided tree
-
-    :param ast: The tree to walk and remove tokens from
-    :param name: The token name to remove
-    :return: The modified tree
-    """
-    logging.info('Name filter for "' + name + '"')
-    return recursive_filter(lambda t: not (hasattr(t, 'name') and name == t.name), ast)
 
 
-def remove_partial(ast, partial):
+def remove_partial(ast, partial, exact=False):
     logging.info('Paritalfilter for "' + partial + '"')
-    return recursive_filter(lambda t: not (hasattr(t, 'name') and partial in t.name), ast)
+    return recursive_filter(lambda t: not (hasattr(t, 'name') and partial in t.name and (not exact or partial == t.name)), ast)
 
 
 def recursive_filter(fn, node):
@@ -44,7 +34,7 @@ def recursive_filter(fn, node):
     return node
 
 
-def apply_function(ast, fn, partial):
+def apply_function(ast, fn, partial, exact=False):
     """
     Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
     to every part of the tree.
@@ -55,7 +45,7 @@ def apply_function(ast, fn, partial):
     :return: the modified tre
     """
     for token in ast:
-        if hasattr(token, 'name') and partial in token.name:
+        if hasattr(token, 'name') and partial in token.name and (not exact or partial == token.name):
             fn(token)
         if hasattr(token, 'definition'):
             apply_function(token.definition, fn, partial)

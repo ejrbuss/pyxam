@@ -12,6 +12,9 @@ import fileutil
 import subprocess
 
 
+global_vars = '<<echo=False>>=\nn = {}\n@'
+
+
 class LibError(Exception):
     pass
 
@@ -22,16 +25,14 @@ def weave():
     their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
     version number.
     """
-    for n in range(options.state.number()):
-        extension = fileutil.get_extension(options.state.template())
-        path = options.state.cwd() + '/template_' + str(n) + '.' + extension
-        fileutil.write(path, fileutil.read(options.state.template()))
-        try:
-            options.post('Weaving ' + str(n + 1) + ' of ' + str(options.state.number()))
-            logging.info('Weaving ' + str(n + 1) + ' of ' + str(options.state.number()))
-            pweave.weave(path, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
-        except:
-            raise LibError('Failed to Pweave file: ' + options.state.tmp() + '/' + str(n))
+    for file in fileutil.with_extension('.mix'):
+        if options.state.noweave():
+            fileutil.move(file, file.replace('.mix', '.tex'))
+        else:
+            try:
+                pweave.weave(file, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
+            except:
+                raise LibError('Failed to Pweave file: ' + file)
     if not options.state.api():
         print('Template successfully weaved.')
 

@@ -71,10 +71,15 @@ shell = 'python'
 method = 'sequence'
 # Alphabetize rather than enumerate exams flag
 alphabetize = False
+# Weave flag
+weave = False
 # Debug flag
 debug = False
 # Solutions flag
 solutions = False
 # Default number of recompilations
 recomps = 1
+
+# Seed
+seed = 0 # random.randint()
 

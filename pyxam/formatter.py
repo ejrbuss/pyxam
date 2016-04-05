@@ -8,7 +8,6 @@ import re
 import util
 import config
 import fileutil
-import filters
 import options
 
 
@@ -70,8 +69,15 @@ def parse():
     if not parser['format']:
         raise FormatError('This format is export only!')
     for file in fileutil.with_extension('.tex'):
+        options.post('Using ' + parser['name'] + ' format to parse ' + file)
+
         logging.info('Using ' + parser['name'] + ' format to parse ' + options.state.template())
-        intermediate = util.Map({'ast': [], 'src': parser['parser_preprocessor'](fileutil.read(file)), 'fmt': parser})
+        intermediate = util.Map({
+            'ast': [],
+            'src': parser['parser_preprocessor'](fileutil.read(file)),
+            'fmt': parser,
+            'name': file.replace('.tex', '')
+        })
         intermediate.ast = parse_tokens(intermediate.src, parser)
         fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
         for default_filter in config.default_filters:
@@ -94,7 +100,7 @@ def compose(intermediates):
     except:
         raise FormatError('Unknown format')
     logging.info('Using ' + composer['name'][0] + ' format to compose ' + options.state.template())
-    for n, intermediate in enumerate(intermediates):
+    for intermediate in intermediates:
         composed = intermediate.src
         # If not already in native format
         if intermediate.fmt != composer:
@@ -102,7 +108,7 @@ def compose(intermediates):
             fileutil.write(options.state.cwd() + '/composed-ast', str(intermediate.ast))
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
-        fileutil.write(options.state.cwd() + '/composed_' + str(n) + '.cmp', composed)
+        fileutil.write(intermediate.name + '.cmp', composed)
     options.post('Successfully composed', composer['name'] + '.')
 
 
@@ -133,10 +139,10 @@ def add_format(name,
                extensions,
                format,
                description='',
-               parser_preprocessor=filters.pass_through,
-               parser_postprocessor=filters.pass_through,
-               composer_postprocessor=filters.pass_through,
-               composer_preprocessor=filters.pass_through,
+               parser_preprocessor=lambda _ : _,
+               parser_postprocessor=lambda _ : _,
+               composer_postprocessor=lambda _ : _,
+               composer_preprocessor=lambda _ : _,
                left_paren=None,
                right_paren=None
 ):
@@ -323,7 +329,6 @@ def build_token(token, src, fmt, debug=False):
         # No match
         else:
             return None, src
-
     # If exited on post
     if post:
         # Nested parentheses counter

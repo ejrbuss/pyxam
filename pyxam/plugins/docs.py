@@ -195,14 +195,15 @@ def compile_doc(build, doc):
     :param doc: The file to compile
     """
     pyxam.start([
+        '-w',
         '-f', 'html',
         '-o', build,
         '-t', 'doc',
         '-htt', config.template_directory + '/docs.html', doc
     ])
-    buffer = fileutil.read(build + '/doc_1.html')
+    buffer = fileutil.read(build + '/doc_v1.html')
     fileutil.remove(doc)
-    fileutil.remove(build + '/doc_1.html')
+    fileutil.remove(build + '/doc_v1.html')
     fileutil.write(
         doc.replace('.md', '.html'),
         buffer
