@@ -43,22 +43,25 @@ def parser_postprocessor(intermediate):
             raise(formatter.FormatError('Malformed question token definition:' + str(token)))
 
     # Run inner function recursively on the ast
-    filters.apply_function(intermediate.ast, def_prompt, 'question', exact=True)
+    filters.apply_function(intermediate.ast, def_prompt, 'question', partial=False)
     return intermediate
 
 
 def composer_postprocessor(source):
     if not source.strip().startswith('\\documentclass'):
-        source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\begin{document}' + source + '\\end{document}'
+        source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\usepackage[T1]{fontenc} \
+        \\catcode`\\_=12\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
         source = re.sub(r'\\documentclass\[', r'\documentclass[answers,', source)
         source = re.sub(r'\\documentclass{', r'\documentclass[answers]{', source)
+    source = source.replace('\\', '\n\\')
+    source = source.replace('\\include', '\n\\include')
     return source
 #TODO finish
 
 def load():
     formatter.add_format(
-        name='latex',
+        name='tex',
         extensions=['tex'],
         description=signature[2],
         parser_preprocessor=parser_preprocessor,
@@ -87,7 +90,6 @@ def load():
             ('center', ['\\begin{center}', (), '\\end{center}', '.']),
             ('emphasis2', ['\\textbf{', (), '}', '.']),
             ('emphasis1', ['\\textit{', (), '}', '.']),
-            ('unknownarg', ['{', (), '}', '.']),
             ('unknown', ['\\', (), '\\s+'])
         ])
     )

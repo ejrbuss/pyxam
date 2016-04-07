@@ -33,7 +33,7 @@ def parser_postprocessor(intermediate):
             raise(formatter.FormatError('Malformed question token definition:' + str(token)))
 
     # Run inner function recursively on the ast
-    filters.apply_function(intermediate.ast, def_prompt, 'question', exact=True)
+    filters.apply_function(intermediate.ast, def_prompt, 'question', partial=False)
     return intermediate
 
 
@@ -89,16 +89,18 @@ def load():
             ('commentblock', ['#+BEGIN_COMMENT ', (), '#+END_COMMENT']),
             ('commentblocktree', ['* COMMENT ', (), '\*']),
             ('$', ['$', (), '$', '.']),
-            ('questions', ['* ?', (), '$']),
+            ('questions', ['* ?:', (), '\n\*\s']),
             ('question', ['** ', (), '\n\*\*[^*]']),
-            ('solution', ['*** Solution', (), '\n\*\*\*[^*]']),
+            ('solution', ['*** solution', (), '\n\*']),
+            ('dataset', ['*** dataset', (), '\n\*']),
             ('img', ['\\includegraphics[width= \linewidth]{', (), '}', '.']),
-            ('choice', ['- [ ]', (), '- \[']),
-            ('correctchoice', ['- [X]', (), '- \[']),
-            ('multichoice', [['title'], (), ['choice', 'correctchoice'], (), '$']),
-            ('shortanswer', [['title'], (), ['solution'], '$']),
-            ('essay', [['title'], (), '$']),
-            ('title', ['?', (), '\n'])
+            ('choices', ['*** choices', (), '\n\*']),
+            ('choice', ['- [ ]', (), '(- \[)|(\n\*)']),
+            ('correctchoice', ['- [X]', (), '(- \[)|(\n\*)']),
+            ('multichoice', [['title'], (), ['choices'], (), '$']),
+            ('shortanswer', [['title'], (), ['solution'], (), '$']),
+            ('essay', [['title'], (), '\n\*\*[^*]']),
+            ('title', ['?:', (), '\n'])
         ])
     )
     return signature

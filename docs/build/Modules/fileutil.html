@@ -529,6 +529,68 @@ def same_caller(cache={}):
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//util.py)">
 <li class="searchable" id="#util_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/util.html">util</a></li>
+<input type="hidden" id="config_py" value="
+# Module config
+
+***
+**pyxam_directory **<br /> Source directory
+***
+**plugin_directory **<br /> Plugin directory
+***
+**lib_directory **<br /> Library directory
+***
+**template_directory **<br /> HTML template directory
+***
+**local_docs **<br /> Local docs directory
+***
+**git_docs **<br /> Git docs directory
+***
+**filename **<br /> File name following title
+***
+**numerical_format **<br /> Format for numerical solutions
+***
+**numerical_format_no_tolerance **<br /> Format for numerical solutions when tolerance is zero
+***
+**calculated_format **<br /> Format for calculated solutions
+***
+**calculated_format_no_tolerance **<br /> Format for calculated solutions when tolerance is zero
+***
+**name_column_identifiers **<br /> Strings used to identify columns in a csv files that match a student name
+***
+**number_column_identifiers **<br /> Strings used to identify columns in a csv files that match a student number
+***
+**default_logging **<br /> Default logging level
+***
+**out **<br /> Default out directory
+***
+**tmp **<br /> Default tmp directory
+***
+**fig **<br /> Default figure directory
+***
+**number **<br /> Default number of exam versions
+***
+**title **<br /> Default exam title
+***
+**format **<br /> Default output format
+***
+**shell **<br /> Default code shell
+***
+**method **<br /> Default CSV mixing method
+***
+**alphabetize **<br /> Alphabetize rather than enumerate exams flag
+***
+**weave **<br /> Weave flag
+***
+**debug **<br /> Debug flag
+***
+**solutions **<br /> Solutions flag
+***
+**recomps **<br /> Default number of recompilations
+***
+**seed **<br /> Seed
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py)">
+<li class="searchable" id="#config_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/config.html">config</a></li>
 <input type="hidden" id="options_py" value="
 # Module options
 
@@ -786,292 +848,52 @@ def get_extension():
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//formatter.py)">
 <li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
-<input type="hidden" id="filters_py" value="
-# Module filters
+<input type="hidden" id="mixer_py" value="
+# Module mixer
 
-This module provides helper functions for transforming a Pyxam parse tree.
 
 ***
-**remove_partial**(*ast, partial, exact=False*)
+**_methods **<br /> A map of all currently loaded methods
+***
+**setup**()
 
-
-    logging.info('Paritalfilter for ' + partial + '')
-    return recursive_filter(lambda t: not (hasattr(t, 'name') and partial in t.name and (not exact or partial == t.name)), ast)
-
-
-def recursive_filter(fn, node):
     
-    Filters a list and recursively filters any sublists attached to the node.
-
-    <br />`fn`  The filter function
-    <br />`node`  The starting node
-    **<br />returns&nbsp;**  the filtered node
+    Mix the composed files with the specified method then copy all mixed files to the out directory with the
+    appropriate names. If any files are in the figure directory they are copied out as well.
     
 ***
-**apply_function**(*ast, fn, partial, exact=False*)
+**csv_read**(*file*)
 
 
     
-    Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
-    to every part of the tree.
+    Attempts to read the provided CSV file.
 
-    <br />`ast`  The tree to transform
-    <br />`fn`  The function to apply
-    <br />`partial`  TODO
-    **<br />returns&nbsp;**  the modified tre
+    <br />`file`  The csv file to read
+    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
     
 ***
-**pass_through**(*intermediate*)
-
-
-    
-    A dummy function that simply returns its provided intermediate.
-
-    <br />`intermediate`  The intermediate
-    **<br />returns&nbsp;**  the intermediate
-    
-***
-**pop_unknowns**(*ast*)
-
-
-    
-    Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
-    tokens are also processed for unknowns
-
-    <br />`ast`  The tree whose unknowns are being popped
-    **<br />returns&nbsp;**  the modified tree
-    
-***
-**img64**(*ast*)
-
-
-    
-    Convert image file paths to base64 representations of those images.
-
-    <br />`ast`  The tree whose images will be converted
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**homogenize_strings**(*ast*)
-
-
-    
-    Combine consecutive string tokens into a single string. Applied recursively.
-
-    <br />`ast`  The tree whose strings tokens are combined
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**promote**(*ast, name*)
-
-
-    
-    Finds the first instance (based on a depth first search) of a token with the matching name.
-
-    <br />`ast`  The tree to be searched
-    <br />`name`  The token name to find
-    **<br />returns&nbsp;**  the subtree starting at the matching token
-    
-***
-**wrap_lists**(*ast*)
-
-
-    
-    Wraps consecutive listitem tokens in a list token. Applied recursively.
-
-    <br />`ast`  The tree to be modified
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**untab_verb**(*ast*)
+**mix**(*n, row*)
 
 
     
 
-    <br />`ast`  The tree to modify
-    **<br />returns&nbsp;**  the modified tree
+    <br />`n` 
+    <br />`row` 
+    **<br />returns&nbsp;** 
     
 ***
-**untab**(*token*)
-
-
-        lines = [line for line in token.definition[0].split('\n') if line != '\n']
-        overwrite = False
-        while not overwrite:
-            clear = True
-            for line in lines:
-                clear = not len(line) > 0 and clear
-                overwrite = overwrite or (len(line) > 0 and (line[0] != ' '))
-            overwrite = overwrite or clear
-            if not overwrite:
-                lines = [line[1:] for line in lines if len(line) > 0]
-        token.definition = ['\n'.join(lines)]
-    return apply_function(ast, untab, 'verb')
-
-
-def transform_questions(ast):
-    
-    Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
-    numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
-    questions. Applied recursively.
-
-    <br />`ast`  The tree to modify
-    **<br />returns&nbsp;**  the modified tree
-    
-***
-**to_numerical**(*question*)
+**add_method**(*name, method*)
 
 
     
-    Transforms shortanswer token definitions from
-    ```
-    solution:
-        $:
-            var = answer \pm tolerance
-    ```
-    to
-    ```
-    solution:
-        answer
-        tolerance:
-            tolerance
-    ```
-    <br />`question`  The question to transform
+    Add a method to the method list.
+
+    <br />`name`  The name of the method being added
+    <br />`method`  The method to add
     
 ***
-**to_multiselect**(*question*)
-
-
-    
-    Transforms multichoice token definitions from
-    ```
-    choices:
-        correctchoice:
-            choice
-        correctchoice:
-            choice
-    ```
-    to
-    ```
-    single: false
-    choices:
-        correctchoice:
-            choice
-        correctchoice:
-            choice
-    ```
-    <br />`question`  The question to transform
-    
-***
-**to_true_false**(*question*)
-
-
-    for token in question.definition:
-        count = 0
-        if hasattr(token, 'name') and 'choices' in token.name:
-            for choice in token.definition:
-                if hasattr(choice, 'name') and 'correctchoice' in choice.name:
-                    count += 1
-        if count == 1:
-            question.name = 'truefalse'
-            if token.definition[0].definition[0].lower() == 'true':
-                token.definition = [formatter.Token('true', [], None, '')]
-            else:
-                token.definition = [formatter.Token('false', [], None, '')]
-            logging.info('Converted multichoice question to truefalse')
-
-
-def to_calculated(question):
-    
-    Transforms numerical token definitions from
-    ```
-    solution:
-        answer
-        tolerance:
-            tolerance
-    ```
-    to
-    ```
-    solution:
-        answer
-        tolerance:
-            tolerance
-        params:
-            param:
-                name
-                maximum:
-                    value
-                minimum:
-                    value
-                decimal:
-                    value
-                    formatter.Token('tolerance', [tolerance], None, ''))
-    ```
-    <br />`question`  The question to transform
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
-<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
-<input type="hidden" id="config_py" value="
-# Module config
-
-***
-**pyxam_directory **<br /> Source directory
-***
-**plugin_directory **<br /> Plugin directory
-***
-**lib_directory **<br /> Library directory
-***
-**template_directory **<br /> HTML template directory
-***
-**local_docs **<br /> Local docs directory
-***
-**git_docs **<br /> Git docs directory
-***
-**name_column_identifiers **<br /> Strings used to identify columns in a csv files that match a student name
-***
-**number_column_identifiers **<br /> Strings used to identify columns in a csv files that match a student number
-***
-**csv_filename **<br /> csv file name format
-***
-**student_name **<br /> Default string to replace with student name
-***
-**student_number **<br /> Default string to replace with student number
-***
-**version_number **<br /> Default string to replace test version
-***
-**default_logging **<br /> Default logging level
-***
-**out **<br /> Default out directory
-***
-**tmp **<br /> Default tmp directory
-***
-**fig **<br /> Default figure directory
-***
-**number **<br /> Default number of exam versions
-***
-**title **<br /> Default exam title
-***
-**format **<br /> Default output format
-***
-**shell **<br /> Default code shell
-***
-**method **<br /> Default CSV mixing method
-***
-**alphabetize **<br /> Alphabetize rather than enumerate exams flag
-***
-**weave **<br /> Weave flag
-***
-**debug **<br /> Debug flag
-***
-**solutions **<br /> Solutions flag
-***
-**recomps **<br /> Default number of recompilations
-***
-**seed **<br /> Seed
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py)">
-<li class="searchable" id="#config_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/config.html">config</a></li>
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//mixer.py)">
+<li class="searchable" id="#mixer_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html">mixer</a></li>
 <input type="hidden" id="plugin_loader_py" value="
 # Module plugin_loader
 
@@ -1179,6 +1001,178 @@ list can be changed during runtime via a number of function calls.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//process_list.py)">
 <li class="searchable" id="#process_list_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
+<input type="hidden" id="filters_py" value="
+# Module filters
+This module provides helper functions for transforming a Pyxam parse tree.
+
+***
+**has_name**(*token, name='', partial=True*)
+
+
+    return hasattr(token, 'name') and (name == token.name or (partial and name in token.name))
+
+
+def remove_name(ast, name, partial=True):
+    logging.info('Paritalfilter for ' + name + '')
+    return recursive_filter(lambda t: not has_name(t, name, partial), ast)
+
+
+def recursive_filter(fn, node):
+    
+    Filters a list and recursively filters any sublists attached to the node.
+    <br />`fn`  The filter function
+    <br />`node`  The starting node
+    **<br />returns&nbsp;**  the filtered node
+    
+***
+**apply_function**(*ast, fn, name='', partial=True*)
+
+
+    
+    Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
+    to every part of the tree.
+    <br />`ast`  The tree to transform
+    <br />`fn`  The function to apply
+    <br />`partial`  TODO
+    **<br />returns&nbsp;**  the modified tre
+    
+***
+**pass_through**(*intermediate*)
+
+
+    
+    A dummy function that simply returns its provided intermediate.
+    <br />`intermediate`  The intermediate
+    **<br />returns&nbsp;**  the intermediate
+    
+***
+**pop_unknowns**(*ast*)
+
+
+    
+    Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
+    tokens are also processed for unknowns
+    <br />`ast`  The tree whose unknowns are being popped
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**img64**(*ast*)
+
+
+    
+    Convert image file paths to base64 representations of those images.
+    <br />`ast`  The tree whose images will be converted
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**homogenize_strings**(*ast*)
+
+
+    
+    Combine consecutive string tokens into a single string. Applied recursively.
+    <br />`ast`  The tree whose strings tokens are combined
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**promote**(*ast, name*)
+
+
+    
+    Finds the first instance (based on a depth first search) of a token with the matching name.
+    <br />`ast`  The tree to be searched
+    <br />`name`  The token name to find
+    **<br />returns&nbsp;**  the subtree starting at the matching token
+    
+***
+**wrap_lists**(*ast*)
+
+
+    
+    Wraps consecutive listitem tokens in a list token. Applied recursively.
+    <br />`ast`  The tree to be modified
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**untab_verb**(*ast*)
+
+
+    
+    <br />`ast`  The tree to modify
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**untab**(*token*)
+
+
+        lines = [line for line in token.definition[0].split('\n') if line != '\n']
+        overwrite = False
+        while not overwrite:
+            clear = True
+            for line in lines:
+                clear = not len(line) > 0 and clear
+                overwrite = overwrite or (len(line) > 0 and (line[0] != ' '))
+            overwrite = overwrite or clear
+            if not overwrite:
+                lines = [line[1:] for line in lines if len(line) > 0]
+        token.definition = ['\n'.join(lines)]
+    return apply_function(ast, untab, 'verb')
+
+
+def transform_questions(ast):
+    
+    Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
+    numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
+    questions. Applied recursively.
+    <br />`ast`  The tree to modify
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**check_tag**(*question*)
+
+
+    
+    Transforms shortanswer token definitions from
+    ```
+    solution:
+        $:
+            var = answer \pm tolerance
+    ```
+    to
+    ```
+    solution:
+        answer
+        tolerance:
+            tolerance
+    ```
+    <br />`question`  The question to transform
+    
+***
+**to_multiselect**(*question*)
+
+
+    
+    Transforms multichoice token definitions from
+    ```
+    choices:
+        correctchoice:
+            choice
+        correctchoice:
+            choice
+    ```
+    to
+    ```
+    single: false
+    choices:
+        correctchoice:
+            choice
+        correctchoice:
+            choice
+    ```
+    <br />`question`  The question to transform
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
+<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
 <input type="hidden" id="exporter_py" value="
 # Module exporter
 
@@ -1198,75 +1192,6 @@ by the compile format.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//exporter.py)">
 <li class="searchable" id="#exporter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/exporter.html">exporter</a></li>
-<input type="hidden" id="mixer_py" value="
-# Module mixer
-
-
-***
-**_methods **<br /> A map of all currently loaded methods
-***
-
-<%
-class pyxam:
-    examnumber = {}
-    examversion = {}.strip()
-    studentname = {}.strip()
-    studentnumber = {}.strip()
-
-    def importquestion(path):
-        import fileutil
-        print(fileutil.read(path))
-
-    def args(args):
-        import options
-        import shlex
-        options.load_options(shlex.split(args))
-
-import random
-import config
-random.seed(pyxam.examnumber + config.seed)
-%>
-
-***
-**setup**()
-
-    
-    Mix the composed files with the specified method then copy all mixed files to the out directory with the
-    appropriate names. If any files are in the figure directory they are copied out as well.
-    
-***
-**csv_read**(*file*)
-
-
-    
-    Attempts to read the provided CSV file.
-
-    <br />`file`  The csv file to read
-    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
-    
-***
-**mix**(*n, row*)
-
-
-    
-
-    <br />`n` 
-    <br />`row` 
-    **<br />returns&nbsp;** 
-    
-***
-**add_method**(*name, method*)
-
-
-    
-    Add a method to the method list.
-
-    <br />`name`  The name of the method being added
-    <br />`method`  The method to add
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//mixer.py)">
-<li class="searchable" id="#mixer_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html">mixer</a></li>
 <input type="hidden" id="fileutil_py" value="
 # Module fileutil
 
@@ -1495,6 +1420,257 @@ def weave():
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//lib_loader.py)">
 <li class="searchable" id="#lib_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+<input type="hidden" id="inline_py" value="
+# Module inline
+This code is loaded into the start of every template file prior to weaving.
+
+***
+**pyxam:
+
+    number = int**(*'{number}')
+    version = '{version}'.strip()
+    student_name = '{student_name}'.strip()
+    student_number = '{student_number}'.strip()
+    wildcard = None
+
+    def import_question(path*)
+
+
+        import fileutil
+        print(fileutil.read(path))
+
+    def args(args):
+        import options
+        import shlex
+        options.load_options(shlex.split(args))
+
+    def shuffle(*choices):
+        choices = list(choices)
+        random.shuffle(choices)
+        for choice in choices:
+            print(choice)
+        return ''
+
+    def numerical(solution, tolerance=0, percent=False):
+        import options
+        if percent:
+            tolerance = solution * (tolerance / 100.0)
+        if options.state.format() == 'moodle':
+            return ':pyxam.numerical<text>{}</text><tolerance>{}</tolerance><tolerancetype>1</tolerancetype>'.format(solution, tolerance)
+        if tolerance == 0:
+            return config.numerical_format_no_tolerance.format(solution=str(solution))
+        return config.numerical_format.format(
+            solution=str(solution),
+            tolerance=tolerance,
+            lower=float(solution) - tolerance,
+            upper=float(solution) + tolerance
+        )
+
+    def calculated(equation, tolerance=0, percent=False):
+        import re
+        import options
+        solution = eval(re.sub(r'\{([^}]*)\}', r'\1', equation))
+        if percent:
+            tolerance = solution * (tolerance / 100.0)
+        if options.state.format() == 'moodle':
+            return ':pyxam.calculated<text>{}</text><tolerance>{}</tolerance><tolerancetype>1</tolerancetype> \
+            <correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength>'.format(equation, tolerance)
+        if tolerance == 0:
+            return config.calculated_format_no_tolerance.format(solution=solution)
+        return config.calculated_format.format(
+            solution=str(solution),
+            tolerance=tolerance,
+            lower=float(solution) - tolerance,
+            upper=float(solution) + tolerance
+        )
+
+    def dataset(*wildcards):
+        import options
+        if options.state.format() == 'moodle':
+            print('<dataset_definitions>')
+            for wildcard in wildcards:
+                wildcard.name = [ k for k,v in globals().items() if v is wildcard][0]
+                print('<dataset_definition><status><text>private</text></status><name><text>{}</text></name> \
+                <type>calculatedsimple</type><distribution><text>uniform</text></distribution> \
+                <maximum><text>{}</text></maximum><minimum><text>{}</text></minimum> \
+                <decimals><text>{}</text></decimals><itemcount>{}</itemcount><dataset_items>'.format(
+                    wildcard.name, wildcard.max, wildcard.min, wildcard.decimals, len(wildcard.set)
+                ))
+                for number, value in enumerate(wildcard.set):
+                    print('<dataset_item><number>{}</number><value>{}</value></dataset_item>'.format(number + 1, value))
+                print('</dataset_items><number_of_items>{}</number_of_items></dataset_definition>'.format(len(wildcard.set)))
+            return '</dataset_definitions>'
+        return ''
+
+
+class Wildcard:
+
+    def __init__(self, name='', wildcard=None, min=None, max=None, set=None, n=pyxam.number, decimals=0):
+        self.name = str(name)
+        self.decimals = decimals
+        if wildcard is not None:
+            self.set = wildcard.set
+            self.min = wildcard.min
+            self.max = wildcard.max
+            self.decimals = wildcard.decimals
+        elif set is not None and len(set) > 0:
+            self.set = set
+            self.min = self.set[0]
+            self.max = self.set[0]
+            for item in self.set:
+                if item < self.min:
+                    self.min = item
+                if item > self.max:
+                    self.max = item
+                if '.' in str(item) and len(str(item).split('.')[1]) > decimals:
+                    self.decimals = len(str(item).split('.')[1])
+        else:
+            self.set = []
+            self.min = min
+            self.max = max
+            for item in range(n if n > 0 else 1):
+                i = random.randint(min, max)
+                self.set.append(random.randint(min, max) + round(random.random(), decimals))
+
+    def __add__(self, other):
+        return Wildcard(set=[a + b for a, b in zip(self.set, other.set)])
+
+    def __iadd__(self, other):
+        self.__init__(self.name, set=[a + b for a, b in zip(self.set, other.set)])
+
+    def __sub__(self, other):
+        return Wildcard(set=[a - b for a, b in zip(self.set, other.set)])
+
+    def __isub__(self, other):
+        self.__init__(self.name, set=[a - b for a, b in zip(self.set, other.set)])
+
+    def __mul__(self, other):
+        return Wildcard(set=[a * b for a, b in zip(self.set, other.set)])
+
+    def __imul__(self, other):
+        self.__init__(self.name, set=[a * b for a, b in zip(self.set, other.set)])
+
+    def __truediv__(self, other):
+        return Wildcard(set=[a / b for a, b in zip(self.set, other.set)])
+
+    def __itruediv__(self, other):
+        self.__init__(self.name, set=[a / b for a, b in zip(self.set, other.set)])
+
+    def __floordiv__(self, other):
+        return Wildcard(set=[a // b for a, b in zip(self.set, other.set)])
+
+    def __ifloordiv__(self, other):
+        self.__init__(self.name, set=[a // b for a, b in zip(self.set, other.set)])
+
+    def __mod__(self, other):
+        return Wildcard(set=[a % b for a, b in zip(self.set, other.set)])
+
+    def __imod__(self, other):
+        self.__init__(self.name, set=[a % b for a, b in zip(self.set, other.set)])
+
+    def __divmod__(self, other):
+        return Wildcard(set=[divmod(a, b) for a, b in zip(self.set, other.set)])
+
+    def __pow__(self, other):
+        return Wildcard(set=[a ** b for a, b in zip(self.set, other.set)])
+
+    def __ipow__(self, other):
+        self.__init__(self.name, set=[a ** b for a, b in zip(self.set, other.set)])
+
+    def __and__(self, other):
+        return Wildcard(set=[a and b for a, b in zip(self.set, other.set)])
+
+    def __iand__(self, other):
+        self.__init__(self.name, set=[a and b for a, b in zip(self.set, other.set)])
+
+    def __xor__(self, other):
+        return Wildcard(set=[a ^ b for a, b in zip(self.set, other.set)])
+
+    def __ixor__(self, other):
+        self.__init__(self.name, set=[a ^ b for a, b in zip(self.set, other.set)])
+
+    def __or__(self, other):
+        return Wildcard(set=[a or b for a, b in zip(self.set, other.set)])
+
+    def __ior__(self, other):
+        self.__init__(self.name, set=[a or b for a, b in zip(self.set, other.set)])
+
+    def __lshift__(self, other):
+        return Wildcard(set=[a << b for a, b in zip(self.set, other.set)])
+
+    def __ilshift__(self, other):
+        self.__init__(self.name, set=[a << b for a, b in zip(self.set, other.set)])
+
+    def __rshift__(self, other):
+        return Wildcard(set=[a >> b for a, b in zip(self.set, other.set)])
+
+    def __irshift__(self, other):
+        self.__init__(self.name, set=[a >> b for a, b in zip(self.set, other.set)])
+
+    def __abs__(self):
+        return Wildcard(set=[abs(a) for a in self.set])
+
+    def __pos__(self):
+        return Wildcard(set=[a for a in self.set])
+
+    def __neg__(self):
+        return Wildcard(set=[-a for a in self.set])
+
+    def __invert__(self):
+        return Wildcard(set=[~a for a in self.set])
+
+    def __complex__(self):
+        return Wildcard(set=[complex(a) for a in self.set])
+
+    def __int__(self):
+        return Wildcard(set=[int(a) for a in self.set])
+
+    def __round__(self, n=None):
+        return Wildcard(set=[round(a, n) for a in self.set])
+
+    def __eq__(self, other):
+        return Wildcard(set=[a == b for a, b in zip(self.set, other.set)])
+
+    def __ne__(self, other):
+        return Wildcard(set=[a != b for a, b in zip(self.set, other.set)])
+
+    def __lt__(self, other):
+        return Wildcard(set=[a < b for a, b in zip(self.set, other.set)])
+
+    def __gt__(self, other):
+        return Wildcard(set=[a > b for a, b in zip(self.set, other.set)])
+
+    def __le__(self, other):
+        return Wildcard(set=[a <= b for a, b in zip(self.set, other.set)])
+
+    def __ge__(self, other):
+        return Wildcard(set=[a >= b for a, b in zip(self.set, other.set)])
+
+    def __bool__(self):
+        return all(self.set)
+
+    def __repr__(self):
+        return str(self.set[pyxam.number % len(self.set)])
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __float__(self):
+        return float(str(self))
+
+    def __hash__(self):
+        
+        **PURE EVIL**
+        By placing a wildcard in a dictionary printing that dictionary will call the hash function of that wildcard. We
+        will print the value we want and then prevent the next print statement from occurring meaning we are the only
+        ones to print.
+        **<br />returns&nbsp;**  0
+        
+***
+**pyxam.wildcard **<br /> Set the wildcard alias
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//inline.py)">
+<li class="searchable" id="#inline_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/inline.html">inline</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
 <input type="hidden" id="format_orghtml_py" value="
 ***
@@ -1581,7 +1757,7 @@ Adds support import export format support for org mode files
             raise(formatter.FormatError('Malformed question token definition:' + str(token)))
 
     # Run inner function recursively on the ast
-    filters.apply_function(intermediate.ast, def_prompt, 'question', exact=True)
+    filters.apply_function(intermediate.ast, def_prompt, 'question', partial=False)
     return intermediate
 
 
@@ -1619,10 +1795,6 @@ def composer_preprocessor(intermediate):
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_org.py)">
 <li class="searchable" id="#format_org_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
-<input type="hidden" id="format_markdown_py" value="
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_markdown.py)">
-<li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
 <input type="hidden" id="format_moodle_py" value="**composer_preprocessor**(*intermediate*)
 
 
@@ -1634,6 +1806,10 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_moodle.py)">
 <li class="searchable" id="#format_moodle_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
+<input type="hidden" id="format_markdown_py" value="
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_markdown.py)">
+<li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
 <input type="hidden" id="format_pdf_py" value="
 # Plugin format_pdf
 
@@ -1959,20 +2135,7 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
         <div style='height:2em'></div>
     </div>
     <div class='doc'>
-        <div class="content"><%
-class pyxam:
-    examnumber = 0
-    examversion = "1".strip()
-    studentname = "".strip()
-    studentnumber = "".strip()<br />    def importquestion(path):
-        import fileutil
-        print(fileutil.read(path))<br />    def args(args):
-        import options
-        import shlex
-        options.load_options(shlex.split(args))<br />import random
-import config
-random.seed(pyxam.examnumber + config.seed)
-%><h1>Module fileutil</h1>This Module provides helper functions for working with files.<hr /><br /><b>build_files</b>()<br />    
+        <div class="content"><h1>Module fileutil</h1>This Module provides helper functions for working with files.<hr /><br /><b>build_files</b>()<br />    
     Finds the absolute file path for the template, tmp directory, and out directory and updates their options to point
     to their absolute path. Also creates the tmp and out directories if necessary. Warns user if tmp is going to be
     overridden as this will delete any leftover files. Finally changes the current working directory to tmp.<hr /><br /><b>cleanup</b>()<br />    

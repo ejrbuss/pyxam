@@ -24,11 +24,27 @@ git_docs = 'https://rawgit.com/balancededge/pyxam/master/docs/build'
 
 # Default filters run after parsing
 default_filters=[
-    lambda ast: filters.remove_partial(ast, 'comment'),
+    lambda ast: filters.remove_name(ast, 'comment'),
     filters.pop_unknowns,
     filters.homogenize_strings,
-    filters.transform_questions
+    filters.transform_questions,
+    lambda ast: filters.remove_name(ast, 'pyxamnumerical'),
+    lambda ast: filters.remove_name(ast, 'pyxamcalculated')
 ]
+
+# Formatting
+
+# File name following title
+filename = 'v{version}_{name}_{number}'
+# Format for numerical solutions
+numerical_format = '{solution} with a tolerance of {tolerance}({upper}-{lower})'
+# Format for numerical solutions when tolerance is zero
+numerical_format_no_tolerance = '{solution}'
+# Format for calculated solutions
+calculated_format = '{solution} with a tolerance of {tolerance}({upper}-{lower})'
+# Format for calculated solutions when tolerance is zero
+calculated_format_no_tolerance = '{solution}'
+
 
 # CSV
 #TODO finish
@@ -36,14 +52,7 @@ default_filters=[
 name_column_identifiers = ['firstname', 'surname', 'lastname', 'studentname']
 # Strings used to identify columns in a csv files that match a student number
 number_column_identifiers = ['studentid', 'id', 'identificationnumber']
-# csv file name format
-csv_filename = '{n}_{name}_{number}.mix'
-# Default string to replace with student name
-student_name = '@student__name'
-# Default string to replace with student number
-student_number = '@student__number'
-# Default string to replace test version
-version_number = '@test__version'
+
 # Logging
 
 # Default logging level
@@ -79,7 +88,6 @@ debug = False
 solutions = False
 # Default number of recompilations
 recomps = 1
-
 # Seed
 seed = 0 # random.randint()
 

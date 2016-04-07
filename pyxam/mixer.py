@@ -16,28 +16,8 @@ import fileutil
 _methods = {}
 
 
-global_vars = """
-<%
-class pyxam:
-    examnumber = {}
-    examversion = "{}".strip()
-    studentname = "{}".strip()
-    studentnumber = "{}".strip()
+inline = fileutil.read(config.pyxam_directory + '/inline.py')
 
-    def importquestion(path):
-        import fileutil
-        print(fileutil.read(path))
-
-    def args(args):
-        import options
-        import shlex
-        options.load_options(shlex.split(args))
-
-import random
-import config
-random.seed(pyxam.examnumber + config.seed)
-%>
-"""
 
 def setup():
     """
@@ -99,11 +79,22 @@ def mix(n, row):
     :return:
     """
     version = str(chr(n + ord('A')) if options.state.alphabetize() else n + 1)
-    fileutil.write(
-        options.state.cwd() + '/v{}_{}_{}'.format(version, row['name'], row['number']).strip('_') + '.mix',
-        global_vars.format(n, version, row['name'], row['number']) +
-        fileutil.read(options.state.template())
-    )
+    if options.state.noweave():
+        fileutil.write(
+            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.mix',
+            fileutil.read(options.state.template())
+        )
+    else:
+        fileutil.write(
+            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.mix',
+            '<%\n' + inline
+                .replace('{number}', str(n))
+                .replace('{version}', str(version))
+                .replace('{student_name}', str(row['name']))
+                .replace('{student_number}', str(row['number'])) +
+            '\n%>' + fileutil.read(options.state.template())
+        )
+
 
 
 def add_method(name, method):

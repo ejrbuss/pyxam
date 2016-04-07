@@ -1,6 +1,5 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016\
 import xml.dom.minidom
-import re
 import formatter
 import collections
 import filters
@@ -24,7 +23,8 @@ def composer_preprocessor(intermediate):
         return token
 
     def fix_solutions(token):
-        token.definition[0] = '<text>' + token.definition[0] + '</text>'
+        if not token.definition[0].startswith('<text>'):
+            token.definition = ['<text>'] + token.definition + ['</text>']
         return token
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
     intermediate.ast = filters.img64(intermediate.ast)
@@ -32,6 +32,9 @@ def composer_preprocessor(intermediate):
     intermediate.ast = filters.apply_function(intermediate.ast, fix_solutions, 'solution')
     return intermediate
 
+
+def composer_postprocessor(source):
+    return xml.dom.minidom.parseString(source).toprettyxml()
 
 def load():
     formatter.add_format(
@@ -71,7 +74,8 @@ def load():
             ('itemvalue', ['<value>', (), '</value></dataset_item>', '.']),
             ('decimal', ['<correctanswerformat>1</correctanswerformat><correctanswerlength>', (), '</correctanswerlength>', '.'])
         ]),
-        composer_preprocessor=composer_preprocessor
+        composer_preprocessor=composer_preprocessor,
+        composer_postprocessor=composer_postprocessor
     )
     # Return signature
     return signature

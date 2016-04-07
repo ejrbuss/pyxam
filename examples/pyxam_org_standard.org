@@ -1,47 +1,58 @@
-* ?
-** ?Essay Question
+* ?:
+** ?: 1. Essay Question
 This is the simplest question possible. It is just a prompt and has no solution.
-** ?Short Answer
+** ?: 2. Short Answer
 Short answer questions are composed of a prompt and solution. When importing the question to Moodle the solution will be
 matched character for character.
-*** Solution
+*** solution
 Place your solution in a solution block.
-** ?Multiple Choice
+** ?: 3. Multiple Choice
 Multiple choice questions are made up of choices and correct choices. You can have as many of each as you need. All
-choices should appear in a choices block. By default multiple choice questions will be scrambled when imported to
-Moodle.
+choices should appear in a choices block. By default multiple choice questions will be shuffled when imported to Moodle.
+*** choices
 - [ ] A
 - [ ] B
 - [ ] C
 - [X] D
-** ?Multi Select
+** ?: 4. Shuffled Multiple Choice
+Although multiple choice questions are automatically shuffled when added to Moodle they are not automatically shuffled
+when exporting to other formats such as pdf. To do this use the pyxam.shuffle function on your choices.
+*** choices
+<%= pyxam.shuffle(
+    '- [ ] A',
+    '- [ ] B',
+    '- [ ] C',
+    '- [X] D'
+)%>
+** ?: 5. Multi Select
 Multi select questions are a slight variation on multiple choice questions. By including multiple correct choices the
 Moodle format will automatically allow the user to select multiple answers.
+*** choices
 - [ ] A
 - [X] B
 - [ ] C
 - [X] D
-** ?True or False
+** ?: 6. True or False
 True or False questions are a variation of multiple choice questions where the only choices are True or False.
+*** choices
 - [ ] True
-- [X] False
-** ?Numerical Question
-Numerical questions look like short answer questions except they use the format $var=solution$ in the solution block.
-These questions will be automatically be converted to numerical questions when importing to moodle making the solution
-part of the format the answer.
-*** Solution
-$y=4$
-** ?Numerical Question With Absolute Tolerance
-Numerical questions can be given a tolerance which allows the user to enter a value within $\pm$ the tolerance of the
-solution.
-*** Solution
-$y=4 tolerance 0.1$
-** ?Numerical Question With Percent Tolerance
-Tolerance for numerical questions can also pe specified in percent.
-*** Solution
-$y=4 tolerance 1\%$
-** ?Using a Plot in a Question
-Plots can be added to any question by setting the figure flag option.
+- [ ] False
+** ?: 7. Numerical Question
+Numerical questions look like short answer questions except that in the solution block they call the pyxam.numerical
+function. By passing in a numerical solution the question will be set to the numerical type in moodle.
+*** solution
+<%= pyxam.numerical(4) %>
+** ?: 8. Numerical Question With Absolute Tolerance
+The pyxam.numerical function also supports a tolerance argument which allows for answers from plus or minus tolerance of
+the answer.
+*** solution
+<%= pyxam.numerical(4, tolerance=0.1) %>
+** ?: 9. Numerical Question With Percent Tolerance
+Tolerance for numerical questions can also pe specified in percent by setting the percent flag.
+*** solution
+<%= pyxam.numerical(4, tolerance=1, percent=True) %>
+** ?: 10. Using a Plot in a Question
+Plots can be added to any question by settign the fig flag in the noweb format.
 <<echo=False, fig=True>>=
 import matplotlib.pyplot
 # To add a dataset we use the pyplot module in matplotlib and provide a dataset to the plot function
@@ -54,73 +65,62 @@ matplotlib.pyplot.title('A Simple Graph')
 # Use the show function to finalize the figure and display it in the question
 matplotlib.pyplot.show()
 @
-** ?Using Random Parameters
-You can define parameters in a python equation using random values in order to create a randomized question.
+** ?: 11. Random Numbers
+You can constructor a wildcard using pyxam.wildcard. Wildcards take a name and min max values. They will automatically
+generate random numbers for you. Wildcards support most basic arithmetic meaning they can be added together, multiply by
+eachother, etc. Operations between wildcards will produce another wildcard. This is important for the calculated
+question type. In order to include the values of wildcards in the question simply write them in a code snippet.
 <%
 # Set our parameters
-a = random.randint(0, 10)
-b = random.randint(0, 10)
-# Calculate our solution
-c = a + b
+a = pyxam.wildcard(min=0, max=10)
+b = pyxam.wildcard(min=0, max=10)
 %>
 Now that we've set up the question we can ask what is <%= a %> + <%= b %>?
-*** Solution
-$<%= a %> + <%= b %> = <%= c %>$
-** ?Picking Parameters From a List
-You can use python to pick random parameters from a defined list.
+*** solution
+<%= pyxam.numerical(a + b) %>
+** ?: 12. Picking Parameters From a List
+Wildcards can also be used to pick parameters from a list. Which parameter is picked will depend on the exam number,
+ie. version 1 of the exam will pick the first parameter, version 2 will pick the second, and so on. To create this type
+of wildcard simply specify the set argument.
 <%
 # Define the lists for our parameters
-list_a = [1, 2, 3, 4]
-list_b = [1, 2, 3, 4]
-# Use the choice function to select random parameters
-a = random.choice(list_a)
-b = random.choice(list_b)
-# Calculate our solution
-c = a + b
+a = pyxam.wildcard(set=[1, 2, 3, 4])
+b = pyxam.wildcard(set=[1, 2, 3, 4])
 %>
 What is <%= a %> + <%= b %>?
-*** Solution
-$<%= a %> + <%= b %> = <%= c %>$
-** ?Picking Random Items From a List
-For questions with solutions that are too difficulat to calculate in Python you can pick a dictionary from a list.
+*** solution
+<%= pyxam.numerical(a + b) %>
+** ?: 13. Calculated Question
+Calculated questions can be used to create questions that randomly change when accessed on Moodle. When outputting to a
+format other than moodle these questions act just like numerical questions. You can use the n argument to the wildcard
+to set how many moodle values will be generated and the decimals argument to specify how many decimal points should be
+in the parameters.
 <%
-# Define our list as list of dictionaries containing our parameters and solution
-params = [{'a':1, 'b':2, 'c':3}, {'a':5, 'b':9, 'c':14}, {'a':0, 'b':7, 'c':7}]
-# Select our parameters and solutions
-param = random.choice(params)
-# Set our parameters and solution
+a = pyxam.wildcard(min=0, max=10, n=3, decimals=1)
+b = pyxam.wildcard(set=[2.5, 4.0, 9.8])
 %>
-What is <%= a %> + <%= b %>?
-*** Solution
-$<%= a %> + <%= b %> = <%= c %>$
-** ?Using the Exam Version to Pick Items From a List
-If you want to pick a specific item in a list for the exam version you can use the pyxam object to access the exam
-number.
+To reference variables within your prompt you have to put the wildcards in curly brackets. So here we would ask what is
+<%= {a} %> + <%= {b} %>. Next call the pyxam.calculated function in the solution block. The first argument of the
+function must be the moodle equation used to calculate solutions. The tolerance and percent arguments fron numerical can
+also be used here. Finally call the pyxam.dataset function outside in the dataset block and pass in your wildcards.
+*** solution
+<%= pyxam.calculated('{a} + {b}', tolerance=0.1) %>
+*** dataset
+<%= pyxam.dataset(a, b) %>
+** ?: 14. Calculated Question Picked From List
+Just like with numerical questions you can also use the pick from a list with calculated questions and
+have the solution picked rather than calculated.
 <%
-# Define the lists for our parameters
-list_a = [1, 2, 3, 4]
-list_b = [4, 3, 2, 1]
-# Use the exam number to select our parameters
-a = list_a[pyxam.examnumber % len(list_a)]
-b = list_b[pyxam.examnumber % len(list_b)]
-# Calculate our solution
-c = a + b
+a = pyxam.wildcard(set=[1, 2, 3, 4])
 %>
-What is <%= a %> + <%= b %>?
-*** Solution
-$<%= a %> + <%= b %> = <%= c %>$
-** ?Moodle Pick From a List
-In order to generate a pick from a list question in Moodle you have to use a sepcific format. Variables have to be
-surrounded by curly brackets. You solution has to be given as an equation so here {a} + {b} can be written out verbatim.
-To provide potential parameters you need to provide items with the format where ${variable} [list of solutions]$ These
-questions still support tolerance.
-*** Solution
-${a} + {b} = {a} + {b} tolerance 0.01$
-where ${a} [1.0, 7.5, 6.0]$
-where ${b} [2.5, 4.0, 9.8]$
-** ?Constants
-Constants can be referened in comments using the following commands.
-<%= pyxam.examnumber %> will be replaced with the exam number.
-<%= pyxam.examversion %> will be replaced with the exam version.
-<%= pyxam.studentname %> will be replaced with the student name if available.
-<%= pyxam.studentnumber %> will be replaced with the student number if available.
+For example what is <%= {a} %>?
+*** solution
+<%= pyxam.calculated('{a}') %>
+*** dataset
+<%= pyxam.dataset(a) %>
+** ?: 15. Constants
+Constants can be referened by the following variables.
+<%= pyxam.number %> will be replaced with the exam number.
+<%= pyxam.version %> will be replaced with the exam version.
+<%= pyxam.student_name %> will be replaced with the student name if available.
+<%= pyxam.student_number %> will be replaced with the student number if available.

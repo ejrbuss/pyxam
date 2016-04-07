@@ -159,6 +159,10 @@ def add_format(name,
 
     :return:
     """
+    format.update(collections.OrderedDict([
+        ('pyxamnumerical', [':pyxam.numerical', '.']),
+        ('pyxamcalculated', [':pyxam.calculated', '.'])
+    ]))
     fmt = {
         'name': name,
         'extensions': extensions + [name],

@@ -1,7 +1,6 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Module filters
-
 This module provides helper functions for transforming a Pyxam parse tree.
 """
 import lib_loader
@@ -14,48 +13,49 @@ import re
 #TODO finish
 
 
-def remove_partial(ast, partial, exact=False):
-    logging.info('Paritalfilter for "' + partial + '"')
-    return recursive_filter(lambda t: not (hasattr(t, 'name') and partial in t.name and (not exact or partial == t.name)), ast)
+def has_name(token, name='', partial=True):
+    return hasattr(token, 'name') and (name == token.name or (partial and name in token.name))
+
+
+def remove_name(ast, name, partial=True):
+    logging.info('Paritalfilter for "' + name + '"')
+    return recursive_filter(lambda t: not has_name(t, name, partial), ast)
 
 
 def recursive_filter(fn, node):
     """
     Filters a list and recursively filters any sublists attached to the node.
-
     :param fn: The filter function
     :param node: The starting node
     :return: the filtered node
     """
     if isinstance(node, list):
         return list(filter(fn, [recursive_filter(fn, n) for n in node]))
-    if hasattr(node, 'definition'):
+    if has_name(node):
         node.definition = list(filter(fn, [recursive_filter(fn, n) for n in node.definition]))
     return node
 
 
-def apply_function(ast, fn, partial, exact=False):
+def apply_function(ast, fn, name='', partial=True):
     """
     Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
     to every part of the tree.
-
     :param ast: The tree to transform
     :param fn: The function to apply
     :param partial: TODO
     :return: the modified tre
     """
     for token in ast:
-        if hasattr(token, 'name') and partial in token.name and (not exact or partial == token.name):
+        if has_name(token, name, partial):
             fn(token)
-        if hasattr(token, 'definition'):
-            apply_function(token.definition, fn, partial)
+        if has_name(token):
+            apply_function(token.definition, fn, name)
     return ast
 
 
 def pass_through(intermediate):
     """
     A dummy function that simply returns its provided intermediate.
-
     :param intermediate: The intermediate
     :return: the intermediate
     """
@@ -67,7 +67,6 @@ def pop_unknowns(ast):
     """
     Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
     tokens are also processed for unknowns
-
     :param ast: The tree whose unknowns are being popped
     :return: the modified tree
     """
@@ -90,7 +89,6 @@ def pop_unknowns(ast):
 def img64(ast):
     """
     Convert image file paths to base64 representations of those images.
-
     :param ast: The tree whose images will be converted
     :return: The modified tree
     """
@@ -106,7 +104,6 @@ def img64(ast):
 def homogenize_strings(ast):
     """
     Combine consecutive string tokens into a single string. Applied recursively.
-
     :param ast: The tree whose strings tokens are combined
     :return: The modified tree
     """
@@ -130,7 +127,6 @@ def homogenize_strings(ast):
 def promote(ast, name):
     """
     Finds the first instance (based on a depth first search) of a token with the matching name.
-
     :param ast: The tree to be searched
     :param name: The token name to find
     :return: the subtree starting at the matching token
@@ -145,7 +141,6 @@ def promote(ast, name):
 def wrap_lists(ast):
     """
     Wraps consecutive listitem tokens in a list token. Applied recursively.
-
     :param ast: The tree to be modified
     :return: The modified tree
     """
@@ -168,7 +163,6 @@ def wrap_lists(ast):
 
 def untab_verb(ast):
     """
-
     :param ast: The tree to modify
     :return: the modified tree
     """
@@ -192,25 +186,20 @@ def transform_questions(ast):
     Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
     numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
     questions. Applied recursively.
-
     :param ast: The tree to modify
     :return: the modified tree
     """
     for token in ast:
-        if hasattr(token, 'name') and 'shortanswer' in token.name:
-            to_numerical(token)
-        if hasattr(token, 'name') and 'numerical' in token.name:
-            to_calculated(token)
-        if hasattr(token, 'name') and 'multichoice' in token.name:
+        if has_name(token, 'shortanswer'):
+            check_tag(token)
+        if has_name(token, 'multichoice'):
             to_multiselect(token)
-        #if hasattr(token, 'name') and 'multichoice' in token.name:
-        #    to_true_false(token)
-        elif hasattr(token, 'definition'):
+        elif has_name(token):
             token.definition = transform_questions(token.definition)
     return ast
 
 
-def to_numerical(question):
+def check_tag(question):
     """
     Transforms shortanswer token definitions from
     ```
@@ -228,20 +217,11 @@ def to_numerical(question):
     :param question: The question to transform
     """
     for token in question.definition:
-        if hasattr(token, 'name') and 'solution' in token.name:
-            for solution_token in token.definition:
-                try:
-                    parsed = re.match(r'(.*)=([^tolerance]*)(tolerance(.*))?', solution_token.definition[0].replace(' ', ''))
-                    token.definition[0] = parsed.group(2)
+        if has_name(token, 'solution'):
+                if has_name(token.definition[0], 'pyxamnumerical', partial=False):
                     question.name = 'numerical'
-                    logging.info('Converted shortanswer question to numerical')
-                    tolerance = parsed.group(4)
-                    if tolerance is not None:
-                        if tolerance.endswith('\\%'):
-                            tolerance = str(float(parsed.group(2)) * (float(tolerance[:-2]) / 100.0))
-                        token.definition.insert(1, formatter.Token('tolerance', [tolerance], None, ''))
-                except:
-                    return
+                if has_name(token.definition[0], 'pyxamcalculated', partial=False):
+                    question.name = 'calculated'
 
 
 def to_multiselect(question):
@@ -267,93 +247,11 @@ def to_multiselect(question):
     """
     for token in question.definition:
         count = 0
-        if hasattr(token, 'name') and 'choices' in token.name:
+        if has_name(token, 'choices'):
             for choice in token.definition:
-                if hasattr(choice, 'name') and 'correctchoice' in choice.name:
+                if has_name(choice, 'correctchoice'):
                     count += 1
         if count > 1:
             question.name = 'multiselect'
             logging.info('Converted multichoice question to multiselect')
 
-
-def to_true_false(question):
-    for token in question.definition:
-        count = 0
-        if hasattr(token, 'name') and 'choices' in token.name:
-            for choice in token.definition:
-                if hasattr(choice, 'name') and 'correctchoice' in choice.name:
-                    count += 1
-        if count == 1:
-            question.name = 'truefalse'
-            if token.definition[0].definition[0].lower() == 'true':
-                token.definition = [formatter.Token('true', [], None, '')]
-            else:
-                token.definition = [formatter.Token('false', [], None, '')]
-            logging.info('Converted multichoice question to truefalse')
-
-
-def to_calculated(question):
-    """
-    Transforms numerical token definitions from
-    ```
-    solution:
-        answer
-        tolerance:
-            tolerance
-    ```
-    to
-    ```
-    solution:
-        answer
-        tolerance:
-            tolerance
-        params:
-            param:
-                name
-                maximum:
-                    value
-                minimum:
-                    value
-                decimal:
-                    value
-                    formatter.Token('tolerance', [tolerance], None, ''))
-    ```
-    :param question: The question to transform
-    """
-    # TODO finish calculated
-    for token in question.definition:
-        if hasattr(token, 'name') and 'solution' in token.name:
-            definition = []
-            dataset = []
-            decimal = 0
-            for where, condition in zip(token.definition, token.definition[1:]):
-                if where == 'where':
-                    try:
-                        parsed = re.match(r'(.*)\[(.*)\]', condition.definition[0].replace(' ', ''))
-                        items = parsed.group(2).split(',')
-                        decimal = max(decimal, max([len(item.split('.')[1]) for item in items if '.' in item]))
-                        items = [float(item) for item in items]
-                        name = formatter.Token('paramname', [parsed.group(1).replace('{', '').replace('}', '')], None, '')
-                        pmax = formatter.Token('parammax', [str(max(items))], None, '')
-                        pmin = formatter.Token('parammin', [str(min(items))], None, '')
-                        pdec = formatter.Token('paramdec', ['2'], None, '')
-                        # Generate a random value
-                        count = formatter.Token('itemcount', [str(len(items))], None, '')
-                        pitems = formatter.Token('items', [], None, '')
-                        for n, item in enumerate(items):
-                            pitems.definition.append(formatter.Token('itemnumber', [str(n + 1)], None, ''))
-                            pitems.definition.append(formatter.Token('itemvalue', [str(item)], None, ''))
-                        dataset.append(formatter.Token('param', [name, pmax, pmin, pdec, count, pitems], None, ''))
-                    except:
-                        return
-                elif not hasattr(where, 'name') or 'tolerance' in where.name:
-                    definition.append(where)
-            if dataset:
-                for n, tolerance in enumerate(definition):
-                    if hasattr(tolerance, 'name') and 'tolerance' in tolerance.name:
-                        definition.insert(n + 1, formatter.Token('decimal', [str(decimal)], None, ''))
-                question.name='calculated'
-                logging.info('Converted numerical question to calculated')
-                question.definition.append(formatter.Token('params', dataset, None, ''))
-                token.definition = definition
-                return
