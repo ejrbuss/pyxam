@@ -92,7 +92,7 @@ def load_source(name, directory, build):
     for file in os.listdir(directory):
         path = directory + '/' + file
         if os.path.isfile(path) and path.endswith('.py') and '__init__' not in path:
-            docstrings = re.findall(r'((((((def)|(class))\s.*?:\s*)?"{3}.*?)"{3})|(\n#[^\n]*\n[^\n]* =))', fileutil.read(path), re.DOTALL)
+            docstrings = re.findall(r'((((((def)|(class))\s[^\n]*?:\s*)?"{3}.*?)"{3})|(\n#[^\n]*\n[^\n]* =))', fileutil.read(path), re.DOTALL)
             parsed = '\n***\n'.join([parse_docstring(doc[0]) for doc in docstrings])
             parsed += '\n***\nView the [source](%/../../pyxam/{})'.format(
                 path.replace(os.path.dirname(os.path.dirname(__file__)), '')
@@ -121,9 +121,9 @@ def parse_docstring(docstring):
     # Remove *args and **kwargs
     docstring = re.sub(r'\*args, \*\*kwargs', 'args, kwargs', docstring)
     # Format function/class signature
-    docstring = re.sub(r'^((def)|(class))\s+(.*?)\((.*?)\):', r'**\4**(*\5*)\n\n', docstring, 1, re.DOTALL)
+    docstring = re.sub(r'^((def)|(class))\s+([^\s]*?)\(([^\n]*?)\):', r'**\4**(*\5*)\n', docstring, 1)
     # Remove empty parameters
-    docstring = re.sub(r'\(\*\*\)\n', '()', docstring)
+    docstring = re.sub(r'\(\*\*\)\n', '()\n', docstring)
     # Format param
     docstring = re.sub(r':param\s*(.*?):(.*?)', r'<br />`\1` \2', docstring)
     # Format return

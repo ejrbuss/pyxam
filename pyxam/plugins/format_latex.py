@@ -1,8 +1,9 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 import re
+import util
 import options
-import formatter
 import filters
+import formatter
 import collections
 
 
@@ -36,7 +37,7 @@ def parser_postprocessor(intermediate):
             title, prompt = definition.pop(0), []
             while len(definition) > 0 and (not hasattr(definition[0], 'name') or definition[0].name in ['$', 'img', 'verbatim']):
                 prompt.append(definition.pop(0))
-            definition.insert(0, formatter.Token('prompt', prompt, None, ''))
+            definition.insert(0, util.Map({'name': 'prompt', 'definition': prompt}))
             definition.insert(0, title)
             return token
         except AttributeError:

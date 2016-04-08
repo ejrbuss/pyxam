@@ -81,7 +81,7 @@ def mix(n, row):
     version = str(chr(n + ord('A')) if options.state.alphabetize() else n + 1)
     if options.state.noweave():
         fileutil.write(
-            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.mix',
+            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex',
             fileutil.read(options.state.template())
         )
     else:

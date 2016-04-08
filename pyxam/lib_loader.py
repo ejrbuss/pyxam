@@ -12,9 +12,6 @@ import fileutil
 import subprocess
 
 
-global_vars = '<<echo=False>>=\nn = {}\n@'
-
-
 class LibError(Exception):
     pass
 

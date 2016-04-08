@@ -1,6 +1,8 @@
 import formatter
 import collections
-signature = 'org mode foramt', 'ejrbuss', 'Format for producing and viewing org mode files'
+
+
+signature = 'org mode format', 'ejrbuss', 'Format for producing and viewing org mode files'
 
 
 def load():

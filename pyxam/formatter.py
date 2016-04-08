@@ -1,38 +1,38 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Module formatter
+
+This module
 """
-import collections
-import logging
 import re
 import util
 import config
-import fileutil
 import options
+import filters
+import fileutil
+import collections
 
-
-# TODO cleanup
+# TODO finish
 
 
 class FormatError(Exception):
+    """
+    Exception wrapper for format errors
+    """
     pass
 
 
-class Token:
+def str_token(token):
+    """
 
-    def __init__(self, name, definition, fmt, regex=None):
-        self.name = name
-        self.definition = definition
-        self.regex = unpack(definition, fmt) if regex is None else regex
-
-    def package(self, fmt):
-        try:
-            return ''.join(pack(child, fmt) for child in self.definition)
-        finally:
-            self.definition = []
-
-    def __repr__(self):
-        return '\n' + self.name + ':\n     ' + ''.join(str(child).replace('\n', '\n     ') for child in self.definition) + '\n'
+    :param token:
+    :return:
+    """
+    if isinstance(token, list):
+        return ''.join(str_token(t) for t in token)
+    if isinstance(token, str):
+        return token
+    return '\n' + token.name + ':\n\t' + ''.join(str_token(child).replace('\n', '\n\t') for child in token.definition) + '\n'
 
 
 formats = {}
@@ -40,7 +40,8 @@ formats = {}
 
 def get_extension():
     """
-    Get the output extension
+    Get the file extension of the output format.
+
     :return: The output extension
     """
     return formats[options.state.format()]['extensions'][0]
@@ -48,30 +49,28 @@ def get_extension():
 
 def get_format(file):
     """
+    Get the format of the given file. Format is based on file extension.
 
-    :param file:
-    :return:
+    :param file: The file to find the format of
+    :return: The format of the given file
     """
     try:
         return formats[fileutil.get_extension(file)]
     except:
         raise FormatError('Unknown format')
-#TODO finish
+
 
 def parse():
     """
     source to ast
     :return:
     """
-    global formats
-    intermediates = []
-    parser = get_format(options.state.template())
+    intermediates, parser = [], get_format(options.state.template())
     if not parser['format']:
         raise FormatError('This format is export only!')
+    # Loop through all weaved files
     for file in fileutil.with_extension('.tex'):
         options.post('Using ' + parser['name'] + ' format to parse ' + file)
-
-        logging.info('Using ' + parser['name'] + ' format to parse ' + options.state.template())
         intermediate = util.Map({
             'ast': [],
             'src': parser['parser_preprocessor'](fileutil.read(file)),
@@ -79,12 +78,11 @@ def parse():
             'name': file.replace('.tex', '')
         })
         intermediate.ast = parse_tokens(intermediate.src, parser)
-        fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
         for default_filter in config.default_filters:
             intermediate.ast = default_filter(intermediate.ast)
         intermediate = parser['parser_postprocessor'](intermediate)
         intermediates.append(intermediate)
-        fileutil.write(options.state.cwd() + '/parsed-ast', str(''.join(str(token) for token in intermediate.ast)))
+        fileutil.write(options.state.cwd() + '/parsed-ast', ''.join(str_token(intermediate.ast)))
     options.post('Successfully parsed', parser['name'] + '.')
     return intermediates
 
@@ -99,13 +97,12 @@ def compose(intermediates):
         composer = formats[options.state.format()]
     except:
         raise FormatError('Unknown format')
-    logging.info('Using ' + composer['name'][0] + ' format to compose ' + options.state.template())
     for intermediate in intermediates:
         composed = intermediate.src
         # If not already in native format
         if intermediate.fmt != composer:
             intermediate = composer['composer_preprocessor'](intermediate)
-            fileutil.write(options.state.cwd() + '/composed-ast', str(intermediate.ast))
+            fileutil.write(options.state.cwd() + '/composed-ast', ''.join(str_token(intermediate.ast)))
             composed = ''.join([pack(token, composer) for token in intermediate.ast]).strip()
         composed = composer['composer_postprocessor'](composed)
         fileutil.write(intermediate.name + '.cmp', composed)
@@ -131,7 +128,8 @@ def pack(token, fmt):
         if isinstance(symbol, str):
             content += symbol
         if isinstance(symbol, tuple) or isinstance(symbol, list):
-            content += token.package(fmt)
+            content += ''.join(pack(child, fmt) for child in token.definition)
+            token.definition = []
     return content
 
 
@@ -139,10 +137,10 @@ def add_format(name,
                extensions,
                format,
                description='',
-               parser_preprocessor=lambda _ : _,
-               parser_postprocessor=lambda _ : _,
-               composer_postprocessor=lambda _ : _,
-               composer_preprocessor=lambda _ : _,
+               parser_preprocessor=lambda _: _,
+               parser_postprocessor=lambda _: _,
+               composer_postprocessor=lambda _: _,
+               composer_preprocessor=lambda _: _,
                left_paren=None,
                right_paren=None
 ):
@@ -176,34 +174,9 @@ def add_format(name,
         'format': format
     }
     formats.update(dict((extension, fmt) for extension in fmt['extensions']))
-    fmt['format'] = collections.OrderedDict([(name, Token(name, defn, fmt['format'])) for name, defn in fmt['format'].items()])
-
-
-def unpack(token, fmt, tail=False):
-    """
-    Convert format list to a regex using the following rules:
-    - Convert pure strings to pure strings within the regex with all regex characters escapted
-    - Convert empty tuples to non-greedy character grabbers (.*?)
-    - Convert lists to recursively obtain the regex of the token contained within that list
-    - Throw an error for any other input
-    If a tail prefix the regex with a start of string whitespace regex and append a end of string or
-    the last entry in the format list regex
-    :param token: The token to build the regex for
-    :param fmt: The reference format
-    :param tail: Whether the regex should have a prefix and postfix applied
-    :return: The regex
-    """
-    regex = r''
-    for symbol in token[:-1]:
-        if isinstance(symbol, tuple):
-            regex += r'(.*?)' if len(symbol) < 1 else symbol[0]
-        elif isinstance(symbol, str):
-            regex += re.escape(symbol)
-        elif isinstance(symbol, list):
-            regex += unpack(fmt[symbol[0]], fmt, tail=True)
-        else:
-            raise FormatError('Cannot unpack token: ' + token)
-    return regex if tail else (r'(\s*' + regex + ')(?=\s*(' + token[-1] + ')|$)').replace('\ ', '\s*')
+    fmt['format'] = collections.OrderedDict([
+        (name, util.Map({'name': name, 'definition': definition})) for name, definition in fmt['format'].items()
+    ])
 
 
 def parse_tokens(src, fmt):
@@ -237,7 +210,7 @@ def match_token(src, fmt):
     return src[0], src[1:]
 
 
-def build_token(token, src, fmt, debug=False):
+def build_token(token, src, fmt):
     """
 
     :param token:
@@ -246,81 +219,54 @@ def build_token(token, src, fmt, debug=False):
     :param debug:
     :return:
     """
-    definition, unmatched, post = [], src, False
-    # Nested parentheses counter
-    parens = 0
-    if debug: print('SRC:\n',src)
+    definition, unmatched, packing = [], src, False
     for symbol in token.definition[:-1]:
-        if debug: print('\tPROCESSING SYMBOL:',symbol)
-        # If post
-        if post:
-            # Matched content
-            matched = ''
-            # While there are unmatched characters
-            while post:
+        if packing:
+            matched, parentheses = '', 0
+            while packing:
                 # No match
-                if len(unmatched) == 0:
+                if not unmatched:
                     return None, src
-                # If token
+                # If token we don't care what parentheses level we are in
                 elif isinstance(symbol, list):
                     for sub_token in symbol:
-                        if debug: print('\t\t\tCHECKING SUBTOKEN: [', symbol[0], ']')
                         child, unmatched = build_token(fmt['format'][sub_token], unmatched, fmt)
-                        if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t\t'))
                         if child is not None:
-                            if debug: print('\t\tEND OF POST',child)
                             definition += parse_tokens(matched, fmt)
                             definition.append(child)
-                            post = False
+                            packing = False
                             break
                     else:
-                        matched += unmatched[0]
-                        unmatched = unmatched[1:]
+                        matched, unmatched = increment(matched, unmatched)
                 # Move down a parentheses level
                 elif fmt['left_paren'] is not None and unmatched.startswith(fmt['left_paren']):
-                    if debug: print('\t\t\tCONSUMED:', unmatched[0])
-                    parens += 1
-                    matched += unmatched[0]
-                    unmatched = unmatched[1:]
+                    parentheses += 1
+                    matched, unmatched = increment(matched, unmatched)
                 # If nested move back up a parentheses level
-                elif parens != 0 and unmatched.startswith(fmt['right_paren']):
-                    if debug: print('\t\t\tCONSUMED:', unmatched[0])
-                    parens -= 1
-                    matched += unmatched[0]
-                    unmatched = unmatched[1:]
+                elif parentheses != 0 and unmatched.startswith(fmt['right_paren']):
+                    parentheses -= 1
+                    matched, unmatched = increment(matched, unmatched)
                 # If parentheses are not balanced consume character
-                elif parens != 0:
-                    matched += unmatched[0]
-                    unmatched = unmatched[1:]
+                elif parentheses != 0:
+                    matched, unmatched = increment(matched, unmatched)
                 # If at the end of content
                 elif isinstance(symbol, str) and unmatched.startswith(symbol):
-                    if debug: print('\t\tEND OF POST:',symbol)
-                    definition += [matched] if \
-                        '$' in token.name or \
-                        'verb' in token.name or \
-                        'comment' in token.name in token.name \
-                        else parse_tokens(matched, fmt)
+                    definition += [matched] if filters.has_name(token, ['$', 'verb', 'comment']) else parse_tokens(matched, fmt)
                     unmatched = unmatched[len(symbol):]
-                    post = False
+                    packing = False
                 # If not at the end of content
                 elif isinstance(symbol, str):
-                    if debug: print('\t\t\tCONSUMED:', unmatched[0])
-                    matched += unmatched[0]
-                    unmatched = unmatched[1:]
+                    matched, unmatched = increment(matched, unmatched)
                 # No match
                 else:
                     return None, src
-
         # If str
         elif isinstance(symbol, str) and unmatched.startswith(symbol):
-            if debug: print('\t\tREMOVEING:',symbol)
             unmatched = unmatched[len(symbol):]
         # If token
         elif isinstance(symbol, list):
             for sub_token in symbol:
-                if debug: print('\t\tCHECKING SUBTOKEN: [', sub_token, ']')
                 child, unmatched = build_token(fmt['format'][sub_token], unmatched, fmt)
-                if debug: print('\t\t\tRETURNED:',str(child).replace('\n', '\n\t\t\t'))
                 if child is not None:
                     definition.append(child)
                     break
@@ -328,55 +274,50 @@ def build_token(token, src, fmt, debug=False):
                 return None, src
         # If content
         elif isinstance(symbol, tuple):
-            if debug: print('\t\tENTERING POST')
-            post = True
+            packing = True
         # No match
         else:
             return None, src
-    # If exited on post
-    if post:
-        # Nested parentheses counter
-        parens = 0
-        # Matched content
-        matched = ''
-        # While there are unmatched characters
-        while post:
+    # If exited before packing
+    if packing:
+        matched, parentheses = '', 0
+        while packing:
             # End of string
             if len(unmatched) == 0:
                 definition += [matched] if ('$' or 'verbatim' or 'comment') in token.name else parse_tokens(matched, fmt)
-                post = False
-            # Move down a parentheses lvel
+                packing = False
+            # Move down a parentheses level
             elif fmt['left_paren'] is not None and unmatched.startswith(fmt['left_paren']):
-                parens += 1
-                matched += unmatched[0]
-                unmatched = unmatched[1:]
+                parentheses += 1
+                matched, unmatched = increment(matched, unmatched)
             # If nested move back up a parentheses level
-            elif parens != 0 and unmatched.startswith(fmt['right_paren']):
-                parens -= 1
-                matched += unmatched[0]
-                unmatched = unmatched[1:]
+            elif parentheses != 0 and unmatched.startswith(fmt['right_paren']):
+                parentheses -= 1
+                matched, unmatched = increment(matched, unmatched)
             # If parentheses are not balanced consume character
-            elif parens != 0:
-                matched += unmatched[0]
-                unmatched = unmatched[1:]
+            elif parentheses != 0:
+                matched, unmatched = increment(matched, unmatched)
             # If at the end of content
             elif re.match(r'^\s*(({})|$).*'.format(token.definition[-1]), unmatched, re.DOTALL):
-                definition += [matched] if \
-                        '$' in token.name or \
-                        'verb' in token.name or \
-                        'comment' in token.name in token.name \
-                        else parse_tokens(matched, fmt)
-                post = False
+                definition += [matched] if filters.has_name(token, ['$', 'verb', 'comment']) else parse_tokens(matched, fmt)
+                packing = False
             # If not at the end of content
             else:
-                matched += unmatched[0]
-                unmatched = unmatched[1:]
+                matched, unmatched = increment(matched, unmatched)
     # Check if ending regex matches
     if unmatched == '' or re.match(r'^\s*(({})|$).*'.format(token.definition[-1]), unmatched, re.DOTALL):
-        return Token(token.name, definition, fmt, ''), unmatched
+        return util.Map({'name': token.name, 'definition': definition}), unmatched
     return None, src
 
 
+def increment(matched, unmatched):
+    """
+
+    :param matched:
+    :param unmatched:
+    :return:
+    """
+    return matched + unmatched[0], unmatched[1:]
 
 
 

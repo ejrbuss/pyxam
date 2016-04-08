@@ -9,14 +9,14 @@ import inspect
 
 class Map(dict):
     """
-    A custom dictionary which can be accessed with index notation and function notation. Taken from a
+    A custom dictionary which can be accessed with index notation and attribute notation. Taken from a
     [stackoverflow](http://stackoverflow.com/questions/2352181/how-to-use-a-dot-to-access-members-of-dictionary)
     post by [epool](http://stackoverflow.com/users/845296/epool). Example usage:
     ```python
         # Can construct using a dictionary/named args
         m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
-        # Access using function notation
-        assert(m.firstname() == 'Eduardo')
+        # Access using attribute notation
+        assert(m.firstname == 'Eduardo')
         # Access using index notation
         assert(m['lastname'] == 'Pool')
     ```

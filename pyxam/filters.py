@@ -3,17 +3,24 @@
 # Module filters
 This module provides helper functions for transforming a Pyxam parse tree.
 """
-import lib_loader
-import formatter
-import logging
+import util
 import base64
-import re
+import logging
+import lib_loader
 
 
 #TODO finish
 
-
 def has_name(token, name='', partial=True):
+    """
+
+    :param token:
+    :param name:
+    :param partial:
+    :return:
+    """
+    if isinstance(name, list):
+        return any(has_name(token, n, partial) for n in name)
     return hasattr(token, 'name') and (name == token.name or (partial and name in token.name))
 
 
@@ -153,11 +160,11 @@ def wrap_lists(ast):
             buffer.append(token)
         else:
             if buffer:
-                new_ast.append(formatter.Token('list', buffer, None, ''))
+                new_ast.append(util.Map({'name': 'list', 'definition': buffer}))
                 buffer = []
             new_ast.append(token)
     if buffer:
-        new_ast.append(formatter.Token('list', buffer, None, ''))
+        new_ast.append(util.Map({'name': 'list', 'definition': buffer}))
     return new_ast
 
 
