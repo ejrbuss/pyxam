@@ -20,7 +20,7 @@ options can be seen by _options.
 import pyxam
 import config
 import options
-import formatter
+import parser_composer
 import process_list
 
 
@@ -40,6 +40,7 @@ def load():
      - `method -m` Set the selection method for population mixing
      - `population -p` Set the class list
      - `alphabetize -a` Enable lettered versioning
+     - `noweave -w` Disable pweave
      - `debug -d` Disable file cleanup
      - `solutions -s` Enable solutions
      - `version -v` Show the version number
@@ -60,12 +61,12 @@ def load():
     options.add_option('method',       '-m',   'Set selection method for CSVs',       config.method,      str)
     options.add_option('population',   '-p',   'Set class list',                      None,               str)
     options.add_option('alphabetize',  '-a',   'Enable lettered versioning',          config.alphabetize, bool)
-    options.add_option('noweave',      '-w',   'Disable pweave',                      config.weave,        bool)
+    options.add_option('noweave',      '-w',   'Disable pweave',                      config.noweave,     bool)
     options.add_option('debug',        '-d',   'Disable file cleanup',                config.debug,       bool)
     options.add_option('solutions',    '-s',   'Enable soultions',                    config.solutions,   bool)
-    options.add_option('version',      '-v',  'Show the version number',             False,              bool)
-    options.add_option('list',         '-ls', 'List all available formats',          False,              bool)
-    options.add_option('help',         '-h',  'Show a help message',                 False,              bool)
+    options.add_option('version',      '-v',  'Show the version number',             False,               bool)
+    options.add_option('list',         '-ls', 'List all available formats',          False,               bool)
+    options.add_option('help',         '-h',  'Show a help message',                 False,               bool)
     # Run once and produce solutions then run again widthout solutions
     if options.state.solutions():
         options.state.population('')
@@ -76,9 +77,9 @@ def load():
             pyxam.welcome()
     # Display a list of all available formats then exit
     elif options.state.list():
-        formats = set(fmt['extensions'][0] for key, fmt in formatter.formats.items())
+        formats = set(fmt['extensions'][0] for key, fmt in parser_composer.formats.items())
         for fmt in set(formats):
-            print(formatter.formats[fmt]['extensions'][0] + ':\n\t' + formatter.formats[fmt]['description'])
+            print(parser_composer.formats[fmt]['extensions'][0] + ':\n\t' + parser_composer.formats[fmt]['description'])
     # Display a help message then exit
     elif options.state.help():
         div = '-' * max(len(line) for line in options.get_help().split('\n'))
@@ -96,14 +97,14 @@ def rerun_without_solutions():
     [process_list](%/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
     one with solutions and one without. =
     """
-    args = pyxam.store_args()
+    args = pyxam.pyxam.store_args()
     if '--solutions' in args:
         args.remove('--solutions')
     if '-solutions' in args:
         args.remove('-solutions')
     if '-s' in args:
         args.remove('-s')
-    pyxam.start(args, options.state.api())
+    pyxam.pyxam.start(args, options.state.api())
 
 
 

@@ -1,43 +1,54 @@
-# Author: Eric Buss <ebuss@ualberta.ca> 2016\
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
+"""
+# Plugin format_moodle
+
+Plugin for importing and exporting moodle xml files.
+"""
 import xml.dom.minidom
-import formatter
+import parser_composer
 import collections
 import filters
 
 
 signature = 'moodle format', 'ejrbuss', 'Format for producing and viewing moodle xml files'
-# Plugin signature
 
-fmt_truefalse =  '<answer fraction="{}"><text>true</text><feedback><text>Correct</text></feedback></answer>\n \
-                    <answer fraction="{}"><text>false</text><feedback><text>Incorrect</text></feedback></answer>'
-#TODO finish
 
 def composer_preprocessor(intermediate):
     """
-    Promote questions to top level of the ast
+    Performs the following modifications to the intermediate:
+     - Promote questions token to top level of the ast
+     - Converts images to a base64 encoded string to appear directly in the HTML source
+     - Add text tags around the solution if they are not already present
+
     :param intermediate: An intermediate parse object
     :return: A modified intermediate
     """
-    def fix_html(token):
-        token.definition[0] = token.definition[0].replace('<', '&#60;').replace('\n', '<br />\n').replace(' '*4, '&emsp;'*2)
-        return token
-
     def fix_solutions(token):
         if not token.definition[0].startswith('<text>'):
             token.definition = ['<text>'] + token.definition + ['</text>']
         return token
+
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
     intermediate.ast = filters.img64(intermediate.ast)
-    intermediate.ast = filters.apply_function(intermediate.ast, fix_html, 'verbatim')
     intermediate.ast = filters.apply_function(intermediate.ast, fix_solutions, 'solution')
     return intermediate
 
 
 def composer_postprocessor(source):
+    """
+    Formats the xml to help readability.
+
+    :param source: The source to transform
+    :return: The transformed source
+    """
     return xml.dom.minidom.parseString(source).toprettyxml()
 
+
 def load():
-    formatter.add_format(
+    """
+    Loads the moodle xml format.
+    """
+    parser_composer.add_format(
         name='moodle',
         extensions=['xml'],
         description=signature[2],
@@ -51,13 +62,10 @@ def load():
             ('img', ['<img alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
             ('choice', ['<answer fraction="0"> <text>', (), '</text> <feedback> <text>Incorrect</text> </feedback> </answer>', '.']),
             ('correctchoice', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text>Correct</text> </feedback> </answer>', '.']),
-            ('verbatim', ['<p style="font-family:monospace;padding:1em"><b>', (), '</b></p>', '.']),
-            ('true', [fmt_truefalse.format('100', '0'), '.']),
-            ('false', [fmt_truefalse.format('0', '100'), '.']),
+            ('verbatim', ['<pre class="verbatim">', (), '</pre>', '.']),
             ('essay', ['<question type="essay">', (), '</question>', '']),
             ('tolerance', ['<tolerance>', (), '</tolerance><tolerancetype>1</tolerancetype>', '.']),
             ('shortanswer', ['<question type="shortanswer">', ['title'], (), '</question>', '.']),
-            ('truefalse', ['<question type="truefalse">', ['title'], (), '</question>', '.']),
             ('multichoice', ['<question type="multichoice">', ['title'], (), '<shuffleanswers>1</shuffleanswers></question>', '.']),
             ('multiselect', ['<question type="multichoice"><single>false</single>', ['title'], (), '<shuffleanswers>1</shuffleanswers></question>', '.']),
             ('numerical', ['<question type="numerical">', ['title'], (), '</question>', '.']),
@@ -77,12 +85,9 @@ def load():
         composer_preprocessor=composer_preprocessor,
         composer_postprocessor=composer_postprocessor
     )
-    # Return signature
     return signature
 
 
-def unload():
-    pass
 
 
 

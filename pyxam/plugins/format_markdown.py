@@ -1,14 +1,21 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
-import formatter
+"""
+# Plugin format_markdown
+
+A small plugin for exporting markdown to HTML. This plugin does not support exams written in markdown.
+"""
+import parser_composer
 import collections
-import filters
 
 
 signature = 'markdown format', 'ejrbuss', 'Format for producing and viewing files in markdown'
 
-#TODO finish
+
 def load():
-    formatter.add_format(
+    """
+    Loads the markdown format.
+    """
+    parser_composer.add_format(
         name='markdown',
         extensions=['md'],
         description=signature[2],
@@ -27,12 +34,5 @@ def load():
             ('verbexpr', ['`', (), '`', '.'])
         ])
     )
-    # Return signature
     return signature
-
-
-def unload():
-    pass
-
-
 

@@ -1,28 +1,53 @@
-"""
-# Module config
-"""
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
+#TODO Finish
 import os
 import filters
 import logging
 
-# Directories
+"""
+# Module config
 
-# Source directory
+This module can be used to set various configuration settings for running Pyxam.
+
+## Directories
+
+The following configuration options allow you to set the paths to the different components of the Pyxam system.
+
+The pyxam_directory should point to the source directory. By default that will be the parent directory of this file.
+"""
 pyxam_directory = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
-# Plugin directory
+"""
+The plugin directory should point to the plugins folder. By default this will be located in a directory named plugins in
+the source directory.
+"""
 plugin_directory = pyxam_directory + '/plugins'
-# Library directory
-lib_directory = pyxam_directory + '/libs'
-# HTML template directory
+"""
+The template_directory should point to a folder containing template HTML files used for exporting to HTML. By default
+this will be located in a directory named templates in the source directory.
+"""
 template_directory = pyxam_directory + '/templates'
-# Local docs directory
+"""
+The local_docs should point to the build directory for your local documentation. By default this will be located in the
+docs/build directory one level up from the source directory.
+"""
 local_docs = os.path.dirname(pyxam_directory) + '/docs/build'
-# Git docs directory
+"""
+The git_docs should point to the rawgit url for viewing documentation. By default this should be
+https://rawgit.com/username_of_repo_owner/repo/branch/docs/build
+"""
 git_docs = 'https://rawgit.com/balancededge/pyxam/master/docs/build'
+"""
+## Formatter
 
-# Parser
+The following configuration options relate to parsing and formatting.
 
-# Default filters run after parsing
+The default_filters should be a list of functions to apply to a parsed ast prior to parser post processing. By default:
+ - Comments are removed
+ - Unknowns are popped (unknowns are replaced with their first recognized child)
+ - Consecutive strings are homogenized (combined)
+ - Question types are transformed (ex. multichoice to multiselect)
+ - The builtins pyxamnumerical and pyxamcalcualted are removed
+"""
 default_filters=[
     lambda ast: filters.remove_name(ast, 'comment'),
     filters.pop_unknowns,
@@ -31,63 +56,116 @@ default_filters=[
     lambda ast: filters.remove_name(ast, 'pyxamnumerical'),
     lambda ast: filters.remove_name(ast, 'pyxamcalculated')
 ]
+"""
+## Formatting
 
-# Formatting
+The following configuration options relate to formatting of various auto-generated strings.
 
-# File name following title
+The filename is the postfix format for exported files. This will appear after the title of the exam followed by an
+underscore. The exam version, student name, and student number can all be specified.
+"""
 filename = 'v{version}_{name}_{number}'
-# Format for numerical solutions
+"""
+The numerical_format defines the default format of numerical answers. The solution, tolerance (as an absolute value) and
+upper and lower bounds can all be specified.
+"""
 numerical_format = '{solution} with a tolerance of {tolerance}({upper}-{lower})'
-# Format for numerical solutions when tolerance is zero
+"""
+The numerical_format_no_tolerance defines the format of numerical answers when the tolerance is zero.
+"""
 numerical_format_no_tolerance = '{solution}'
-# Format for calculated solutions
+"""
+The calculated_format defines the default format of calculated answers. The solution, tolerance (as an absolute value)
+and upper and lower bounds can all be specified.
+"""
 calculated_format = '{solution} with a tolerance of {tolerance}({upper}-{lower})'
-# Format for calculated solutions when tolerance is zero
+"""
+The calculated_format_no_tolerance defines the format of calclated answers when the tolerance is zero.
+"""
 calculated_format_no_tolerance = '{solution}'
+"""
+## CSV
+
+The following configuration options relate to reading in CSV files.
 
 
-# CSV
-#TODO finish
-# Strings used to identify columns in a csv files that match a student name
+Strings used to identify columns in a csv files that match a student name
+"""
 name_column_identifiers = ['firstname', 'surname', 'lastname', 'studentname']
-# Strings used to identify columns in a csv files that match a student number
+"""
+Strings used to identify columns in a csv files that match a student number
+"""
 number_column_identifiers = ['studentid', 'id', 'identificationnumber']
+"""
+## Logging
 
-# Logging
+The following configuration options relate to logging.
 
-# Default logging level
+The default_logging defines the default logging level.
+"""
 default_logging = logging.WARNING
-# Logging output format
+"""
+The logging_format defines the default format for logging messages.
+"""
 logging_format='%(levelname)s@%(module)s.%(funcName)s(): %(message)s'
+"""
+## Options
 
-# Options
+The following configuration options relate to command line options
 
-# Default out directory
+The default out directory.
+"""
 out = 'out'
-# Default tmp directory
+"""
+The default tmp directory.
+"""
 tmp = 'tmp'
-# Default figure directory
+"""
+The default figure directory.
+"""
 fig = 'fig'
-# Default number of exam versions
+"""
+The default number of exam versions.
+"""
 number = 1
-# Default exam title
+"""
+The default exam title.
+"""
 title = 'exam'
-# Default output format
+"""
+The default output format.
+"""
 format = 'tex'
-# Default code shell
+"""
+The default shell to run python through.
+"""
 shell = 'python'
-# Default CSV mixing method
+"""
+The default CSV mixing method.
+"""
 method = 'sequence'
-# Alphabetize rather than enumerate exams flag
+"""
+Set whether exams are numerated or alphabetized.
+"""
 alphabetize = False
-# Weave flag
-weave = False
-# Debug flag
+"""
+Set whether pweave is disabled by default.
+"""
+noweave = False
+"""
+Set whether debug mode is disabled by default.
+"""
 debug = False
-# Solutions flag
+"""
+Set whether solutiosn are enabled by default.
+"""
 solutions = False
-# Default number of recompilations
+"""
+Set the default number of LaTeX recompilations.
+"""
 recomps = 1
-# Seed
+"""
+Set the default random seed.
+"""
 seed = 0 # random.randint()
 

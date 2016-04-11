@@ -1,4 +1,5 @@
-import formatter
+# Author: Eric Buss <ebuss@ualberta.ca> 2016
+import parser_composer
 import collections
 
 
@@ -7,7 +8,7 @@ signature = 'org mode format', 'ejrbuss', 'Format for producing and viewing org 
 
 def load():
 
-    formatter.add_format(
+    parser_composer.add_format(
         name='orghtml',
         extensions=['orghtml'],
         description=signature[2],
@@ -25,3 +26,5 @@ def load():
         ])
     )
     return signature
+
+# TODO finish

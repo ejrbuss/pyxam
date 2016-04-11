@@ -7,7 +7,7 @@ Adds support import export format support for org mode files
 import re
 import util
 import filters
-import formatter
+import parser_composer
 import collections
 
 
@@ -31,7 +31,7 @@ def parser_postprocessor(intermediate):
             definition.insert(0, title)
             return token
         except AttributeError:
-            raise(formatter.FormatError('Malformed question token definition:' + str(token)))
+            raise(parser_composer.FormatError('Malformed question token definition:' + str(token)))
 
     # Run inner function recursively on the ast
     filters.apply_function(intermediate.ast, def_prompt, 'question', partial=False)
@@ -78,7 +78,7 @@ def load():
 
     :return: plugin signature
     """
-    formatter.add_format(
+    parser_composer.add_format(
         name='org',
         extensions=['org'],
         description=signature[2],

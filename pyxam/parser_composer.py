@@ -2,7 +2,7 @@
 """
 # Module formatter
 
-This module
+This module parsers and composes mixed files.
 """
 import re
 import util
@@ -11,8 +11,6 @@ import options
 import filters
 import fileutil
 import collections
-
-# TODO finish
 
 
 class FormatError(Exception):
@@ -24,9 +22,10 @@ class FormatError(Exception):
 
 def str_token(token):
     """
+    Converts a token into a human readable string.
 
-    :param token:
-    :return:
+    :param token: The token to represent
+    :return: the string representation
     """
     if isinstance(token, list):
         return ''.join(str_token(t) for t in token)
@@ -62,8 +61,10 @@ def get_format(file):
 
 def parse():
     """
-    source to ast
-    :return:
+    Converts mixed files from source to an intermediate based on the extension of the template file. Once converted the
+    intermediate is run through the default filters and the extension formatter's processors.
+
+    :return: A list of intermediates corresponding to each of the mixed files
     """
     intermediates, parser = [], get_format(options.state.template())
     if not parser['format']:
@@ -89,9 +90,11 @@ def parse():
 
 def compose(intermediates):
     """
-    ast to source
-    :param intermediates:
-    :return:
+    Converts intermediates to a source file based on the format option. The formatter's processors are run on the
+    intermediate and final source. If the source is being converted to the same format it came from the intermediate
+    will be discarded in favour of the original source.
+
+    :param intermediates: A list of intermediates
     """
     try:
         composer = formats[options.state.format()]
@@ -112,14 +115,16 @@ def compose(intermediates):
 def pack(token, fmt):
     """
     Convert a token into a string using the following rules:
-    - If the token name is contained in the format:
-        - Append every pure string in that format
-        - Append every tuple or list as the packed content of the token
-    - If the token name is not contained in the format
-        - Append the packed content of the token
-    :param token:
-    :param fmt:
-    :return:
+
+    If the token name is contained in the format:
+     - Append every pure string in that format
+     - Append every tuple or list as the packed content of the token
+    If the token name is not contained in the format
+     - Append the packed content of the token
+
+    :param token: The token to pack
+    :param fmt: The format to pack to
+    :return: The packed token
     """
     if isinstance(token, str):
         return token
@@ -145,17 +150,16 @@ def add_format(name,
                right_paren=None
 ):
     """
+    Add a format to the formatter.
 
-    :param name:
-    :param extensions:
-    :param description:
-    :param format:
-    :param parser_preprocessor:
-    :param parser_postprocessor:
-    :param composer_postprocessor:
-    :param composer_preprocessor:
-
-    :return:
+    :param name: The name of the format
+    :param extensions: A list of extensions related to the format
+    :param description: A description of the format
+    :param format: The token list for the format
+    :param parser_preprocessor: The parsing pre processor
+    :param parser_postprocessor: The parsing post processor
+    :param composer_postprocessor: The composer pre processor
+    :param composer_preprocessor: The composer post processor
     """
     format.update(collections.OrderedDict([
         ('pyxamnumerical', [':pyxam.numerical', '.']),
@@ -184,6 +188,7 @@ def parse_tokens(src, fmt):
     Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
     tokens must be provided. Any string sequences that cannot be matched will be returned as
     raw characters
+
     :param src: The source to convert into an ast
     :param fmt: The format providing the tokens
     :return: The ast
@@ -199,6 +204,7 @@ def match_token(src, fmt):
     """
     Determine what token a specific string sequence begins with. If no token can be found in the given
     template a raw character is returned off the top.
+
     :param src: The string sequence
     :param fmt: The format providing the tokens
     :return: The matched token, The unmatched sequence
@@ -212,12 +218,12 @@ def match_token(src, fmt):
 
 def build_token(token, src, fmt):
     """
+    Attempts to convert the source into a token.
 
-    :param token:
-    :param src:
-    :param fmt:
-    :param debug:
-    :return:
+    :param token: The token to build
+    :param src: The source to build from
+    :param fmt: The format to build to
+    :return: The token if built or none
     """
     definition, unmatched, packing = [], src, False
     for symbol in token.definition[:-1]:
@@ -312,10 +318,11 @@ def build_token(token, src, fmt):
 
 def increment(matched, unmatched):
     """
+    Moves the first character of unmatched to the end of matched
 
-    :param matched:
-    :param unmatched:
-    :return:
+    :param matched: The matched string
+    :param unmatched: The unmatched string
+    :return: matched, unmatched
     """
     return matched + unmatched[0], unmatched[1:]
 

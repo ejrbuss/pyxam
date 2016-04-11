@@ -5,6 +5,7 @@
 This Module provides helper functions for working with files.
 """
 import distutils.dir_util
+import parser_composer
 import logging
 import options
 import shutil
@@ -46,6 +47,24 @@ def build_files():
     # Change current working directory
     options.state.cwd(options.state.tmp())
     logging.info('Built directories')
+
+
+def export():
+    """
+    Copies all .cmp files and figures from the tmp directory to the out directory. Files are renamed with their title,
+    postfix, correct extension and solution tag if the solutions option is set.
+    """
+    for file in with_extension('.cmp'):
+        move(
+            file,
+            options.state.out() + '/' +
+            options.state.title() + '_' +
+            os.path.basename(file[:-4]) +
+            ('_solutions' if options.state.solutions() else '') +
+            '.' + parser_composer.get_extension()
+        )
+    # Export figures
+    copy_figure()
 
 
 def cleanup():

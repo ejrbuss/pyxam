@@ -14,7 +14,6 @@ Prior to launching however script checks Python dependencies for `matplotlib` an
 generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
 these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
 """
-# TODO Fix org -> latex/pdf
 # TODO Finish docs
 # TODO Tests & cleanup
 # TODO Website
@@ -35,15 +34,16 @@ except ImportError:
     exit('pweave is required for Pyxam. Please run:\n\n\t$ pip install pweave')
 
 
+import os
 import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import mixer
 import options
-import exporter
 import fileutil
-import formatter
 import lib_loader
 import process_list
 import plugin_loader
+import parser_composer
 
 
 # Pyxam Version Number
@@ -84,7 +84,7 @@ def store_args(args=None):
     :param args: The args to store
     :return: The most recently stored args or a message saying there are no stored args.
     """
-    from pyxam import _args
+    global _args
     if args is not None:
         _args.append(args)
     return _args[-1]
@@ -101,7 +101,7 @@ def start(args, api=True):
      - `run_commands` prepossesses commands in the template (see [bang](%/Modules/bang.html))
      - `post_status` posts the current state of all options
      - `weave` runs any inline code within the template
-     - `parse` reads the template document into an intermediate format (see [formatter](%/Modules/formatter.py))
+     - `parse` reads the template document into an intermediate format (see [formatter](%/Modules/parser_composer.py))
      - `compose` converts the intermediate format into the output format
      - `export` moves files from the tmp directory to the final out directory
      - `cleanup` removes all temporary files
@@ -127,9 +127,9 @@ def start(args, api=True):
         mixer.setup,
         options.post_status,
         lib_loader.weave,
-        formatter.parse,
-        formatter.compose,
-        exporter.export,
+        parser_composer.parse,
+        parser_composer.compose,
+        fileutil.export,
         fileutil.cleanup,
         plugin_loader.unload_plugins,
         goodbye])
@@ -142,4 +142,6 @@ if __name__ == '__main__':
     # Slice argv so as not to pass ./Pyxam.py
     start(sys.argv[1:], api=False)
 
+def main():
+    start(sys.argv[1:], api=False)
 

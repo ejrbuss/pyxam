@@ -1,9 +1,14 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
+"""
+# Plugin format_latex
+
+Formatter plugin for importing and exporting LaTeX.
+"""
 import re
 import util
 import options
 import filters
-import formatter
+import parser_composer
 import collections
 
 
@@ -17,6 +22,7 @@ end = r'(\\question)|(\\titledquestion)|(\\end{questions})'
 def parser_preprocessor(src):
     """
     Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
+
     :param src: The template source
     :return: The modified source
     """
@@ -28,6 +34,7 @@ def parser_postprocessor(intermediate):
     """
     Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
     prompt Token.
+
     :param intermediate: An intermediate parse object
     :return: A modified intermediate
     """
@@ -41,7 +48,7 @@ def parser_postprocessor(intermediate):
             definition.insert(0, title)
             return token
         except AttributeError:
-            raise(formatter.FormatError('Malformed question token definition:' + str(token)))
+            raise(parser_composer.FormatError('Malformed question token definition:' + str(token)))
 
     # Run inner function recursively on the ast
     filters.apply_function(intermediate.ast, def_prompt, 'question', partial=False)
@@ -49,21 +56,30 @@ def parser_postprocessor(intermediate):
 
 
 def composer_postprocessor(source):
+    """
+    Adds the necessary boilerplate commands to the LaTeX file if they are not present as well as enables solutions if
+    the option is set. Performs some rough formatting.
+
+    :param source: The source to transform
+    :return: The transformed source
+    """
     if not source.strip().startswith('\\documentclass'):
         source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\usepackage[T1]{fontenc} \
         \\catcode`\\_=12\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
         source = re.sub(r'\\documentclass\[', r'\documentclass[answers,', source)
         source = re.sub(r'\\documentclass{', r'\documentclass[answers]{', source)
-    source = source.replace('\\', '\n\\')
-    source = source.replace('\\include', '\n\\include')
+    source = source.replace('\\include', '\n\n\\include')
     return source
-#TODO finish
+
 
 def load():
-    formatter.add_format(
+    """
+    Loads the tex formatter.
+    """
+    parser_composer.add_format(
         name='tex',
-        extensions=['tex'],
+        extensions=['tex', 'LaTeX', 'latex'],
         description=signature[2],
         parser_preprocessor=parser_preprocessor,
         parser_postprocessor=parser_postprocessor,
@@ -94,12 +110,7 @@ def load():
             ('unknown', ['\\', (), '\\s+'])
         ])
     )
-    # Return signature
     return signature
-
-
-def unload():
-    pass
 
 
 

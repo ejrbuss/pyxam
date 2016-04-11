@@ -11,7 +11,7 @@ $ ./pyxam.py -f pdf my_file.tex
 import config
 import options
 import fileutil
-import formatter
+import parser_composer
 import lib_loader
 import process_list
 
@@ -32,13 +32,13 @@ def load():
 
     :return: plugin signature
     """
-    formatter.add_format(
+    parser_composer.add_format(
         name='pdf',
         extensions=['pdf'],
         description='PDF export support',
         format={}
     )
-    formatter.add_format(
+    parser_composer.add_format(
         name='dvi',
         extensions=['dvi'],
         description='DVI export support',

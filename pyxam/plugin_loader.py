@@ -1,6 +1,8 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Module plugin_loader
+
+Loads and unloads plugins.
 """
 import config
 import logging
@@ -9,17 +11,21 @@ import options
 
 
 class PluginError(Exception):
+    """
+    Exception wrapper for Plugin errors
+    """
     pass
 
 
 # A map of all currently loaded plugins
 _plugins = {}
 
-#TODO finish
+
 def load_plugins():
     """
-    Call the load function on all plugins in the appropriate order.
-    :return: None
+    Call the load function on all plugins in the appropriate order. Loads the following
+    [option](%/Modules/options.html):
+     - `plugins -plg` List all currently loaded plugins
     """
     options.add_option('plugins', '-plg', 'List all currently loaded plugins', False, bool)
     plugins = [plugin[:-3] for plugin in os.listdir(config.plugin_directory) if plugin.endswith('.py')]
@@ -48,7 +54,6 @@ def load_plugins():
 def unload_plugins():
     """
     Call the unload function on all plugins.
-    :return: None
     """
     plugins = sorted((plugin[:-3] for plugin in os.listdir(config.plugin_directory) if plugin.endswith('.py')))
     for plugin in plugins:
@@ -62,8 +67,8 @@ def unload_plugins():
 def load(signature):
     """
     Called on the return value of a plugin. Should return a valid signature.
+
     :param signature: The return value of the plugin's load function
-    :return: None
     """
     name, author, description = signature
     _plugins[name] = {author: description}

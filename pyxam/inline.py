@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Module inline

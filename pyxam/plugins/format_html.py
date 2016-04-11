@@ -1,19 +1,18 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
-Plugin format_html
+# Plugin format_html
 
+Plugin for exporting a file to HTML.
 """
 import os
 import re
-import xml
 import options
 import filters
 import fileutil
-import formatter
+import parser_composer
 import collections
 
 
-# HTML format by ejrbuss: Format for exporting HTML files
 signature = 'html format', 'ejrbuss', 'Format for exporting html files'
 
 
@@ -27,18 +26,18 @@ math = {
     '\\emptyset':   '&phi;',
     '\\int_':       '&int;',
     '\\sum_':       '&sum;',
+    '\\pm':         '&#177;',
     '+/-':          '&#177;'
 }
 
 
 def composer_preprocessor(intermediate):
     """
-    Performs two modifications to the intermediate.
-     - HTML requires listitem tokens be wrapped in a containing element. [filters.wrap_lists](%/Modules/fitlers.html) is
-     called to place a list token around all consecutive listitem tokens.
-     - Converts images to a base64 encoded string to appear directly in the HTML source.
-     - Verbatim blocks have leading whitespaced evenly removed to help formatting in the case where verbatim blocks are
-     being read in from formatted source
+    Performs the following modifications to the intermediate:
+     - [filters.wrap_lists](%/Modules/fitlers.html) is called to warp all consecutive listitem tokens in a list token
+     - Converts images to a base64 encoded string to appear directly in the HTML source
+     - Verbatim blocks have leading whitespace evenly removed to help formatting in the case where verbatim blocks are
+     being read in from formatted source files
 
     :param intermediate: The intermediate to process
     :return: The processed intermediate
@@ -47,14 +46,14 @@ def composer_preprocessor(intermediate):
     intermediate.ast = filters.img64(intermediate.ast)
     intermediate.ast = filters.untab_verb(intermediate.ast)
     return intermediate
-#TODO finish
+
 
 def composer_postprocessor(src):
     """
     Performs a number of transformations to the source to create a more comprehensive appearance in html:
      - Converts LaTeX symbols to html codes
-     - Convers markdown images [img](url) into `img` tags
-     - Converts markdown links [label](url) into `a` tags
+     - Converys markdown images [img] into `img` tags
+     - Converts markdown links [label] into `a` tags
      - Converts two consecutive newlines into a `br` tag
      - Converts three consecutive newlines into two `br` tags
     Additionally the provided source is loaded into a template and solutions are made visible if the flag is set.
@@ -70,22 +69,30 @@ def composer_postprocessor(src):
     src = re.sub(r'\[([^\[\]\n]+)\]\(([^()\n]+)\)', r'<a href="\2">\1</a>', src)
     src = re.sub(r'\n{3}', '<br /><br />', src)
     src = re.sub(r'\n{2}', '<br />', src)
-    if options.state.solutions():
-        src = src.replace('display:none', '')
-        src = src.replace('display:visible', 'display:none')
-    return fileutil.read(
+    src =  fileutil.read(
         options.state.htmltemplate()
      ).replace('<!-- content -->','<div class="content">' + src + '</div>')
+    if options.state.solutions():
+        src = src.replace('display: none', '')
+    else:
+        src = src.replace('class="correctchoice"','class="choice"')
+    return src
 
 
 def load():
+    """
+    Loads the following [option](%/Modules/options.html):
+     - `htmltemplate -htt` Specify an HTML template file
+
+    Loads the HTML format. The template file is used as a wrapper for converted content.
+    """
     options.add_option(
         'htmltemplate', '-htt',
         'Specify an HTML template file',
         os.path.abspath(os.path.dirname(__file__) + '/../templates/exam.html'),
         str
     )
-    formatter.add_format(
+    parser_composer.add_format(
         name='html',
         extensions=['html'],
         description=signature[2],
@@ -123,7 +130,6 @@ def load():
             ('newline', ['<br />', '.'])
         ])
     )
-    # Return signature
     return signature
 
 

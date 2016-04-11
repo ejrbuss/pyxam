@@ -2,6 +2,7 @@
 """
 # Module mixer
 
+Mixes and weaves the template file.
 """
 import re
 import os
@@ -16,6 +17,7 @@ import fileutil
 _methods = {}
 
 
+# The inline code placed at the start of every weaved file
 inline = fileutil.read(config.pyxam_directory + '/inline.py')
 
 
@@ -25,7 +27,7 @@ def setup():
     appropriate names. If any files are in the figure directory they are copied out as well.
     """
     for n in range(options.state.number()):
-        mix(n, {'name':'','number':''})
+        mix(n, {'name': '','number': ''})
     _methods[options.state.method()](options.state.number(), csv_read(options.state.population()))
 
 
@@ -73,10 +75,12 @@ def csv_read(file):
 
 def mix(n, row):
     """
+    Takes an exam version and row of data and prepares a file for the formatter. If weaving is enabled a .mix with the
+    correct name is weaved with the inline code at the start of the file. If weaving is disabled a .tex file is prepared
+    for the formatter directly.
 
-    :param n:
-    :param row:
-    :return:
+    :param n: The exam version
+    :param row: The row of data
     """
     version = str(chr(n + ord('A')) if options.state.alphabetize() else n + 1)
     if options.state.noweave():
@@ -96,7 +100,6 @@ def mix(n, row):
         )
 
 
-
 def add_method(name, method):
     """
     Add a method to the method list.
@@ -105,5 +108,3 @@ def add_method(name, method):
     :param method: The method to add
     """
     _methods[name] = method
-
-#TODO finish
