@@ -245,7 +245,7 @@
 Pyxam is currently maintained by Eric Buss at the University of Alberta.
 **email**: ebuss@ualberta.ca ">
 <li class="searchable" id="#2_Support_and_Contact_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//2_Support_and_Contact.html">Support and Contact</a></li>
-<input type="hidden" id="0_index_md" value="# Pyxam Docs
+<input type="hidden" id="0_Overview_md" value="# Pyxam Docs
 
 This is the code documentation for the Pyxam Exam module. For details on installation and usage checkout the
 [readme](https://github.com/balancededge/pyxam).
@@ -286,18 +286,8 @@ exams. Pyxam aims to bring similar functionality to inline Python code using [Pw
 that emulates Sweave for Python. Without the great work by these other parties Pyxam would not have been created.
 
 ">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//0_index.html">Overview</a></li>
+<li class="searchable" id="#0_Overview_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build//0_Overview.html">Overview</a></li>
 <li class="accordion-toggle"><b><a href="#">Framework</a></b><ul class="nav accordion-content">
-<input type="hidden" id="0_index_md" value="# The Pyxam Framework
-
-Pyxam is built on top of a set of structures that follow a consistent design pattern. Each of the following structures
-takes ownership over a collection of implementations. Similar to interfaces in object oriented programming the primary
-function of these structures is to call a function provided by their children.
-
-This design model is implemented to allow for easy extensibility whilst maintaining a consistent set of core tools and
-design principles. All of these structures can be added to via plugins which are loaded dynamically at runtime.
-">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/0_index.html">Overview</a></li>
 <input type="hidden" id="2_Process_List_md" value="# The Process List 
 The process list is the highest level of the Pyxam process. The process list is simply a list of functions that are run
 one after the other until the list is empty. Once empty Pyxam is finished and the program exits. This process list can be
@@ -478,809 +468,26 @@ Usage in a file would look something like:
 # pyxam!hello_world
 ```">
 <li class="searchable" id="#6_Inline_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/6_Inline.html">Inline</a></li>
+<input type="hidden" id="0_Overview_md" value="# The Pyxam Framework
+
+Pyxam is built on top of a set of structures that follow a consistent design pattern. Each of the following structures
+takes ownership over a collection of implementations. Similar to interfaces in object oriented programming the primary
+function of these structures is to call a function provided by their children.
+
+This design model is implemented to allow for easy extensibility whilst maintaining a consistent set of core tools and
+design principles. All of these structures can be added to via plugins which are loaded dynamically at runtime.
+">
+<li class="searchable" id="#0_Overview_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Framework/0_Overview.html">Overview</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Changelog</a></b><ul class="nav accordion-content">
 <input type="hidden" id="1_0_4_0_md" value=" 
 ">
 <li class="searchable" id="#1_0_4_0_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Changelog/1_0.4.0.html">0.4.0</a></li>
-<input type="hidden" id="0_index_md" value="# Changelog
+<input type="hidden" id="0_Overview_md" value="# Changelog
  
  - [0.4.0](https://rawgit.com/balancededge/pyxam/master/docs/build/Changelog/1_0.4.0.html) 
 ">
-<li class="searchable" id="#0_index_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Changelog/0_index.html">Overview</a></li>
+<li class="searchable" id="#0_Overview_md"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Changelog/0_Overview.html">Overview</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Modules</a></b><ul class="nav accordion-content">
-<input type="hidden" id="mixer_py" value="
-# Module mixer
-
-Mixes and weaves the template file.
-
-***
-**_methods **<br /> A map of all currently loaded methods
-***
-**inline **<br /> The inline code placed at the start of every weaved file
-***
-**setup**()
-
-    
-    Mix the composed files with the specified method then copy all mixed files to the out directory with the
-    appropriate names. If any files are in the figure directory they are copied out as well.
-    
-***
-**csv_read**(*file*)
-
-    
-    Attempts to read the provided CSV file.
-
-    <br />`file`  The csv file to read
-    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
-    
-***
-**mix**(*n, row*)
-
-    
-    Takes an exam version and row of data and prepares a file for the formatter. If weaving is enabled a .mix with the
-    correct name is weaved with the inline code at the start of the file. If weaving is disabled a .tex file is prepared
-    for the formatter directly.
-
-    <br />`n`  The exam version
-    <br />`row`  The row of data
-    
-***
-**add_method**(*name, method*)
-
-    
-    Add a method to the method list.
-
-    <br />`name`  The name of the method being added
-    <br />`method`  The method to add
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//mixer.py)">
-<li class="searchable" id="#mixer_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html">mixer</a></li>
-<input type="hidden" id="fileutil_py" value="
-# Module fileutil
-
-This Module provides helper functions for working with files.
-
-***
-**build_files**()
-
-    
-    Finds the absolute file path for the template, tmp directory, and out directory and updates their options to point
-    to their absolute path. Also creates the tmp and out directories if necessary. Warns user if tmp is going to be
-    overridden as this will delete any leftover files. Finally changes the current working directory to tmp.
-    
-***
-**export**()
-
-    
-    Copies all .cmp files and figures from the tmp directory to the out directory. Files are renamed with their title,
-    postfix, correct extension and solution tag if the solutions option is set.
-    
-***
-**cleanup**()
-
-    
-    Removes the temporary directory and resets the current working directory.
-    
-***
-**get_extension**(*file*)
-
-    
-    Get the file extension for a file.
-    <br />`file`  The path of the file to get the extension of
-    **<br />returns&nbsp;**  The extension
-    
-***
-**with_extension**(*ext*)
-
-    
-    Find all files in the current working directory that match the given extension or extensions.
-
-    <br />`ext`  The extension or extensions to match
-    **<br />returns&nbsp;**  a list of files that end in the provided extension or extensions
-    
-***
-**read**(*file*)
-
-    
-    Read a string from a file.
-
-    <br />`file`  The relative or absolute path to the file to read
-    **<br />returns&nbsp;**  The string contents of the file
-    
-***
-**write**(*file, src*)
-
-    
-    Write a string to a file.
-
-    <br />`file`  The relative or absolute path to the file to write to
-    <br />`src`  The string to write to the file
-    
-***
-**copy_figure**()
-
-    
-    Copy the figure directory to the out directory along with its children.
-    
-***
-**remove**(*file*)
-
-    
-    Remove a list of files or individual file. If removing a directory all contents of that directory will also be
-    removed. When the debug flag is set no files will be removed.
-
-    <br />`file`  The file or files to remove
-    
-***
-**move_template**(*dest*)
-
-    
-    Copy the template file to a specified destination. This will update the option and create a new directory if
-    necessary.
-
-    <br />`dest`  The new template file destination
-    
-***
-**move**(*src, dest*)
-
-    
-    Moves a file from src to destination.
-
-    <br />`src`  The relative or absolute path for the file or directory to move
-    <br />`dest`  The relative or absolute path for the file's destination
-    
-***
-**is_bin**(*file*)
-
-    
-    Check if a file is a binary file.
-
-    <br />`file`  The file to check
-    **<br />returns&nbsp;**  True if the file is a binary file
-    
-***
-**wait_on_io**(*fn, timeout=5*)
-
-    
-    Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
-    False.
-
-    <br />`fn`  The io function to wait on
-    <br />`timeout`  The maximum time to wait
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py)">
-<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
-<input type="hidden" id="options_py" value="
-# Module options
-
-This module handles the command line arguments for Pyxam which act as global state for the entire program.
-
-***
-**OptionError**(*Exception*)
-
-    
-    Error wrapper for Exceptions that occur within the options module.
-    
-***
-**state **<br /> A Map of all current compile functions
-***
-**_compiled **<br /> A Map of all current options
-***
-**_unique **<br /> A map of all unique current options
-***
-**_hanging **<br /> A list of yet to be compiled options
-***
-**clear**()
-
-    
-    Clear all compiled, unique, and hanging options.
-    
-***
-**compile_**(*option, value=None*)
-
-    
-    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
-    The compiled value is the default if no value hs been provided by the current or past callers.
-
-    <br />`option`  The option to compile
-    <br />`value`  The value to try and set, when None the value is not set
-    **<br />returns&nbsp;**  The compiled value
-    
-***
-**add_option**(*name, flag, description, default, type_, value=None*)
-
-    
-    Add an option.
-
-    <br />`name`  The name of the option
-    <br />`flag`  The flag for the option
-    <br />`description`  A description of the option
-    <br />`default`  The default value of the option
-    <br />`type_`  The type of the option
-    <br />`value`  A value, defaults to None
-    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
-    
-***
-**load_options**(*options*)
-
-    
-    Load options provided as a list in command line syntax.
-
-    <br />`options`  A list of options to load
-    
-***
-**load_template**()
-
-    
-    Load the template option. Expects to be the last option loaded.
-    
-***
-**get_help**()
-
-    
-    Get a string representing the help message for all options currently added.
-
-    **<br />returns&nbsp;**  The help string
-    
-***
-**status**()
-
-    
-    Get a string with a table showing all options and their current value.
-
-    **<br />returns&nbsp;**  The status table
-    
-***
-**post**(*args, kwargs*)
-
-    
-    Send a string to be printed if in api mode. Will add a newline between different callers.
-    
-***
-**post_status**()
-
-    
-    Post the status table.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//options.py)">
-<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
-<input type="hidden" id="filters_py" value="
-# Module filters
-This module provides helper functions for transforming a Pyxam parse tree.
-
-***
-**has_name**(*token, name='', partial=True*)
-
-    
-
-    <br />`token` 
-    <br />`name` 
-    <br />`partial` 
-    **<br />returns&nbsp;** 
-    
-***
-**recursive_filter**(*fn, node*)
-
-    
-    Filters a list and recursively filters any sublists attached to the node.
-    <br />`fn`  The filter function
-    <br />`node`  The starting node
-    **<br />returns&nbsp;**  the filtered node
-    
-***
-**apply_function**(*ast, fn, name='', partial=True*)
-
-    
-    Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
-    to every part of the tree.
-    <br />`ast`  The tree to transform
-    <br />`fn`  The function to apply
-    <br />`partial`  TODO
-    **<br />returns&nbsp;**  the modified tre
-    
-***
-**pass_through**(*intermediate*)
-
-    
-    A dummy function that simply returns its provided intermediate.
-    <br />`intermediate`  The intermediate
-    **<br />returns&nbsp;**  the intermediate
-    
-***
-**pop_unknowns**(*ast*)
-
-    
-    Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
-    tokens are also processed for unknowns
-    <br />`ast`  The tree whose unknowns are being popped
-    **<br />returns&nbsp;**  the modified tree
-    
-***
-**img64**(*ast*)
-
-    
-    Convert image file paths to base64 representations of those images.
-    <br />`ast`  The tree whose images will be converted
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**homogenize_strings**(*ast*)
-
-    
-    Combine consecutive string tokens into a single string. Applied recursively.
-    <br />`ast`  The tree whose strings tokens are combined
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**promote**(*ast, name*)
-
-    
-    Finds the first instance (based on a depth first search) of a token with the matching name.
-    <br />`ast`  The tree to be searched
-    <br />`name`  The token name to find
-    **<br />returns&nbsp;**  the subtree starting at the matching token
-    
-***
-**wrap_lists**(*ast*)
-
-    
-    Wraps consecutive listitem tokens in a list token. Applied recursively.
-    <br />`ast`  The tree to be modified
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**untab_verb**(*ast*)
-
-    
-    <br />`ast`  The tree to modify
-    **<br />returns&nbsp;**  the modified tree
-    
-***
-**transform_questions**(*ast*)
-
-    
-    Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
-    numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
-    questions. Applied recursively.
-    <br />`ast`  The tree to modify
-    **<br />returns&nbsp;**  the modified tree
-    
-***
-**check_tag**(*question*)
-
-    
-    Transforms shortanswer token definitions from
-    ```
-    solution:
-        $:
-            var = answer \pm tolerance
-    ```
-    to
-    ```
-    solution:
-        answer
-        tolerance:
-            tolerance
-    ```
-    <br />`question`  The question to transform
-    
-***
-**to_multiselect**(*question*)
-
-    
-    Transforms multichoice token definitions from
-    ```
-    choices:
-        correctchoice:
-            choice
-        correctchoice:
-            choice
-    ```
-    to
-    ```
-    single: false
-    choices:
-        correctchoice:
-            choice
-        correctchoice:
-            choice
-    ```
-    <br />`question`  The question to transform
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
-<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
-<input type="hidden" id="plugin_loader_py" value="
-# Module plugin_loader
-
-Loads and unloads plugins.
-
-***
-**PluginError**(*Exception*)
-
-    
-    Exception wrapper for Plugin errors
-    
-***
-**_plugins **<br /> A map of all currently loaded plugins
-***
-**load_plugins**()
-
-    
-    Call the load function on all plugins in the appropriate order. Loads the following
-    [option](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `plugins -plg` List all currently loaded plugins
-    
-***
-**unload_plugins**()
-
-    
-    Call the unload function on all plugins.
-    
-***
-**load**(*signature*)
-
-    
-    Called on the return value of a plugin. Should return a valid signature.
-
-    <br />`signature`  The return value of the plugin's load function
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugin_loader.py)">
-<li class="searchable" id="#plugin_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
-<input type="hidden" id="pyxam_py" value="
-# Module pyxam
-
-This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
-mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
-mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
-messages and tracking the Pyxam version number.
-
-
-
-Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
-generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
-these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
-
-***
-**__version__ **<br /> Pyxam Version Number
-***
-**_args **<br /> Copy of original arguments
-***
-**title **<br /> Pyxam Title String
-***
-**welcome**()
-
-    
-    Posts the Pyxam title and version number
-    
-***
-**goodbye**()
-
-    
-    Posts a goodbye message
-    
-***
-**store_args**(*args=None*)
-
-    
-    Store a list of arguments. Called every time Pyxam is run.
-
-    <br />`args`  The args to store
-    **<br />returns&nbsp;**  The most recently stored args or a message saying there are no stored args.
-    
-***
-**start**(*args, api=True*)
-
-    
-    Start Pyxam with a set of [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html). Start adds the following processes to the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html):
-     - `load_options` loads the command line options
-     - `welcome` displays a welcome message
-     - `load_plugins` loads all available plugins
-     - `build_files` fixes paths and builds all necessary files
-     - `run_commands` prepossesses commands in the template (see [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html))
-     - `post_status` posts the current state of all options
-     - `weave` runs any inline code within the template
-     - `parse` reads the template document into an intermediate format (see [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/parser_composer.py))
-     - `compose` converts the intermediate format into the output format
-     - `export` moves files from the tmp directory to the final out directory
-     - `cleanup` removes all temporary files
-     - `unload_plugins` unloads all available plugins
-     - `goodbye` display a goodbye message
-    Once added these processes are consumed until there are no more processes.
-
-    <br />`args`  A list of options provided in command line syntax
-    <br />`api`  A flag indicating if Pyxam is being called as an api
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//pyxam.py)">
-<li class="searchable" id="#pyxam_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/pyxam.html">pyxam</a></li>
-<input type="hidden" id="lib_loader_py" value="
-# Module lib_loader
-
-Module for interacting with external modules and libraries.
-
-***
-**weave**()
-
-    
-    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
-    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
-    version number.
-    
-***
-**gs**(*file*)
-
-    
-    Calls ghostscript on a pdf image file to convert it to png.
-    <br />`file`  The path to the pdf image file
-    **<br />returns&nbsp;**  The new new path to the png file
-    
-***
-**pdflatex**(*file*)
-
-    
-    Calls pdflatex on a LaTeX file to compile it. By default no output is shown and no user input is allowed. If this
-    fails the compilation is attempted again but this time pdflatex is run in interactive mode to allow the user to see
-    what issues there may be.
-    <br />`file`  The path to the LaTeX file to compile
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//lib_loader.py)">
-<li class="searchable" id="#lib_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
-<input type="hidden" id="parser_composer_py" value="
-# Module formatter
-
-This module parsers and composes mixed files.
-
-***
-**FormatError**(*Exception*)
-
-    
-    Exception wrapper for format errors
-    
-***
-**str_token**(*token*)
-
-    
-    Converts a token into a human readable string.
-
-    <br />`token`  The token to represent
-    **<br />returns&nbsp;**  the string representation
-    
-***
-**get_extension**()
-
-    
-    Get the file extension of the output format.
-
-    **<br />returns&nbsp;**  The output extension
-    
-***
-**get_format**(*file*)
-
-    
-    Get the format of the given file. Format is based on file extension.
-
-    <br />`file`  The file to find the format of
-    **<br />returns&nbsp;**  The format of the given file
-    
-***
-**parse**()
-
-    
-    Converts mixed files from source to an intermediate based on the extension of the template file. Once converted the
-    intermediate is run through the default filters and the extension formatter's processors.
-
-    **<br />returns&nbsp;**  A list of intermediates corresponding to each of the mixed files
-    
-***
-**compose**(*intermediates*)
-
-    
-    Converts intermediates to a source file based on the format option. The formatter's processors are run on the
-    intermediate and final source. If the source is being converted to the same format it came from the intermediate
-    will be discarded in favour of the original source.
-
-    <br />`intermediates`  A list of intermediates
-    
-***
-**pack**(*token, fmt*)
-
-    
-    Convert a token into a string using the following rules:
-
-    If the token name is contained in the format:
-     - Append every pure string in that format
-     - Append every tuple or list as the packed content of the token
-    If the token name is not contained in the format
-     - Append the packed content of the token
-
-    <br />`token`  The token to pack
-    <br />`fmt`  The format to pack to
-    **<br />returns&nbsp;**  The packed token
-    
-***
-
-    Add a format to the formatter.
-
-    <br />`name`  The name of the format
-    <br />`extensions`  A list of extensions related to the format
-    <br />`description`  A description of the format
-    <br />`format`  The token list for the format
-    <br />`parser_preprocessor`  The parsing pre processor
-    <br />`parser_postprocessor`  The parsing post processor
-    <br />`composer_postprocessor`  The composer pre processor
-    <br />`composer_preprocessor`  The composer post processor
-    
-***
-**parse_tokens**(*src, fmt*)
-
-    
-    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
-    tokens must be provided. Any string sequences that cannot be matched will be returned as
-    raw characters
-
-    <br />`src`  The source to convert into an ast
-    <br />`fmt`  The format providing the tokens
-    **<br />returns&nbsp;**  The ast
-    
-***
-**match_token**(*src, fmt*)
-
-    
-    Determine what token a specific string sequence begins with. If no token can be found in the given
-    template a raw character is returned off the top.
-
-    <br />`src`  The string sequence
-    <br />`fmt`  The format providing the tokens
-    **<br />returns&nbsp;**  The matched token, The unmatched sequence
-    
-***
-**build_token**(*token, src, fmt*)
-
-    
-    Attempts to convert the source into a token.
-
-    <br />`token`  The token to build
-    <br />`src`  The source to build from
-    <br />`fmt`  The format to build to
-    **<br />returns&nbsp;**  The token if built or none
-    
-***
-**increment**(*matched, unmatched*)
-
-    
-    Moves the first character of unmatched to the end of matched
-
-    <br />`matched`  The matched string
-    <br />`unmatched`  The unmatched string
-    **<br />returns&nbsp;**  matched, unmatched
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//parser_composer.py)">
-<li class="searchable" id="#parser_composer_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/parser_composer.html">parser_composer</a></li>
-<input type="hidden" id="process_list_py" value="
-# Module process_list
-
-This module manages the Pyxam process list which is a consecutive set of functions that are run in order. This process
-list can be changed during runtime via a number of function calls.
-
-***
-**_process_list **<br /> Core Process List
-***
-**ready**()
-
-    
-    **<br />returns&nbsp;**  True as long as there are items in the process list
-    
-***
-**append**(*process*)
-
-    
-    Append a process to the end of the process list, or if the provided argument is a list, append all the items to
-    the process list.
-
-    <br />`process`  the process or processes to append
-    
-***
-**run_after**(*process, hook*)
-
-    
-    Add a hook to run after a given process.
-
-    <br />`process`  The string name of the process to hook
-    <br />`hook`  The function to run
-    
-***
-**run_before**(*process, hook*)
-
-    
-    Add a hook to run before a given process.
-
-    <br />`process`  The string name of the process to hook
-    <br />`hook`  The function to run
-    
-***
-**consume**(*arg=None*)
-
-    
-    Run the next process in the process list with any provided arguments.
-
-    <br />`arg`  Arguments
-    **<br />returns&nbsp;**  Arguments for the next process
-    
-***
-**skip**()
-
-    
-    Skips the next process in the process list.
-    
-***
-**clear**()
-
-    
-    Clears the process list of all waiting processes.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//process_list.py)">
-<li class="searchable" id="#process_list_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
-<input type="hidden" id="util_py" value="
-# Module util_classes
-
-Provides utility classes and functinos to other Modules.
-
-***
-**Map**(*dict*)
-
-    
-    A custom dictionary which can be accessed with index notation and attribute notation. Taken from a
-    [stackoverflow](http://stackoverflow.com/questions/2352181/how-to-use-a-dot-to-access-members-of-dictionary)
-    post by [epool](http://stackoverflow.com/users/845296/epool). Example usage:
-    ```python
-        # Can construct using a dictionary/named args
-        m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
-        # Access using attribute notation
-        assert(m.firstname == 'Eduardo')
-        # Access using index notation
-        assert(m['lastname'] == 'Pool')
-    ```
-
-    
-***
-**same_caller**(*cache={}*)
-
-    
-
-    <br />`cache` 
-    **<br />returns&nbsp;** 
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//util.py)">
-<li class="searchable" id="#util_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/util.html">util</a></li>
-<input type="hidden" id="inline_py" value="
-# Module inline
-This code is loaded into the start of every template file prior to weaving.
-
-***
-**__hash__**(*self*)
-
-        
-        **PURE EVIL**
-        By placing a wildcard in a dictionary printing that dictionary will call the hash function of that wildcard. We
-        will print the value we want and then prevent the next print statement from occurring meaning we are the only
-        ones to print.
-        **<br />returns&nbsp;**  0
-        
-***
-**pyxam.wildcard **<br /> Set the wildcard alias
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//inline.py)">
-<li class="searchable" id="#inline_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/inline.html">inline</a></li>
 <input type="hidden" id="config_py" value="
 # Module config
 
@@ -1440,11 +647,947 @@ Set the default random seed.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py)">
 <li class="searchable" id="#config_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/config.html">config</a></li>
-</ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
-<input type="hidden" id="format_orghtml_py" value="
+<input type="hidden" id="fileutil_py" value="
+# Module fileutil
+
+This Module provides helper functions for working with files.
+
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_orghtml.py)">
-<li class="searchable" id="#format_orghtml_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_orghtml.html">format_orghtml</a></li>
+**build_files**()
+
+    
+    Finds the absolute file path for the template, tmp directory, and out directory and updates their options to point
+    to their absolute path. Also creates the tmp and out directories if necessary. Warns user if tmp is going to be
+    overridden as this will delete any leftover files. Finally changes the current working directory to tmp.
+    
+***
+**export**()
+
+    
+    Copies all .cmp files and figures from the tmp directory to the out directory. Files are renamed with their title,
+    postfix, correct extension and solution tag if the solutions option is set.
+    
+***
+**cleanup**()
+
+    
+    Removes the temporary directory and resets the current working directory.
+    
+***
+**get_extension**(*file*)
+
+    
+    Get the file extension for a file.
+    <br />`file`  The path of the file to get the extension of
+    **<br />returns&nbsp;**  The extension
+    
+***
+**with_extension**(*ext*)
+
+    
+    Find all files in the current working directory that match the given extension or extensions.
+
+    <br />`ext`  The extension or extensions to match
+    **<br />returns&nbsp;**  a list of files that end in the provided extension or extensions
+    
+***
+**read**(*file*)
+
+    
+    Read a string from a file.
+
+    <br />`file`  The relative or absolute path to the file to read
+    **<br />returns&nbsp;**  The string contents of the file
+    
+***
+**write**(*file, src*)
+
+    
+    Write a string to a file.
+
+    <br />`file`  The relative or absolute path to the file to write to
+    <br />`src`  The string to write to the file
+    
+***
+**copy_figure**()
+
+    
+    Copy the figure directory to the out directory along with its children.
+    
+***
+**remove**(*file*)
+
+    
+    Remove a list of files or individual file. If removing a directory all contents of that directory will also be
+    removed. When the debug flag is set no files will be removed.
+
+    <br />`file`  The file or files to remove
+    
+***
+**move_template**(*dest*)
+
+    
+    Copy the template file to a specified destination. This will update the option and create a new directory if
+    necessary.
+
+    <br />`dest`  The new template file destination
+    
+***
+**move**(*src, dest*)
+
+    
+    Moves a file from src to destination.
+
+    <br />`src`  The relative or absolute path for the file or directory to move
+    <br />`dest`  The relative or absolute path for the file's destination
+    
+***
+**is_bin**(*file*)
+
+    
+    Check if a file is a binary file.
+
+    <br />`file`  The file to check
+    **<br />returns&nbsp;**  True if the file is a binary file
+    
+***
+**wait_on_io**(*fn, timeout=5*)
+
+    
+    Wait on an io function to finish with a specified timeout. Will wait for the timeout or for the function to return
+    False.
+
+    <br />`fn`  The io function to wait on
+    <br />`timeout`  The maximum time to wait
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//fileutil.py)">
+<li class="searchable" id="#fileutil_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/fileutil.html">fileutil</a></li>
+<input type="hidden" id="filters_py" value="
+# Module filters
+
+This module provides helper functions for transforming a Pyxam parse tree.
+
+***
+**has_name**(*token, name='', partial=True*)
+
+    
+    Checks if the given token is a token and its name matches the given name. If the partial flag is set to True the
+    token will be matched if any part of the name matches. A list of names can also be provided instead. If any of the
+    names match True will be returned.
+
+    <br />`token`  The token to match
+    <br />`name`  The name or list of names to match
+    <br />`partial`  If True the name only has to match part of the token name
+    **<br />returns&nbsp;**  True if the token and name matches
+    
+***
+**recursive_filter**(*fn, node*)
+
+    
+    Filters a list and recursively filters any sublists attached to the node.
+
+    <br />`fn`  The filter function
+    <br />`node`  The starting node
+    **<br />returns&nbsp;**  the filtered node
+    
+***
+**apply_function**(*ast, fn, name='', partial=True*)
+
+    
+    Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
+    to every part of the tree.
+
+    <br />`ast`  The tree to transform
+    <br />`fn`  The function to apply
+    <br />`partial`  TODO
+    **<br />returns&nbsp;**  the modified tre
+    
+***
+**pass_through**(*intermediate*)
+
+    
+    A dummy function that simply returns its provided intermediate.
+
+    <br />`intermediate`  The intermediate
+    **<br />returns&nbsp;**  the intermediate
+    
+***
+**pop_unknowns**(*ast*)
+
+    
+    Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
+    tokens are also processed for unknowns
+
+    <br />`ast`  The tree whose unknowns are being popped
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**img64**(*ast*)
+
+    
+    Convert image file paths to base64 representations of those images.
+
+    <br />`ast`  The tree whose images will be converted
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**homogenize_strings**(*ast*)
+
+    
+    Combine consecutive string tokens into a single string. Applied recursively.
+
+    <br />`ast`  The tree whose strings tokens are combined
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**promote**(*ast, name*)
+
+    
+    Finds the first instance (based on a depth first search) of a token with the matching name.
+
+    <br />`ast`  The tree to be searched
+    <br />`name`  The token name to find
+    **<br />returns&nbsp;**  the subtree starting at the matching token
+    
+***
+**wrap_lists**(*ast*)
+
+    
+    Wraps consecutive listitem tokens in a list token. Applied recursively.
+
+    <br />`ast`  The tree to be modified
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**untab_verb**(*ast*)
+
+    
+    Removes any leading tabs from a verbatim token.
+
+    <br />`ast`  The tree to modify
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**transform_questions**(*ast*)
+
+    
+    Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
+    numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
+    questions. Applied recursively.
+
+    <br />`ast`  The tree to modify
+    **<br />returns&nbsp;**  the modified tree
+    
+***
+**check_tag**(*question*)
+
+    
+    Transforms shortanswer token definitions from
+    ```
+    solution:
+        $:
+            var = answer \pm tolerance
+    ```
+    to
+    ```
+    solution:
+        answer
+        tolerance:
+            tolerance
+    ```
+    <br />`question`  The question to transform
+    
+***
+**to_multiselect**(*question*)
+
+    
+    Transforms multichoice token definitions from
+    ```
+    choices:
+        correctchoice:
+            choice
+        correctchoice:
+            choice
+    ```
+    to
+    ```
+    single: false
+    choices:
+        correctchoice:
+            choice
+        correctchoice:
+            choice
+    ```
+    <br />`question`  The question to transform
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//filters.py)">
+<li class="searchable" id="#filters_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/filters.html">filters</a></li>
+<input type="hidden" id="formatter_py" value="
+# Module formatter
+
+This module parsers and composes mixed files.
+
+***
+**FormatError**(*Exception*)
+
+    
+    Exception wrapper for format errors
+    
+***
+**str_token**(*token*)
+
+    
+    Converts a token into a human readable string.
+
+    <br />`token`  The token to represent
+    **<br />returns&nbsp;**  the string representation
+    
+***
+**get_extension**()
+
+    
+    Get the file extension of the output format.
+
+    **<br />returns&nbsp;**  The output extension
+    
+***
+**get_format**(*file*)
+
+    
+    Get the format of the given file. Format is based on file extension.
+
+    <br />`file`  The file to find the format of
+    **<br />returns&nbsp;**  The format of the given file
+    
+***
+**parse**()
+
+    
+    Converts mixed files from source to an intermediate based on the extension of the template file. Once converted the
+    intermediate is run through the default filters and the extension formatter's processors.
+
+    **<br />returns&nbsp;**  A list of intermediates corresponding to each of the mixed files
+    
+***
+**compose**(*intermediates*)
+
+    
+    Converts intermediates to a source file based on the format option. The formatter's processors are run on the
+    intermediate and final source. If the source is being converted to the same format it came from the intermediate
+    will be discarded in favour of the original source.
+
+    <br />`intermediates`  A list of intermediates
+    
+***
+**pack**(*token, fmt*)
+
+    
+    Convert a token into a string using the following rules:
+
+    If the token name is contained in the format:
+     - Append every pure string in that format
+     - Append every tuple or list as the packed content of the token
+    If the token name is not contained in the format
+     - Append the packed content of the token
+
+    <br />`token`  The token to pack
+    <br />`fmt`  The format to pack to
+    **<br />returns&nbsp;**  The packed token
+    
+***
+
+    Add a format to the formatter.
+
+    <br />`name`  The name of the format
+    <br />`extensions`  A list of extensions related to the format
+    <br />`description`  A description of the format
+    <br />`format`  The token list for the format
+    <br />`parser_preprocessor`  The parsing pre processor
+    <br />`parser_postprocessor`  The parsing post processor
+    <br />`composer_postprocessor`  The composer pre processor
+    <br />`composer_preprocessor`  The composer post processor
+    
+***
+**parse_tokens**(*src, fmt*)
+
+    
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+
+    <br />`src`  The source to convert into an ast
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The ast
+    
+***
+**match_token**(*src, fmt*)
+
+    
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+
+    <br />`src`  The string sequence
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The matched token, The unmatched sequence
+    
+***
+**build_token**(*token, src, fmt*)
+
+    
+    Attempts to convert the source into a token.
+
+    <br />`token`  The token to build
+    <br />`src`  The source to build from
+    <br />`fmt`  The format to build to
+    **<br />returns&nbsp;**  The token if built or none
+    
+***
+**increment**(*matched, unmatched*)
+
+    
+    Moves the first character of unmatched to the end of matched
+
+    <br />`matched`  The matched string
+    <br />`unmatched`  The unmatched string
+    **<br />returns&nbsp;**  matched, unmatched
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//formatter.py)">
+<li class="searchable" id="#formatter_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/formatter.html">formatter</a></li>
+<input type="hidden" id="inline_py" value="
+# Module inline
+This code is loaded into the start of every template file prior to weaving.
+
+***
+**__hash__**(*self*)
+
+        
+        **PURE EVIL**
+        By placing a wildcard in a dictionary printing that dictionary will call the hash function of that wildcard. We
+        will print the value we want and then prevent the next print statement from occurring meaning we are the only
+        ones to print.
+        **<br />returns&nbsp;**  0
+        
+***
+**pyxam.wildcard **<br /> Set the wildcard and Table alias
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//inline.py)">
+<li class="searchable" id="#inline_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/inline.html">inline</a></li>
+<input type="hidden" id="lib_loader_py" value="
+# Module lib_loader
+
+Module for interacting with external modules and libraries.
+
+***
+**weave**()
+
+    
+    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
+    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
+    version number.
+    
+***
+**gs**(*file*)
+
+    
+    Calls ghostscript on a pdf image file to convert it to png.
+    <br />`file`  The path to the pdf image file
+    **<br />returns&nbsp;**  The new new path to the png file
+    
+***
+**pdflatex**(*file*)
+
+    
+    Calls pdflatex on a LaTeX file to compile it. By default no output is shown and no user input is allowed. If this
+    fails the compilation is attempted again but this time pdflatex is run in interactive mode to allow the user to see
+    what issues there may be.
+    <br />`file`  The path to the LaTeX file to compile
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//lib_loader.py)">
+<li class="searchable" id="#lib_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/lib_loader.html">lib_loader</a></li>
+<input type="hidden" id="mixer_py" value="
+# Module mixer
+
+Mixes and weaves the template file.
+
+***
+**_methods **<br /> A map of all currently loaded methods
+***
+**inline **<br /> The inline code placed at the start of every weaved file
+***
+**setup**()
+
+    
+    Mix the composed files with the specified method then copy all mixed files to the out directory with the
+    appropriate names. If any files are in the figure directory they are copied out as well.
+    
+***
+**csv_read**(*file*)
+
+    
+    Attempts to read the provided CSV file.
+
+    <br />`file`  The csv file to read
+    **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
+    
+***
+**mix**(*n, row*)
+
+    
+    Takes an exam version and row of data and prepares a file for the formatter. If weaving is enabled a .mix with the
+    correct name is weaved with the inline code at the start of the file. If weaving is disabled a .tex file is prepared
+    for the formatter directly.
+
+    <br />`n`  The exam version
+    <br />`row`  The row of data
+    
+***
+**add_method**(*name, method*)
+
+    
+    Add a method to the method list.
+
+    <br />`name`  The name of the method being added
+    <br />`method`  The method to add
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//mixer.py)">
+<li class="searchable" id="#mixer_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html">mixer</a></li>
+<input type="hidden" id="options_py" value="
+# Module options
+
+This module handles the command line arguments for Pyxam which act as global state for the entire program.
+
+***
+**OptionError**(*Exception*)
+
+    
+    Error wrapper for Exceptions that occur within the options module.
+    
+***
+**state **<br /> A Map of all current compile functions
+***
+**_compiled **<br /> A Map of all current options
+***
+**_unique **<br /> A map of all unique current options
+***
+**_hanging **<br /> A list of yet to be compiled options
+***
+**clear**()
+
+    
+    Clear all compiled, unique, and hanging options.
+    
+***
+**compile_**(*option, value=None*)
+
+    
+    Set the value field of an option with the correct type and/or retrieve the compiled value of the option.
+    The compiled value is the default if no value hs been provided by the current or past callers.
+
+    <br />`option`  The option to compile
+    <br />`value`  The value to try and set, when None the value is not set
+    **<br />returns&nbsp;**  The compiled value
+    
+***
+**add_option**(*name, flag, description, default, type_, value=None*)
+
+    
+    Add an option.
+
+    <br />`name`  The name of the option
+    <br />`flag`  The flag for the option
+    <br />`description`  A description of the option
+    <br />`default`  The default value of the option
+    <br />`type_`  The type of the option
+    <br />`value`  A value, defaults to None
+    **<br />returns&nbsp;**  The value of the option after parsing any hanging options
+    
+***
+**load_options**(*options*)
+
+    
+    Load options provided as a list in command line syntax.
+
+    <br />`options`  A list of options to load
+    
+***
+**load_template**()
+
+    
+    Load the template option. Expects to be the last option loaded.
+    
+***
+**get_help**()
+
+    
+    Get a string representing the help message for all options currently added.
+
+    **<br />returns&nbsp;**  The help string
+    
+***
+**status**()
+
+    
+    Get a string with a table showing all options and their current value.
+
+    **<br />returns&nbsp;**  The status table
+    
+***
+**post**(*args, kwargs*)
+
+    
+    Send a string to be printed if in api mode. Will add a newline between different callers.
+    
+***
+**post_status**()
+
+    
+    Post the status table.
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//options.py)">
+<li class="searchable" id="#options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html">options</a></li>
+<input type="hidden" id="parser_composer_py" value="
+# Module formatter
+
+This module parsers and composes mixed files.
+
+***
+**FormatError**(*Exception*)
+
+    
+    Exception wrapper for format errors
+    
+***
+**str_token**(*token*)
+
+    
+    Converts a token into a human readable string.
+
+    <br />`token`  The token to represent
+    **<br />returns&nbsp;**  the string representation
+    
+***
+**get_extension**()
+
+    
+    Get the file extension of the output format.
+
+    **<br />returns&nbsp;**  The output extension
+    
+***
+**get_format**(*file*)
+
+    
+    Get the format of the given file. Format is based on file extension.
+
+    <br />`file`  The file to find the format of
+    **<br />returns&nbsp;**  The format of the given file
+    
+***
+**parse**()
+
+    
+    Converts mixed files from source to an intermediate based on the extension of the template file. Once converted the
+    intermediate is run through the default filters and the extension formatter's processors.
+
+    **<br />returns&nbsp;**  A list of intermediates corresponding to each of the mixed files
+    
+***
+**compose**(*intermediates*)
+
+    
+    Converts intermediates to a source file based on the format option. The formatter's processors are run on the
+    intermediate and final source. If the source is being converted to the same format it came from the intermediate
+    will be discarded in favour of the original source.
+
+    <br />`intermediates`  A list of intermediates
+    
+***
+**pack**(*token, fmt*)
+
+    
+    Convert a token into a string using the following rules:
+
+    If the token name is contained in the format:
+     - Append every pure string in that format
+     - Append every tuple or list as the packed content of the token
+    If the token name is not contained in the format
+     - Append the packed content of the token
+
+    <br />`token`  The token to pack
+    <br />`fmt`  The format to pack to
+    **<br />returns&nbsp;**  The packed token
+    
+***
+
+    Add a format to the formatter.
+
+    <br />`name`  The name of the format
+    <br />`extensions`  A list of extensions related to the format
+    <br />`description`  A description of the format
+    <br />`format`  The token list for the format
+    <br />`parser_preprocessor`  The parsing pre processor
+    <br />`parser_postprocessor`  The parsing post processor
+    <br />`composer_postprocessor`  The composer pre processor
+    <br />`composer_preprocessor`  The composer post processor
+    
+***
+**parse_tokens**(*src, fmt*)
+
+    
+    Convert a string source into an abstract syntax tree (ast). A format containing a list of valid
+    tokens must be provided. Any string sequences that cannot be matched will be returned as
+    raw characters
+
+    <br />`src`  The source to convert into an ast
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The ast
+    
+***
+**match_token**(*src, fmt*)
+
+    
+    Determine what token a specific string sequence begins with. If no token can be found in the given
+    template a raw character is returned off the top.
+
+    <br />`src`  The string sequence
+    <br />`fmt`  The format providing the tokens
+    **<br />returns&nbsp;**  The matched token, The unmatched sequence
+    
+***
+**build_token**(*token, src, fmt*)
+
+    
+    Attempts to convert the source into a token.
+
+    <br />`token`  The token to build
+    <br />`src`  The source to build from
+    <br />`fmt`  The format to build to
+    **<br />returns&nbsp;**  The token if built or none
+    
+***
+**increment**(*matched, unmatched*)
+
+    
+    Moves the first character of unmatched to the end of matched
+
+    <br />`matched`  The matched string
+    <br />`unmatched`  The unmatched string
+    **<br />returns&nbsp;**  matched, unmatched
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//parser_composer.py)">
+<li class="searchable" id="#parser_composer_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/parser_composer.html">parser_composer</a></li>
+<input type="hidden" id="plugin_loader_py" value="
+# Module plugin_loader
+
+Loads and unloads plugins.
+
+***
+**PluginError**(*Exception*)
+
+    
+    Exception wrapper for Plugin errors
+    
+***
+**_plugins **<br /> A map of all currently loaded plugins
+***
+**load_plugins**()
+
+    
+    Call the load function on all plugins in the appropriate order. Loads the following
+    [option](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
+     - `plugins -plg` List all currently loaded plugins
+    
+***
+**unload_plugins**()
+
+    
+    Call the unload function on all plugins.
+    
+***
+**load**(*signature*)
+
+    
+    Called on the return value of a plugin. Should return a valid signature.
+
+    <br />`signature`  The return value of the plugin's load function
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugin_loader.py)">
+<li class="searchable" id="#plugin_loader_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader.html">plugin_loader</a></li>
+<input type="hidden" id="process_list_py" value="
+# Module process_list
+
+This module manages the Pyxam process list which is a consecutive set of functions that are run in order. This process
+list can be changed during runtime via a number of function calls.
+
+***
+**_process_list **<br /> Core Process List
+***
+**ready**()
+
+    
+    **<br />returns&nbsp;**  True as long as there are items in the process list
+    
+***
+**append**(*process*)
+
+    
+    Append a process to the end of the process list, or if the provided argument is a list, append all the items to
+    the process list.
+
+    <br />`process`  the process or processes to append
+    
+***
+**run_after**(*process, hook*)
+
+    
+    Add a hook to run after a given process.
+
+    <br />`process`  The string name of the process to hook
+    <br />`hook`  The function to run
+    
+***
+**run_before**(*process, hook*)
+
+    
+    Add a hook to run before a given process.
+
+    <br />`process`  The string name of the process to hook
+    <br />`hook`  The function to run
+    
+***
+**consume**(*arg=None*)
+
+    
+    Run the next process in the process list with any provided arguments.
+
+    <br />`arg`  Arguments
+    **<br />returns&nbsp;**  Arguments for the next process
+    
+***
+**skip**()
+
+    
+    Skips the next process in the process list.
+    
+***
+**clear**()
+
+    
+    Clears the process list of all waiting processes.
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//process_list.py)">
+<li class="searchable" id="#process_list_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html">process_list</a></li>
+<input type="hidden" id="pyxam_py" value="
+# Module pyxam
+
+This is the primary script for Pyxam. This script can be run from the command line with Pyxam's options or run in api
+mode from another python script. When run from the command line all command line arguments are passed to Pyxam and api
+mode is automatically disabled. In addition to launching Pyxam this script is also responsible for welcome and goodbye
+messages and tracking the Pyxam version number.
+
+
+
+Prior to launching however script checks Python dependencies for `matplotlib` and `numpy` which are needed for
+generating figure images as well as `pweave` which is needed for weaving inline Python code. Failing to meet one of
+these dependencies will result in an exit statement and a recommendation todo `pip install` for the dependency.
+
+***
+**__version__ **<br /> Pyxam Version Number
+***
+**_args **<br /> Copy of original arguments
+***
+**title **<br /> Pyxam Title String
+***
+**welcome**()
+
+    
+    Posts the Pyxam title and version number
+    
+***
+**goodbye**()
+
+    
+    Posts a goodbye message
+    
+***
+**store_args**(*args=None*)
+
+    
+    Store a list of arguments. Called every time Pyxam is run.
+
+    <br />`args`  The args to store
+    **<br />returns&nbsp;**  The most recently stored args or a message saying there are no stored args.
+    
+***
+**start**(*args, api=True*)
+
+    
+    Start Pyxam with a set of [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html). Start adds the following processes to the
+    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html):
+     - `load_options` loads the command line options
+     - `welcome` displays a welcome message
+     - `load_plugins` loads all available plugins
+     - `build_files` fixes paths and builds all necessary files
+     - `run_commands` prepossesses commands in the template (see [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html))
+     - `post_status` posts the current state of all options
+     - `weave` runs any inline code within the template
+     - `parse` reads the template document into an intermediate format (see [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/parser_composer.py))
+     - `compose` converts the intermediate format into the output format
+     - `export` moves files from the tmp directory to the final out directory
+     - `cleanup` removes all temporary files
+     - `unload_plugins` unloads all available plugins
+     - `goodbye` display a goodbye message
+    Once added these processes are consumed until there are no more processes.
+
+    <br />`args`  A list of options provided in command line syntax
+    <br />`api`  A flag indicating if Pyxam is being called as an api
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//pyxam.py)">
+<li class="searchable" id="#pyxam_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/pyxam.html">pyxam</a></li>
+<input type="hidden" id="util_py" value="
+# Module util_classes
+
+Provides utility classes and functinos to other Modules.
+
+***
+**Map**(*dict*)
+
+    
+    A custom dictionary which can be accessed with index notation and attribute notation. Taken from a
+    [stackoverflow](http://stackoverflow.com/questions/2352181/how-to-use-a-dot-to-access-members-of-dictionary)
+    post by [epool](http://stackoverflow.com/users/845296/epool). Example usage:
+    ```python
+        # Can construct using a dictionary/named args
+        m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
+        # Access using attribute notation
+        assert(m.firstname == 'Eduardo')
+        # Access using index notation
+        assert(m['lastname'] == 'Pool')
+    ```
+
+    
+***
+**same_caller**(*cache={}*)
+
+    
+
+    <br />`cache` 
+    **<br />returns&nbsp;** 
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//util.py)">
+<li class="searchable" id="#util_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/util.html">util</a></li>
+</ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
 <input type="hidden" id="_logging_py" value="
 # Plugin _logging
 
@@ -1472,135 +1615,60 @@ in their load functions.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_logging.py)">
 <li class="searchable" id="#_logging_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_logging.html">_logging</a></li>
-<input type="hidden" id="format_latex_py" value="
-# Plugin format_latex
+<input type="hidden" id="_options_py" value="
+# Plugin _options
 
-Formatter plugin for importing and exporting LaTeX.
+This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
+if the user knows what they are doing.
 
-***
-**end **<br /> Regex for recognizing the end of a question
-***
-**parser_preprocessor**(*src*)
 
-    
-    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
 
-    <br />`src`  The template source
-    **<br />returns&nbsp;**  The modified source
-    
-***
-**parser_postprocessor**(*intermediate*)
+This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
+also manages a few commands:
+ - `solutions` if provided will cause _options to hook a rerun function to the end of the process list
+ - `version` if provided will cause _options to print the version number then exit
+ - `list` if provided will cause _options to print all formats then exit
+ - `help` if provided will cause _options to pritn all options then exit
+The [plugin_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader) will always load _options last so that other Plugins that add formats or
+options can be seen by _options.
 
-    
-    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
-    prompt Token.
 
-    <br />`intermediate`  An intermediate parse object
-    **<br />returns&nbsp;**  A modified intermediate
-    
-***
-**composer_postprocessor**(*source*)
-
-    
-    Adds the necessary boilerplate commands to the LaTeX file if they are not present as well as enables solutions if
-    the option is set. Performs some rough formatting.
-
-    <br />`source`  The source to transform
-    **<br />returns&nbsp;**  The transformed source
-    
 ***
 **load**()
 
     
-    Loads the tex formatter.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_latex.py)">
-<li class="searchable" id="#format_latex_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_latex.html">format_latex</a></li>
-<input type="hidden" id="format_org_py" value="
-# Plugin format_org
-
-Adds support import export format support for org mode files
-
-***
-**parser_postprocessor**(*intermediate*)
-
-    
-    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
-    prompt Token.
-    <br />`intermediate`  An intermediate parse object
-    **<br />returns&nbsp;**  A modified intermediate
-    
-***
-**composer_preprocessor**(*intermediate*)
-
-    
-    Applies the following filters to the tree:
-     - Promotes the questions token
-
-    <br />`intermediate` 
-    **<br />returns&nbsp;**  The modified tree
-    
-***
-**composer_postprocessor**(*source*)
-
-    
-    Performs a number of formatting changes to the output org file:
-     - Capital blocks are moved to a newline
-     - Capital blocks with whitespace other than newlines and then content have their content moved to newlines
-     - Consecutive newlines are reduced to a single newlines
-     - Any newlines that appear at the start of the src are removed
-     - Newlines followed by whitespace are changed to just newlines
-
-    <br />`source`  The source to format
-    **<br />returns&nbsp;**  The formatted source
-    
-***
-**load**()
-
-    
-    Adds the org format to the [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/Formatter.html).
+    Loads the following [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
+     - `out -o` Set the output directory
+     - `tmp -tmp` Set the temporary directory
+     - `figure -fig` Set the figure directory
+     - `number -n` Set the number of exams to generate
+     - `title -t` Set the title of the exam
+     - `format -f` Set the format of the exam
+     - `shell -shl` Set the shell used to weave the exam
+     - `method -m` Set the selection method for population mixing
+     - `population -p` Set the class list
+     - `alphabetize -a` Enable lettered versioning
+     - `noweave -w` Disable pweave
+     - `debug -d` Disable file cleanup
+     - `solutions -s` Enable solutions
+     - `version -v` Show the version number
+     - `list -ls` List all available formats
+     - `help -h` Show a help message
+     Manages the `solutions`, `version`, `list`, and `help` commands as explained above.
 
     **<br />returns&nbsp;**  plugin signature
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_org.py)">
-<li class="searchable" id="#format_org_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
-<input type="hidden" id="format_moodle_py" value="
-# Plugin format_moodle
-
-Plugin for importing and exporting moodle xml files.
-
-***
-**composer_preprocessor**(*intermediate*)
+**rerun_without_solutions**()
 
     
-    Performs the following modifications to the intermediate:
-     - Promote questions token to top level of the ast
-     - Converts images to a base64 encoded string to appear directly in the HTML source
-     - Add text tags around the solution if they are not already present
-
-    <br />`intermediate`  An intermediate parse object
-    **<br />returns&nbsp;**  A modified intermediate
+    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
+    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
+    one with solutions and one without. =
     
 ***
-**composer_postprocessor**(*source*)
-
-    
-    Formats the xml to help readability.
-
-    <br />`source`  The source to transform
-    **<br />returns&nbsp;**  The transformed source
-    
-***
-**load**()
-
-    
-    Loads the moodle xml format.
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_moodle.py)">
-<li class="searchable" id="#format_moodle_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_options.py)">
+<li class="searchable" id="#_options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
 <input type="hidden" id="docs_py" value="
 # Plugin docs
 
@@ -1741,60 +1809,51 @@ Plugin for exporting a file to HTML.
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_html.py)">
 <li class="searchable" id="#format_html_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_html.html">format_html</a></li>
-<input type="hidden" id="_options_py" value="
-# Plugin _options
+<input type="hidden" id="format_latex_py" value="
+# Plugin format_latex
 
-This plugin is considered a core plugin (indicated by the underscore in its name) it should only be replaced or removed
-if the user knows what they are doing.
+Formatter plugin for importing and exporting LaTeX.
 
+***
+**end **<br /> Regex for recognizing the end of a question
+***
+**parser_preprocessor**(*src*)
 
+    
+    Swaps all instances of \question with \titledquestion{question} to help translate to other formats.
 
-This plugin defines the core set of command line options used by Pyxam. In addition to adding these options _options
-also manages a few commands:
- - `solutions` if provided will cause _options to hook a rerun function to the end of the process list
- - `version` if provided will cause _options to print the version number then exit
- - `list` if provided will cause _options to print all formats then exit
- - `help` if provided will cause _options to pritn all options then exit
-The [plugin_loader](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/plugin_loader) will always load _options last so that other Plugins that add formats or
-options can be seen by _options.
+    <br />`src`  The template source
+    **<br />returns&nbsp;**  The modified source
+    
+***
+**parser_postprocessor**(*intermediate*)
 
+    
+    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
+    prompt Token.
 
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    
+***
+**composer_postprocessor**(*source*)
+
+    
+    Adds the necessary boilerplate commands to the LaTeX file if they are not present as well as enables solutions if
+    the option is set. Performs some rough formatting.
+
+    <br />`source`  The source to transform
+    **<br />returns&nbsp;**  The transformed source
+    
 ***
 **load**()
 
     
-    Loads the following [options](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/options.html):
-     - `out -o` Set the output directory
-     - `tmp -tmp` Set the temporary directory
-     - `figure -fig` Set the figure directory
-     - `number -n` Set the number of exams to generate
-     - `title -t` Set the title of the exam
-     - `format -f` Set the format of the exam
-     - `shell -shl` Set the shell used to weave the exam
-     - `method -m` Set the selection method for population mixing
-     - `population -p` Set the class list
-     - `alphabetize -a` Enable lettered versioning
-     - `noweave -w` Disable pweave
-     - `debug -d` Disable file cleanup
-     - `solutions -s` Enable solutions
-     - `version -v` Show the version number
-     - `list -ls` List all available formats
-     - `help -h` Show a help message
-     Manages the `solutions`, `version`, `list`, and `help` commands as explained above.
-
-    **<br />returns&nbsp;**  plugin signature
+    Loads the tex formatter.
     
 ***
-**rerun_without_solutions**()
-
-    
-    Reruns pyxam with the solutions flag disabled if previously enabled. This is hooked to the
-    [process_list](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/process_list.html) when the solutions flag is set so that two sets of exams are produced,
-    one with solutions and one without. =
-    
-***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/_options.py)">
-<li class="searchable" id="#_options_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/_options.html">_options</a></li>
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_latex.py)">
+<li class="searchable" id="#format_latex_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_latex.html">format_latex</a></li>
 <input type="hidden" id="format_markdown_py" value="
 # Plugin format_markdown
 
@@ -1809,37 +1868,94 @@ A small plugin for exporting markdown to HTML. This plugin does not support exam
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_markdown.py)">
 <li class="searchable" id="#format_markdown_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_markdown.html">format_markdown</a></li>
-<input type="hidden" id="mix_methods_py" value="
-# Plugin mix_methods
-Adds mixing methods to the [mixer](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html).
+<input type="hidden" id="format_moodle_py" value="
+# Plugin format_moodle
+
+Plugin for importing and exporting moodle xml files.
 
 ***
-**sequence_mix**(*versions, data*)
+**composer_preprocessor**(*intermediate*)
 
     
-    Repeatedly loops through the versions alongside the data until every student is assigned an exam.
-    <br />`versions`  The number of exam versions
-    <br />`data`  An array of student data
+    Performs the following modifications to the intermediate:
+     - Promote questions token to top level of the ast
+     - Converts images to a base64 encoded string to appear directly in the HTML source
+     - Add text tags around the solution if they are not already present
+
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
     
 ***
-**random_mix**(*versions, data*)
+**composer_postprocessor**(*source*)
 
     
-    Selects a random exam for each row of data.
-    <br />`versions`  The number of exam versions
-    <br />`data`  An array of student data
+    Formats the xml to help readability.
+
+    <br />`source`  The source to transform
+    **<br />returns&nbsp;**  The transformed source
     
 ***
 **load**()
 
     
-    Adds the sequence and random mixing methods to the mixer.
+    Loads the moodle xml format.
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_moodle.py)">
+<li class="searchable" id="#format_moodle_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_moodle.html">format_moodle</a></li>
+<input type="hidden" id="format_org_py" value="
+# Plugin format_org
+
+Adds support import export format support for org mode files
+
+***
+**parser_postprocessor**(*intermediate*)
+
+    
+    Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
+    prompt Token.
+    <br />`intermediate`  An intermediate parse object
+    **<br />returns&nbsp;**  A modified intermediate
+    
+***
+**composer_preprocessor**(*intermediate*)
+
+    
+    Applies the following filters to the tree:
+     - Promotes the questions token
+
+    <br />`intermediate` 
+    **<br />returns&nbsp;**  The modified tree
+    
+***
+**composer_postprocessor**(*source*)
+
+    
+    Performs a number of formatting changes to the output org file:
+     - Capital blocks are moved to a newline
+     - Capital blocks with whitespace other than newlines and then content have their content moved to newlines
+     - Consecutive newlines are reduced to a single newlines
+     - Any newlines that appear at the start of the src are removed
+     - Newlines followed by whitespace are changed to just newlines
+
+    <br />`source`  The source to format
+    **<br />returns&nbsp;**  The formatted source
+    
+***
+**load**()
+
+    
+    Adds the org format to the [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/Formatter.html).
 
     **<br />returns&nbsp;**  plugin signature
     
 ***
-View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/mix_methods.py)">
-<li class="searchable" id="#mix_methods_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/mix_methods.html">mix_methods</a></li>
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_org.py)">
+<li class="searchable" id="#format_org_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_org.html">format_org</a></li>
+<input type="hidden" id="format_orghtml_py" value="
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_orghtml.py)">
+<li class="searchable" id="#format_orghtml_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_orghtml.html">format_orghtml</a></li>
 <input type="hidden" id="format_pdf_py" value="
 # Plugin format_pdf
 
@@ -1881,12 +1997,43 @@ $ ./pyxam.py -f pdf my_file.tex
 ***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/format_pdf.py)">
 <li class="searchable" id="#format_pdf_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/format_pdf.html">format_pdf</a></li>
+<input type="hidden" id="mix_methods_py" value="
+# Plugin mix_methods
+Adds mixing methods to the [mixer](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/mixer.html).
+
+***
+**sequence_mix**(*versions, data*)
+
+    
+    Repeatedly loops through the versions alongside the data until every student is assigned an exam.
+    <br />`versions`  The number of exam versions
+    <br />`data`  An array of student data
+    
+***
+**random_mix**(*versions, data*)
+
+    
+    Selects a random exam for each row of data.
+    <br />`versions`  The number of exam versions
+    <br />`data`  An array of student data
+    
+***
+**load**()
+
+    
+    Adds the sequence and random mixing methods to the mixer.
+
+    **<br />returns&nbsp;**  plugin signature
+    
+***
+View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//plugins/mix_methods.py)">
+<li class="searchable" id="#mix_methods_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Plugins/mix_methods.html">mix_methods</a></li>
 </ul></li>
         </ul>
         <div style='height:2em'></div>
     </div>
     <div class='doc'>
-        <div class="content"><h1>Support and Contact</h1>Pyxam is currently maintained by Eric Buss at the University of Alberta.<br /><b>email</b>: ebuss@ualberta.ca</div>
+        <h1>Support and Contact</h1>Pyxam is currently maintained by Eric Buss at the University of Alberta.<br /><b>email</b>: ebuss@ualberta.ca
         <hr />
         <div class='credits'>
             Built with <a href='https://github.com/balancededge/pyxam'>Pyxam</a>

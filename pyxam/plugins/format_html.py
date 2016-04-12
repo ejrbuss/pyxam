@@ -71,7 +71,7 @@ def composer_postprocessor(src):
     src = re.sub(r'\n{2}', '<br />', src)
     src =  fileutil.read(
         options.state.htmltemplate()
-     ).replace('<!-- content -->','<div class="content">' + src + '</div>')
+     ).replace('<!-- content -->', src)
     if options.state.solutions():
         src = src.replace('display: none', '')
     else:

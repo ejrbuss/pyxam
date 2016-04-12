@@ -38,10 +38,12 @@ def load_plugins():
         try:
             exec('import plugins.{}; load(plugins.{}.load())'.format(plugin, plugin))
             logging.info('Loaded ' + plugin)
-        except AttributeError:
-            raise PluginError('Failed to load ' + plugin + ': plugin has no load function')
-        except TypeError:
-            raise PluginError('Failed to load ' + plugin + ': plugin returned an invalid plugin signature or was None')
+        except:
+            raise
+        #except AttributeError:
+        #    raise PluginError('Failed to load ' + plugin + ': plugin has no load function')
+        #except TypeError:
+        #    raise PluginError('Failed to load ' + plugin + ': plugin returned an invalid plugin signature or was None')
     # Display plugin list and exit
     options.post('Successfully loaded', len(_plugins), ' plugins.')
     if options.state.plugins():

@@ -1,6 +1,7 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
 """
 # Module filters
+
 This module provides helper functions for transforming a Pyxam parse tree.
 """
 import util
@@ -9,15 +10,16 @@ import logging
 import lib_loader
 
 
-#TODO finish
-
 def has_name(token, name='', partial=True):
     """
+    Checks if the given token is a token and its name matches the given name. If the partial flag is set to True the
+    token will be matched if any part of the name matches. A list of names can also be provided instead. If any of the
+    names match True will be returned.
 
-    :param token:
-    :param name:
-    :param partial:
-    :return:
+    :param token: The token to match
+    :param name: The name or list of names to match
+    :param partial: If True the name only has to match part of the token name
+    :return: True if the token and name matches
     """
     if isinstance(name, list):
         return any(has_name(token, n, partial) for n in name)
@@ -32,6 +34,7 @@ def remove_name(ast, name, partial=True):
 def recursive_filter(fn, node):
     """
     Filters a list and recursively filters any sublists attached to the node.
+
     :param fn: The filter function
     :param node: The starting node
     :return: the filtered node
@@ -47,6 +50,7 @@ def apply_function(ast, fn, name='', partial=True):
     """
     Applies a transform function to all nodes of the tre that match the name given. The function is applied recursively
     to every part of the tree.
+
     :param ast: The tree to transform
     :param fn: The function to apply
     :param partial: TODO
@@ -63,6 +67,7 @@ def apply_function(ast, fn, name='', partial=True):
 def pass_through(intermediate):
     """
     A dummy function that simply returns its provided intermediate.
+
     :param intermediate: The intermediate
     :return: the intermediate
     """
@@ -74,6 +79,7 @@ def pop_unknowns(ast):
     """
     Replace every unknown token with the its definition tokens. This process is applied recursively and all popped
     tokens are also processed for unknowns
+
     :param ast: The tree whose unknowns are being popped
     :return: the modified tree
     """
@@ -96,6 +102,7 @@ def pop_unknowns(ast):
 def img64(ast):
     """
     Convert image file paths to base64 representations of those images.
+
     :param ast: The tree whose images will be converted
     :return: The modified tree
     """
@@ -111,6 +118,7 @@ def img64(ast):
 def homogenize_strings(ast):
     """
     Combine consecutive string tokens into a single string. Applied recursively.
+
     :param ast: The tree whose strings tokens are combined
     :return: The modified tree
     """
@@ -134,6 +142,7 @@ def homogenize_strings(ast):
 def promote(ast, name):
     """
     Finds the first instance (based on a depth first search) of a token with the matching name.
+
     :param ast: The tree to be searched
     :param name: The token name to find
     :return: the subtree starting at the matching token
@@ -148,6 +157,7 @@ def promote(ast, name):
 def wrap_lists(ast):
     """
     Wraps consecutive listitem tokens in a list token. Applied recursively.
+
     :param ast: The tree to be modified
     :return: The modified tree
     """
@@ -170,6 +180,8 @@ def wrap_lists(ast):
 
 def untab_verb(ast):
     """
+    Removes any leading tabs from a verbatim token.
+
     :param ast: The tree to modify
     :return: the modified tree
     """
@@ -193,6 +205,7 @@ def transform_questions(ast):
     Performs a number of transformations to questions in the tree. These include converting shortanswer questions to
     numerical questions, multichoice questions to multiselect questions, and numerical questions to calculated
     questions. Applied recursively.
+
     :param ast: The tree to modify
     :return: the modified tree
     """

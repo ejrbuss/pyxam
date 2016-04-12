@@ -14,7 +14,6 @@ import pyxam
 import config
 import options
 import fileutil
-import webbrowser
 
 signature = 'docs builder', 'ejrbuss', 'Builder for Pyxam\'s documentation'
 
@@ -52,7 +51,7 @@ def load():
     """
     global url, nav
     options.add_option('docs', '-docs', 'Build Pyxam\'s documentation for use locally', False, bool)
-    options.add_option('gitdocs', '-gdocs', 'Builed Pyxam\'s documentation for use on Github', False, bool)
+    options.add_option('gitdocs', '-gdocs', 'Build Pyxam\'s documentation for use on Github', False, bool)
     if options.state.docs() or options.state.gitdocs():
         if options.state.gitdocs():
             url = config.git_docs
@@ -61,15 +60,14 @@ def load():
         # Get paths, use the full path each time in case abspath changes / to \\ on windows
         plugins = os.path.abspath(__file__.replace('docs.py', ''))
         modules = os.path.abspath(__file__.replace('docs.py', '') + '..')
-        docs = os.path.abspath(__file__.replace('docs.py', '') + '../../docs/source')
-        build = docs.replace('source', 'build')
+        docs = os.path.join(os.path.abspath(__file__.replace('docs.py', '')), '..', '..', 'docs', 'source')
+        build = os.path.abspath(docs.replace('source', 'build'))
         load_docs(docs)
         load_source('Modules', modules, build)
         load_source('Plugins', plugins, build)
         # Compile docs
         compile_docs(build)
         # Exit
-        webbrowser.open(url + '/index.html')
         exit('Docs successfully recompiled')
     return signature
 
@@ -89,7 +87,7 @@ def load_source(name, directory, build):
     table += table_sec_start.format(name)
     if not os.path.exists(build + '/' + name):
         os.mkdir(build + '/' + name)
-    for file in os.listdir(directory):
+    for file in sorted(os.listdir(directory)):
         path = directory + '/' + file
         if os.path.isfile(path) and path.endswith('.py') and '__init__' not in path:
             docstrings = re.findall(
@@ -199,7 +197,7 @@ def compile_doc(build, doc):
     :param build: The directory of the file to compile
     :param doc: The file to compile
     """
-    pyxam.start([
+    pyxam.pyxam.start([
         '-w',           # Disable weaving
         '-f', 'html',   # Convert to HTML
         '-o', build,    # Output to the build directory

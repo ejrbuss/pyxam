@@ -15,6 +15,7 @@ class pyxam:
     student_name = '{student_name}'.strip()
     student_number = '{student_number}'.strip()
     wildcard = None
+    table = None
 
     def import_question(path):
         import fileutil
@@ -262,7 +263,31 @@ class Wildcard:
         sys.stdout.write = _
         return 0
 
+
+class Table:
+
+    def __init__(self, css_class):
+        self.css_class = css_class
+        self.data = []
+
+    def row(self, row):
+        self.data.append((row, False))
+
+    def header(self, row):
+        self.data.append((row, True))
+
+    def show(self):
+        print('<table class="{}">'.format(self.css_class))
+        for row, header in self.data:
+            print('<tr>')
+            for col in row:
+                print('<th>{}</th>'.format(col) if header else '<td>{}</td>'.format(col))
+            print('</tr>')
+        print('</table>')
+
+
 # Set random to be seeded by version
 random.seed(pyxam.number + config.seed)
-# Set the wildcard alias
+# Set the wildcard and Table alias
 pyxam.wildcard = Wildcard
+pyxam.table = Table

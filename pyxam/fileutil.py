@@ -177,7 +177,7 @@ def move(src, dest):
     logging.info('Moving ' + src + ' to ' + dest)
     if not os.path.exists(os.path.dirname(dest)):
         os.mkdir(os.path.dirname(dest))
-    os.rename(src, dest)
+    shutil.move(src, dest)
 
 
 def is_bin(file):

@@ -36,7 +36,7 @@ Moodle format will automatically allow the user to select multiple answers.
 True or False questions are a variation of multiple choice questions where the only choices are True or False.
 *** choices
 - [ ] True
-- [ ] False
+- [X] False
 ** ?: 7. Numerical Question
 Numerical questions look like short answer questions except that in the solution block they call the pyxam.numerical
 function. By passing in a numerical solution the question will be set to the numerical type in moodle.

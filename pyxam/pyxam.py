@@ -16,7 +16,6 @@ these dependencies will result in an exit statement and a recommendation todo `p
 """
 # TODO Finish docs
 # TODO Tests & cleanup
-# TODO Website
 
 
 # Module Dependencies

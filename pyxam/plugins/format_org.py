@@ -14,6 +14,11 @@ import collections
 signature = 'org mode foramt', 'ejrbuss', 'Format for producing and viewing org mode files'
 
 
+def parser_preprocessor(source):
+    source = re.sub(r'\n(\|.*\|)\n[+-]+\n', '<table class="data"><thead>\1</thead><tbody>', source)
+    return source
+
+
 def parser_postprocessor(intermediate):
     """
     Because LaTeX has no defined Prompt the first string, equations, and images found in a question are put under a
@@ -82,18 +87,19 @@ def load():
         name='org',
         extensions=['org'],
         description=signature[2],
+        parser_preprocessor=parser_preprocessor,
         parser_postprocessor=parser_postprocessor,
         composer_preprocessor=composer_preprocessor,
         composer_postprocessor=composer_postprocessor,
         format=collections.OrderedDict([
-            ('comment', ['#', (), '\n']),
             ('commentblock', ['#+BEGIN_COMMENT ', (), '#+END_COMMENT']),
             ('commentblocktree', ['* COMMENT ', (), '\*']),
             ('$', ['$', (), '$', '.']),
             ('questions', ['* ?:', (), '\n\*\s']),
-            ('question', ['** ', (), '\n\*\*[^*]']),
+            ('question', ['** ', ['multichoice', 'shortanswer', 'essay'], '\n\*\*[^*]']),
             ('solution', ['*** solution', (), '\n\*']),
             ('dataset', ['*** dataset', (), '\n\*']),
+            ('verbhtml', ['* html', (), '\*']),
             ('img', ['\\includegraphics[width= \linewidth]{', (), '}', '.']),
             ('choices', ['*** choices', (), '\n\*']),
             ('choice', ['- [ ]', (), '(- \[)|(\n\*)']),
@@ -101,7 +107,17 @@ def load():
             ('multichoice', [['title'], (), ['choices'], (), '$']),
             ('shortanswer', [['title'], (), ['solution'], (), '$']),
             ('essay', [['title'], (), '\n\*\*[^*]']),
-            ('title', ['?:', (), '\n'])
+            ('title', ['?:', (), '\n']),
+            ('h3', ['***', (), '\n']),
+            ('h2', ['**', (), '\n']),
+            ('h1', ['*', (), '\n']),
+            ('listitem', ['- ', (), '(- )|\*']),
+            ('verblock', ['```', (), '```', '.']),
+            ('hr', ['-----', '.']),
+            ('emphasis2', ['``', (), '``', '.']),
+            ('emphasis1', ['`', (), '`', '.']),
+            ('verbexpr', ['~', (), '~', '.']),
+            ('newline', ['<br />', '.']),
         ])
     )
     return signature

@@ -1,5 +1,4 @@
 # Author: Eric Buss <ebuss@ualberta.ca> 2016
-#TODO Finish
 import os
 import filters
 import logging
