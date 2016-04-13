@@ -63,7 +63,7 @@ def composer_postprocessor(source):
     :param source: The source to transform
     :return: The transformed source
     """
-    if not source.strip().startswith('\\documentclass'):
+    if not '\\documentclass' in source:
         source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\usepackage[T1]{fontenc} \
         \\catcode`\\_=12\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
