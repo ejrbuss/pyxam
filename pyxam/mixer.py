@@ -27,7 +27,7 @@ def setup():
     appropriate names. If any files are in the figure directory they are copied out as well.
     """
     for n in range(options.state.number()):
-        mix(n, {'name': '','number': ''})
+        mix(n, {'first': '', 'last': '', 'name': '','number': ''})
     _methods[options.state.method()](options.state.number(), csv_read(options.state.population()))
 
 
@@ -47,14 +47,19 @@ def csv_read(file):
             # Get column titles
             cols = rows[0]
             # Name and number col collectors
-            name, number = [], []
+            first, last, name, number = [], [], [], []
             # Try and identify name and number columns
             for i in range(len(cols)):
-                if cols[i].lower().replace(' ', '') in config.name_column_identifiers:
+                if cols[i].lower().replace(' ', '') in config.first_name_column_identifiers:
+                    first.append(i)
+                elif cols[i].lower().replace(' ', '') in config.last_name_column_identifiers:
+                    last.append(i)
+                elif cols[i].lower().replace(' ', '') in config.name_column_identifiers:
                     name.append(i)
-                if cols[i].lower().replace(' ', '') in config.number_column_identifiers:
+                elif cols[i].lower().replace(' ', '') in config.number_column_identifiers:
                     number.append(i)
             # If no columns were identified fallback to regex detection
+            name = name + first + last
             if not name and not number:
                 cols = rows[1]
                 for i in range(len(cols)):
@@ -65,6 +70,8 @@ def csv_read(file):
             # Build and return data
             return [{
                 'number': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in number),
+                'first': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in first),
+                'last': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in last),
                 'name': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in name)
             } for i in range(len(rows) - 1)]
     except:
@@ -94,8 +101,10 @@ def mix(n, row):
             '<%\n' + inline
                 .replace('{number}', str(n))
                 .replace('{version}', str(version))
-                .replace('{student_name}', str(row['name']))
-                .replace('{student_number}', str(row['number'])) +
+                .replace('{student_first_name}', config.placeholder_first_name if options.state.solutions() else str(row['first']))
+                .replace('{student_last_name}', config.placeholder_last_name if options.state.solutions() else str(row['last']))
+                .replace('{student_name}', config.placeholder_name if options.state.solutions() else str(row['name']))
+                .replace('{student_number}', config.placeholder_number if options.state.solutions() else str(row['number'])) +
             '\n%>' + fileutil.read(options.state.template())
         )
 

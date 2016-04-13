@@ -1,108 +1,93 @@
-
 \documentclass[9pt]{extarticle}
 \usepackage[letterpaper, landscape, margin=.5in]{geometry}
 \usepackage{multicol}
 \usepackage{hyperref}
 \pagestyle{empty}
 \begin{document}
-\centering\section*{Pyxam Cheat Sheet v0.3.2}
+\centering\section*{Pyxam Cheat Sheet v0.3.5}
 \begin{multicols}{2}
 \raggedright\subsection*{Running Pyxam}
-Usage pyxam.py [Options] template \\
+Usage \texttt{\$ pyxam [Options] template} \\
 {\bf Command list:} \\
 \begin{tabular}{l l l l}
-alphabetize & -a &  & Enable lettered versioning\\
-out & -o & [out] & Set the output directory\\
-recomps & -r & [recomps] & The number of LaTeX recompilations\\
-version & -v &  & Show the version number\\
-population & -p & [population] & The class list CSV\\
-commands & -cmd &  & Display all available commands\\
-method & -m & [method] & The selection method for CSVs\\
-readme & -rd &  & Generate a new README.md file\\
-number & -n & [number] & Set the number of exams to generate\\
-help & -h &  & Show a help message\\
-list & -ls &  & List all available formats\\
-random & -rng & [random] & Set the seed for rng\\
-figure & -fig & [figure] & Set the figure directory\\
-plugins & -plg &  & List all currently loaded plugins\\
-logging & -l & [logging] & Set the logging level for pyxam\\
- & & & 10: DEBUG\\
- & & & 20: INFO\\
- & & & 30: WARNING\\
- & & & 50: CRITICAL\\
-solutions & -s &  & Enable soultions\\
-format & -f & [format] & The export format\\
-api & -api &  & Run Pyxam in api mode\\
-cheatsheat & -cht &  & Generate a new cheatsheet\\
-tmp & -tmp & [tmp] & Set the temporary directory\\
-debug & -d &  & Disable file cleanup\\
-title & -t & [title] & The title of the exam\\
-shell & -shl & [shell] & The shell used to weave the exam
+
+help         & -h     &                & Show a list of options \\
+version      & -v     &                & Show Pyxam's version number \\
+format       & -f     & [format]       & Set export format \\
+title        & -t     & [title]        & Set the title of the exam \\
+alphabetize  & -a     &                & Enable lettered versioning \\
+solutions    & -s     &                & Enable soultions \\
+out          & -o     & [out]          & Set the output directory \\
+tmp          & -tmp   & [tmp]          & Set the temporary directory \\
+figure       & -fig   & [figure]       & Set the figure directory \\
+population   & -p     & [population]   & Set class list \\
+method       & -m     & [method]       & Set selection method for CSVs \\
+number       & -n     & [number]       & Set the number of exams to generate \\
+recomps      & -r     & [recomps]      & The number of LaTeX recompilations \\
+shell        & -shl   & [shell]        & Set shell used to weave the exam \\
+noweave      & -w     &                & Disable pweave \\
+list         & -ls    &                & List all available formats \\
+plugins      & -plg   &                & List all currently loaded plugins \\
+htmltemplate & -htt   & [htmltemplate] & Specify an HTML template file \\
+docs         & -docs  &                & Build Pyxam's docs for use locally \\
+gitdocs      & -gdocs &                & Build Pyxam's docs for use on Github \\
+api          & -api   &                & Run Pyxam in api mode \\
+debug        & -d     &                & Disable file cleanup \\
+logging      & -l     & [logging]      & Set the logging level for pyxam \\
+             &        &                & 10: DEBUG \\
+             &        &                & 20: INFO \\
+             &        &                & 30: WARNING \\
+             &        &                & 50: CRITICAL \\
 \end{tabular} 
 
 For more details see README.md \\
-\subsection*{Pyxam Bang Commands}
-
-\begin{tabular}{l l}
-pyxam! sexpr & 
-    Run a python expression silently
+\subsection*{Inline Python Variables and Functions}
+\begin{description}
+\item\texttt{pyxam.number} \\
+    The exam version number starting from 0
     \\
-pyxam! verb & 
-    Run a python block and return a verbatim copy of the code
+\item\texttt{pyxam.version} \\
+    The exam version, either a number starting from 1 or a letter starting from A
     \\
-pyxam! expr & 
-    Run a python expression and echo the result
+\item\texttt{pyxam.student\_first\_name} \\
+    The student's first name if available or a placeholder in the solutions document
     \\
-pyxam! fig & 
-    Insert a python figure
+\item\texttt{pyxam.student\_last\_name} \\
+    The student's last name if available or a placeholder in the solutions document
     \\
-pyxam! studentname & None\\
-pyxam! studentnumber & None\\
-pyxam! args & 
-    Load args as though they were command line options.
+\item\texttt{pyxam.student\_name} \\
+    The student's full name if available or a placeholder in the solutions document
     \\
-pyxam! block & 
-    Run a python block silently
+\item\texttt{pyxam.wildcard(min=None, max=None, set=None, n=pyxam.number, decimals=0)} \\
+    Create a wildcard that can be used to pick from a list or generate a set of random numbers
     \\
-pyxam! import & 
-    Insert a question
+\item\texttt{pyxam.import\_question(path)} \\
+    Pastes the content of the file
     \\
-pyxam! def & 
-    Define a constant
-    
-\end{tabular}
+\item\texttt{pyxam.args(args)} \\
+    Set command line arguments from the document, not all options are useable
+    \\
+\item\texttt{pyxam.shuffle(choices)} \\
+    Takes a list of strings and prints them out in a random order
+    \\
+\item\texttt{pyxam.numerical(solution, tolerance=0, percent=False)} \\
+    Create a numerical question with a set tolerance
+    \\
+\item\texttt{pyxam.calculated(equation, tolerance=0, percent=False)} \\
+    Creat a calculated question with a set tolerance, the equation must be provided as a string in moodle syntax
+    \\
+\item\texttt{pyxam.dataset(*wildcards)} \\
+    Add a list of wildcards to the questions dataset so they can be used in moodle
+    \\
+\item\texttt{pyxam.categorize(course, category)} \\
+    Questions will be added to the given course category in moodle
+    \\
+\end{description}
 \subsection*{Examples}
 \begin{description}
-    \item See {\it examples/template.tex} for a simple exam that implements all of Pyxam's features 
-    \item See {\it examples/exam.tex} for examples of more complex problems 
-    \item See {\it examples/github.tex} for an introductory guide to github
+    \item See {\it examples/pyxam\_tex\_standard.tex} for an example tex file
+    \item See {\it examples/pyxam\_org\_standard.org} for an example org file
     \item See {\it README.md} for a general overview of the tools and basic usage 
-\end{description}
-\subsection*{Development Tools}
-\begin{description}
-    \item {\bf Github} \\
-        The version control system used for Pyxam. Github allows for easy
-        management and access of source code. Github can be found at
-        \url{https://github.com/ and the project page} for Pyxam
-        can be found at \url{https://github.com/balancededge/pyxam}.  
-    \item {\bf Git-Cola} \\
-        A GUI client for github on Unix systems. A convenient tool when
-        working with a larger number of files in sub directories where the
-        command line may be less suitable. Git-Cola can be installed through
-        Yast.
-    \item {\bf PyCharm} \\
-        A Python IDE with all the bells and whistles. PyCharm makes
-        programming Python easy and enjoyable whilst also still being one of the
-        most responsive editors available. PyCharm Community edition is free
-        and can be found at \url{https://www.jetbrains.com/pycharm/}.
-    \item {\bf Dillinger.io} \\
-        A Markdown browser based editor. Dillinge   r is simple and elegant a
-        great solution for writing Markdown documents. Dillinger can be found
-        at \url{http://dillinger.io/}.
-    \item {\bf Emacs } \\
-        A powerful and configurable text editor. An ideal environment when
-        working in a large variety of programming languages and with a large
-        number of file formats. Emacs can be installed through Yast.
 \end{description}
 \subsection*{Emacs Shortlist}
 \begin{tabular}{l l}

@@ -12,6 +12,8 @@ class pyxam:
 
     number = int('{number}')
     version = '{version}'.strip()
+    student_first_name = '{student_first_name}'.strip()
+    student_last_name = '{student_last_name}'.strip()
     student_name = '{student_name}'.strip()
     student_number = '{student_number}'.strip()
     wildcard = None
@@ -83,6 +85,11 @@ class pyxam:
                 print('</dataset_items><number_of_items>{}</number_of_items></dataset_definition>'.format(len(wildcard.set)))
             return '</dataset_definitions>'
         return ''
+
+    def categorize(course, category):
+        import options
+        if options.state.format() == 'moodle':
+            print('<question type="category"><category><text>{}/{}</text></category></question>'.format(course, category))
 
 
 class Wildcard:
@@ -204,9 +211,6 @@ class Wildcard:
     def __complex__(self):
         return Wildcard(set=[complex(a) for a in self.set])
 
-    def __int__(self):
-        return Wildcard(set=[int(a) for a in self.set])
-
     def __round__(self, n=None):
         return Wildcard(set=[round(a, n) for a in self.set])
 
@@ -240,6 +244,9 @@ class Wildcard:
     def __float__(self):
         return float(str(self))
 
+    def __int__(self):
+        return int(str(self))
+
     def __hash__(self):
         """
         **PURE EVIL**
@@ -262,6 +269,9 @@ class Wildcard:
         # Make the next print call be to anon function that will restore the print call and return 0 to satisfy the hash
         sys.stdout.write = _
         return 0
+
+    def val(self):
+        return float(self)
 
 
 class Table:

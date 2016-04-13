@@ -1,3 +1,5 @@
+% To generate a pdf from this file with solutions: 
+%    $ pyxam -s -f pdf pyxam_tex_standard.tex
 \documentclass[12pt]{exam}
 
     % The graphicx package is needed for figures
@@ -9,6 +11,8 @@
 
     \begin{document}
         \begin{questions}
+            % Set the question's category to 'testing'
+            <% pyxam.categorize(course='testing', category='standard') %>
             \titledquestion{1. Essay Question}
                 This is the simplest question possible. It is just a prompt and has no solution.
             \titledquestion{2. Short Answer}
@@ -22,10 +26,10 @@
                 you need. All choices should appear in a choices block. By default multiple choice questions will be
                 shuffled when imported to Moodle.
                 \begin{choices}
-                    \choice A
-                    \choice B
-                    \choice C
-                    \CorrectChoice D
+                    \choice Text for choice A
+                    \choice Text for choice B
+                    \choice Text for choice C
+                    \CorrectChoice Text for correct choice D
                 \end{choices}
             \titledquestion{4. Shuffled Multiple Choice}
                 Although multiple choice questions are automatically shuffled when added to Moodle they are not
@@ -33,24 +37,24 @@
                 function on your choices.
                 \begin{choices}
                     <%= pyxam.shuffle(
-                        '\\choice A',
-                        '\\choice B',
-                        '\\choice C',
-                        '\\CorrectChoice D'
+                        '\\choice Text for choice A',
+                        '\\choice Text for choice B',
+                        '\\choice Text for choice C',
+                        '\\CorrectChoice Text for correct choice D'
                     )%>
                 \end{choices}
             \titledquestion{5. Multi Select}
                 Multi select questions are a slight variation on multiple choice questions. By including multiple
                 correct choices the Moodle format will automatically allow the user to select multiple answers.
                 \begin{choices}
-                    \choice A
-                    \CorrectChoice B
-                    \choice C
-                    \CorrectChoice D
+                    \choice Text for choice A
+                    \CorrectChoice Text for correct choice B
+                    \choice Text for choice C
+                    \CorrectChoice Text for correct choice D
                 \end{choices}
             \titledquestion{6. True or False}
                 True or False questions are a variation of multiple choice questions where the only choices are True or
-                False.
+                False. Is $\sqrt{2}=7$?
                 \begin{choices}
                     \choice True
                     \CorrectChoice False
@@ -58,23 +62,24 @@
             \titledquestion{7. Numerical Question}
                 Numerical questions look like short answer questions except that in the solution block they call the
                 pyxam.numerical function. By passing in a numerical solution the question will be set to the numerical
-                type in moodle.
+                type in moodle. What is $\sqrt{16}$?
                 \begin{solution}
                     <%= pyxam.numerical(4) %>
                 \end{solution}
             \titledquestion{8. Numerical Question With Absolute Tolerance}
                 The pyxam.numerical function also supports a tolerance argument which allows for answers from $\pm$
-                tolerance of the answer.
+                tolerance of the answer. What is $\sqrt{16}$ (a numerical tolerance of $\pm 0.1$ will be allowed)?
                 \begin{solution}
                     <%= pyxam.numerical(4, tolerance=0.1) %>
                 \end{solution}
             \titledquestion{9. Numerical Question With Percent Tolerance}
-                Tolerance for numerical questions can also pe specified in percent by setting the percent flag.
+                Tolerance for numerical questions can also pe specified in percent by setting the percent flag. What is 
+                $\sqrt{16}$ (a numerical tolerance of $\pm 1\%$ will be allowed)?
                 \begin{solution}
                     <%= pyxam.numerical(4, tolerance=1, percent=True) %>
                 \end{solution}
             \titledquestion{10. Using a Plot in a Question}
-                Plots can be added to any question by settign the fig flag in the noweb format.
+                Plots can be added to any question by setting the fig flag in the noweb format.
 <<echo=False, fig=True>>=
 import matplotlib.pyplot
 # To add a dataset we use the pyplot module in matplotlib and provide a dataset to the plot function
@@ -102,7 +107,25 @@ b = pyxam.wildcard(min=0, max=10)
                 \begin{solution}
                     <%= pyxam.numerical(a + b) %>
                 \end{solution}
-            \titledquestion{12. Picking Parameters From a List}
+            \titledquestion{12. Plotting Random Numbers}
+                Plots can use wildcards as their plotted data.
+<<echo=False, fig=True>>=
+import matplotlib.pyplot
+# To add a dataset we use the pyplot module in matplotlib and provide a dataset to the plot function
+a = pyxam.wildcard(set=[1, 2, 3, 4])
+b = pyxam.wildcard(set=[5, 6, 7, 8])
+c = pyxam.wildcard(set=[9, 0, 1, 2])
+d = pyxam.wildcard(set=[3, 4, 5, 6])
+matplotlib.pyplot.plot([a, b, c, d])
+# The axis of the plot can be labeled using the ylabel and xlabel functions
+matplotlib.pyplot.ylabel('Y axis')
+matplotlib.pyplot.xlabel('X axis')
+# A title can be added using the title function
+matplotlib.pyplot.title('A Simple Graph')
+# Use the show function to finalize the figure and display it in the question
+matplotlib.pyplot.show()
+@
+            \titledquestion{13. Picking Parameters From a List}
                 Wildcards can also be used to pick parameters from a list. Which parameter is picked will depend on the
                 exam number, ie. version 1 of the exam will pick the first parameter, version 2 will pick the second,
                 and so on. To create this type of wildcard simply specify the set argument.
@@ -115,7 +138,7 @@ b = pyxam.wildcard(set=[1, 2, 3, 4])
                 \begin{solution}
                     <%= pyxam.numerical(a + b) %>
                 \end{solution}
-            \titledquestion{13. Calculated Question}
+            \titledquestion{14. Calculated Question}
                 Calculated questions can be used to create questions that randomly change when accessed on Moodle. When
                 outputting to a format other than moodle these questions act just like numerical questions. You can
                 use the n argument to the wildcard to set how many moodle values will be generated and the decimals
@@ -133,7 +156,7 @@ b = pyxam.wildcard(set=[2.5, 4.0, 9.8])
                     <%= pyxam.calculated('{a} + {b}', tolerance=0.1) %>
                 \end{solution}
                 <%= pyxam.dataset(a, b) %>
-            \titledquestion{14. Calculated Question Picked From List}
+            \titledquestion{15. Calculated Question Picked From List}
                 Just like with numerical questions you can also use the pick from a list with calculated questions and
                 have the solution picked rather than calculated.
 <%
@@ -144,11 +167,13 @@ a = pyxam.wildcard(set=[1, 2, 3, 4])
                     <%= pyxam.calculated('{a}') %>
                 \end{solution}
                 <%= pyxam.dataset(a) %>
-            \titledquestion{15. Constants}
+            \titledquestion{16. Constants}
                 Constants can be referened by the following variables.
                 <%= pyxam.number %> will be replaced with the exam number.
                 <%= pyxam.version %> will be replaced with the exam version.
-                <%= pyxam.student_name %> will be replaced with the student name if available.
+                <%= pyxam.student_first_name %> will be replaced with the student's first name if available
+                <%= pyxam.student_last_name %> will be replaced with the student's last name if available
+                <%= pyxam.student_name %> will be replaced with the student's full name if available.
                 <%= pyxam.student_number %> will be replaced with the student number if available.
         \end{questions}
     \end{document}

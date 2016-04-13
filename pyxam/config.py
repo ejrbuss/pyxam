@@ -90,11 +90,29 @@ The following configuration options relate to reading in CSV files.
 
 Strings used to identify columns in a csv files that match a student name
 """
-name_column_identifiers = ['firstname', 'surname', 'lastname', 'studentname']
+first_name_column_identifiers = ['firstname']
+"""
+"""
+last_name_column_identifiers = ['lastname', 'surname']
+"""
+"""
+name_column_identifiers = ['studentname', 'name']
 """
 Strings used to identify columns in a csv files that match a student number
 """
 number_column_identifiers = ['studentid', 'id', 'identificationnumber']
+"""
+"""
+placeholder_first_name = '<student first name>'
+"""
+"""
+placeholder_last_name = '<student last name>'
+"""
+"""
+placeholder_name = '<student name>'
+"""
+"""
+placeholder_number = '<student number>'
 """
 ## Logging
 
