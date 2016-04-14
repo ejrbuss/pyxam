@@ -134,14 +134,14 @@ def copy_figure():
         distutils.dir_util.copy_tree(options.state.figure(), figure)
 
 
-def remove(file):
+def remove(file, force=False):
     """
     Remove a list of files or individual file. If removing a directory all contents of that directory will also be
     removed. When the debug flag is set no files will be removed.
 
     :param file: The file or files to remove
     """
-    if options.state.debug():
+    if not force and options.state.debug():
         return
     if type(file) == str:
         logging.info('Removing file or directory: ' + file)
