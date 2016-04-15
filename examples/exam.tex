@@ -1,7 +1,3 @@
-% pyxam!args -n 2 -a -f pdf -p students3.csv
-% pyxam!def first_name 'First'
-% pyxam!def last_name 'Last'
-% pyxam!def id_number '1234'
 \documentclass[12pt,legalpaper]{exam}
 
 % ### Commands ###
@@ -68,9 +64,9 @@ Time: 120 Minutes
 \vspace{2cm}
 {\large\sffamily
 \begin{tabular}{rp{6cm}}
-  Last Name & \begin{comment} pyxam!last_name \end{comment} \\
-  Given Names &\begin{comment} pyxam!first_name \end{comment} \\
-  I.D. Number & \begin{comment} pyxam!id_number \end{comment} \\
+  Last Name & <%= pyxam.student_last_name %> \\
+  Given Names & <%= pyxam.student_first_name %> \\
+  I.D. Number & <%= pyxam.student_number %> \\
   Student Signature & \hrulefill \\
 \end{tabular}
 }
@@ -115,6 +111,6 @@ Time: 120 Minutes
 
 % ### Questions ###
 \begin{questions}
-    % pyxam!import 6 questions/420q1.tex|questions/420q2.tex|questions/420q3.tex|questions/420q4.tex|questions/420q5.tex|questions/420q6.tex
+    <% pyxam.import_questions('questions/420q1.tex', 'questions/420q2.tex', 'questions/420q3.tex', 'questions/420q4.tex', 'questions/420q5.tex', 'questions/420q6.tex') %>
 \end{questions}
 \end{document}

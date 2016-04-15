@@ -19,9 +19,10 @@ class pyxam:
     wildcard = None
     table = None
 
-    def import_question(path):
+    def import_questions(*paths):
         import fileutil
-        print(fileutil.read(path))
+        for path in paths:
+            print(fileutil.read(path))
 
     def args(args):
         import options
