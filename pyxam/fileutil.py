@@ -122,6 +122,10 @@ def write(file, src):
         writer.write(src)
 
 
+def copy(src, dest):
+    shutil.copy(src, dest)
+
+
 def copy_figure():
     """
     Copy the figure directory to the out directory along with its children.
@@ -217,8 +221,8 @@ def find_file(path):
     if os.path.isfile(path):
         return os.path.abspath(path)
     if os.path.isfile(os.path.join(os.path.dirname(options.state.template()), path)):
-        return os.path.join(os.path.dirname(options.state.template()), path)
+        return os.path.abspath(os.path.join(os.path.dirname(options.state.template()), path))
     if os.path.isfile(os.path.join(os.path.dirname(options.state.out()), path)):
-        return os.path.join(os.path.dirname(options.state.out()), path)
+        return os.path.abspath(os.path.join(os.path.dirname(options.state.out()), path))
     logging.warning('Cannot find file: ' + path)
     return path

@@ -70,8 +70,12 @@ def composer_postprocessor(source):
     if options.state.solutions():
         source = re.sub(r'\\documentclass\[', r'\documentclass[answers,', source)
         source = re.sub(r'\\documentclass{', r'\documentclass[answers]{', source)
-    source = re.sub(r'\n([^%])\\includegraphics\[(.*?)\]\{(.*?)\}', lambda m : r'\\includegraphics[\1]{' + fileutil.find_file(m.group(2))+ '}', source)
-    source = source.replace('\\include', '\n\n\\include')
+    source = re.sub(
+        r'\\includegraphics\[(.*?)\]\{(.*?)\}',
+        lambda m : '\\includegraphics[' + m.group(1) + ']{' + fileutil.find_file(m.group(2)) + '}',
+        source
+    )
+    source = re.sub(r'\n([^%]*)\\include', r'\n\1\n\n\\include', source)
     return source
 
 
