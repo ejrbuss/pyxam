@@ -72,7 +72,10 @@ def pdf_compile():
     for file in fileutil.with_extension('.tex'):
         if compile_format == 'dvi':
             fileutil.write(file, '%&latex\n' + fileutil.read(file))
-        fileutil.remove(file.replace('.tex', '.pdf'))
+        try:
+            fileutil.remove(file.replace('.tex', '.pdf'))
+        except:
+            pass
         for i in range(options.state.recomps()):
             lib_loader.pdflatex(file)
     fileutil.remove(fileutil.with_extension(['.aux', '.log', '.tex']))

@@ -8,8 +8,9 @@ import re
 import util
 import options
 import filters
-import parser_composer
+import fileutil
 import collections
+import parser_composer
 
 
 signature = 'latex foramt', 'ejrbuss', 'LaTeX markup format for creating documents with scientific and mathematical notation'
@@ -69,6 +70,7 @@ def composer_postprocessor(source):
     if options.state.solutions():
         source = re.sub(r'\\documentclass\[', r'\documentclass[answers,', source)
         source = re.sub(r'\\documentclass{', r'\documentclass[answers]{', source)
+    source = re.sub(r'\n([^%])\\includegraphics\[(.*?)\]\{(.*?)\}', lambda m : r'\\includegraphics[\1]{' + fileutil.find_file(m.group(2))+ '}', source)
     source = source.replace('\\include', '\n\n\\include')
     return source
 

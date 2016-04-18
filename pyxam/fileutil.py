@@ -212,3 +212,13 @@ def wait_on_io(fn, timeout=5):
             raise TimeoutError('Timed out while waiting on io')
     logging.info('io finished')
 
+
+def find_file(path):
+    if os.path.isfile(path):
+        return os.path.abspath(path)
+    if os.path.isfile(os.path.join(os.path.dirname(options.state.template()), path)):
+        return os.path.join(os.path.dirname(options.state.template()), path)
+    if os.path.isfile(os.path.join(os.path.dirname(options.state.out()), path)):
+        return os.path.join(os.path.dirname(options.state.out()), path)
+    logging.warning('Cannot find file: ' + path)
+    return path
