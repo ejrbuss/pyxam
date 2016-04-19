@@ -5,6 +5,7 @@
 Module for interacting with external modules and libraries.
 """
 import os
+import sys
 import pweave
 import options
 import logging
@@ -16,23 +17,14 @@ class LibError(Exception):
     pass
 
 
-def weave():
-    """
-    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
-    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
-    version number.
-    """
-    for file in fileutil.with_extension('.mix'):
-        if options.state.noweave():
-            fileutil.move(file, file.replace('.mix', '.tex'))
-        else:
-            try:
-                pweave.weave(file, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
-            except:
-                raise LibError('Failed to Pweave file: ' + file)
-    if not options.state.api():
-        print('Template successfully weaved.')
-
+def weave(path):
+    stdout = sys.stdout
+    sys.stdout = open(os.devnull, 'w')
+    try:
+        pweave.weave(path, doctype='tex', figdir=options.state.figure(), shell=options.state.shell())
+    except:
+        raise LibError('Failed to Pweave file: ' + path)
+    sys.stdout = stdout
 
 def gs(file):
     """

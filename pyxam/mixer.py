@@ -11,6 +11,7 @@ import config
 import options
 import logging
 import fileutil
+import lib_loader
 
 
 # A map of all currently loaded methods
@@ -29,6 +30,7 @@ def setup():
     for n in range(options.state.number()):
         mix(n, {'first': '', 'last': '', 'name': '','number': ''})
     _methods[options.state.method()](options.state.number(), csv_read(options.state.population()))
+    print('Template successfully weaved.')
 
 
 def csv_read(file):
@@ -80,7 +82,7 @@ def csv_read(file):
         return []
 
 
-def mix(n, row):
+def mix(n, row, default=False):
     """
     Takes an exam version and row of data and prepares a file for the formatter. If weaving is enabled a .mix with the
     correct name is weaved with the inline code at the start of the file. If weaving is disabled a .tex file is prepared
@@ -96,17 +98,31 @@ def mix(n, row):
             fileutil.read(options.state.template())
         )
     else:
+        path = options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex'
         fileutil.write(
-            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.mix',
+            path,
             '<%\n' + inline
                 .replace('{number}', str(n))
                 .replace('{version}', str(version))
-                .replace('{student_first_name}', config.placeholder_first_name if options.state.solutions() else str(row['first']))
-                .replace('{student_last_name}', config.placeholder_last_name if options.state.solutions() else str(row['last']))
-                .replace('{student_name}', config.placeholder_name if options.state.solutions() else str(row['name']))
-                .replace('{student_number}', config.placeholder_number if options.state.solutions() else str(row['number'])) +
+                .replace('{student_first_name}', config.placeholder[options.state.format()]  if not default else str(row['first']))
+                .replace('{student_last_name}', config.placeholder[options.state.format()]  if not default else str(row['last']))
+                .replace('{student_name}', config.placeholder[options.state.format()] if not default else str(row['name']))
+                .replace('{student_number}', config.placeholder[options.state.format()]  if not default else str(row['number'])) +
             '\n%>' + fileutil.read(options.state.template())
         )
+        lib_loader.weave(path)
+        fileutil.write(
+            path,
+            '<%\n' + inline
+                .replace('{number}', str(n))
+                .replace('{version}', str(version))
+                .replace('{student_first_name}', config.placeholder[options.state.format()]  if not default else str(row['first']))
+                .replace('{student_last_name}', config.placeholder[options.state.format()]  if not default else str(row['last']))
+                .replace('{student_name}', config.placeholder[options.state.format()] if not default else str(row['name']))
+                .replace('{student_number}', config.placeholder[options.state.format()]  if not default else str(row['number'])) +
+            '\n%>' + fileutil.read(options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex')
+        )
+        lib_loader.weave(path)
 
 
 def add_method(name, method):

@@ -2,6 +2,7 @@
 import os
 import filters
 import logging
+import collections
 
 """
 # Module config
@@ -103,16 +104,9 @@ Strings used to identify columns in a csv files that match a student number
 number_column_identifiers = ['studentid', 'id', 'identificationnumber']
 """
 """
-placeholder_first_name = '<student first name>'
-"""
-"""
-placeholder_last_name = '<student last name>'
-"""
-"""
-placeholder_name = '<student name>'
-"""
-"""
-placeholder_number = '<student number>'
+placeholder = collections.defaultdict(lambda: '')
+placeholder['tex'] = '\hrulefill'
+placeholder['pdf'] = '\hrulefill'
 """
 ## Logging
 

@@ -22,6 +22,7 @@ class pyxam:
     def import_questions(*paths):
         import fileutil
         for path in paths:
+            path = fileutil.find_file(path)
             print(fileutil.read(path))
 
     def args(args):

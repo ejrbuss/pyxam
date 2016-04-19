@@ -99,7 +99,7 @@ def start(args, api=True):
      - `build_files` fixes paths and builds all necessary files
      - `run_commands` prepossesses commands in the template (see [bang](%/Modules/bang.html))
      - `post_status` posts the current state of all options
-     - `weave` runs any inline code within the template
+     - `mix` runs any inline code within the template
      - `parse` reads the template document into an intermediate format (see [formatter](%/Modules/parser_composer.py))
      - `compose` converts the intermediate format into the output format
      - `export` moves files from the tmp directory to the final out directory
@@ -125,7 +125,6 @@ def start(args, api=True):
         fileutil.build_files,
         mixer.setup,
         options.post_status,
-        lib_loader.weave,
         parser_composer.parse,
         parser_composer.compose,
         fileutil.export,
