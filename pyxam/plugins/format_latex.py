@@ -65,8 +65,7 @@ def composer_postprocessor(source):
     :return: The transformed source
     """
     if not '\\documentclass' in source:
-        source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\usepackage[T1]{fontenc} \
-        \\catcode`\\_=12\\begin{document}' + source + '\\end{document}'
+        source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
         source = re.sub(r'\\documentclass\[', r'\documentclass[answers,', source)
         source = re.sub(r'\\documentclass{', r'\documentclass[answers]{', source)

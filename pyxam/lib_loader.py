@@ -26,6 +26,7 @@ def weave(path):
         raise LibError('Failed to Pweave file: ' + path)
     sys.stdout = stdout
 
+
 def gs(file):
     """
     Calls ghostscript on a pdf image file to convert it to png.

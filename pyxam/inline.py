@@ -124,79 +124,82 @@ class Wildcard:
                 self.set.append(random.randint(min, max) + round(random.random(), decimals))
 
     def __add__(self, other):
-        return Wildcard(set=[a + b for a, b in zip(self.set, other.set)])
-
-    def __iadd__(self, other):
-        self.__init__(self.name, set=[a + b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a + b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a + other for a in self.set])
 
     def __sub__(self, other):
-        return Wildcard(set=[a - b for a, b in zip(self.set, other.set)])
-
-    def __isub__(self, other):
-        self.__init__(self.name, set=[a - b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a - b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a - other for a in self.set])
 
     def __mul__(self, other):
-        return Wildcard(set=[a * b for a, b in zip(self.set, other.set)])
-
-    def __imul__(self, other):
-        self.__init__(self.name, set=[a * b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a * b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a * other for a in self.set])
 
     def __truediv__(self, other):
-        return Wildcard(set=[a / b for a, b in zip(self.set, other.set)])
-
-    def __itruediv__(self, other):
-        self.__init__(self.name, set=[a / b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a / b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a / other for a in self.set])
 
     def __floordiv__(self, other):
-        return Wildcard(set=[a // b for a, b in zip(self.set, other.set)])
-
-    def __ifloordiv__(self, other):
-        self.__init__(self.name, set=[a // b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a // b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a // other for a in self.set])
 
     def __mod__(self, other):
-        return Wildcard(set=[a % b for a, b in zip(self.set, other.set)])
-
-    def __imod__(self, other):
-        self.__init__(self.name, set=[a % b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a % b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a % other for a in self.set])
 
     def __divmod__(self, other):
-        return Wildcard(set=[divmod(a, b) for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[divmod(a, b) for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[divmod(a, other) for a in self.set])
 
     def __pow__(self, other):
-        return Wildcard(set=[a ** b for a, b in zip(self.set, other.set)])
-
-    def __ipow__(self, other):
-        self.__init__(self.name, set=[a ** b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a ** b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a ** other for a in self.set])
 
     def __and__(self, other):
-        return Wildcard(set=[a and b for a, b in zip(self.set, other.set)])
-
-    def __iand__(self, other):
-        self.__init__(self.name, set=[a and b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a and b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a and other for a in self.set])
 
     def __xor__(self, other):
-        return Wildcard(set=[a ^ b for a, b in zip(self.set, other.set)])
-
-    def __ixor__(self, other):
-        self.__init__(self.name, set=[a ^ b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a ^ b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a ^ other for a in self.set])
 
     def __or__(self, other):
-        return Wildcard(set=[a or b for a, b in zip(self.set, other.set)])
-
-    def __ior__(self, other):
-        self.__init__(self.name, set=[a or b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a or b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a or other for a in self.set])
 
     def __lshift__(self, other):
-        return Wildcard(set=[a << b for a, b in zip(self.set, other.set)])
-
-    def __ilshift__(self, other):
-        self.__init__(self.name, set=[a << b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a << b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a << other for a in self.set])
 
     def __rshift__(self, other):
-        return Wildcard(set=[a >> b for a, b in zip(self.set, other.set)])
-
-    def __irshift__(self, other):
-        self.__init__(self.name, set=[a >> b for a, b in zip(self.set, other.set)])
+        if isinstance(other, Wildcard):
+            return Wildcard(set=[a >> b for a, b in zip(self.set, other.set)])
+        else:
+            return Wildcard(set=[a >> other for a in self.set])
 
     def __abs__(self):
         return Wildcard(set=[abs(a) for a in self.set])

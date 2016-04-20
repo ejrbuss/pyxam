@@ -125,6 +125,7 @@ def load():
             ('emphasis2', ['<br /><b>', (), '</b>', '.']),
             ('emphasis1', ['<i>', (), '</i>', '.']),
             ('verbython', ['<pre class="verb-python">', (), '</pre>', '.']),
+            ('verbhtml', ['<div></div>', (), '<div></div>', '.']),
             ('verbblock', ['<pre class="verb-block">', (), '</pre>', '.']),
             ('verbexpr', ['<pre class="verb-expr">', (), '</pre>', '.']),
             ('newline', ['<br />', '.'])
