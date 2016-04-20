@@ -101,7 +101,7 @@ b = pyxam.wildcard(min=0, max=10)
 %>
                 Now that we've set up the question we can ask what is <%= a %> + <%= b %>?
                 \begin{solution}
-                    <%= pyxam.numerical(a + b) %>
+                    <% pyxam.numerical(a + b) %>
                 \end{solution}
             \titledquestion{12. Plotting Random Numbers}
                 Plots can use wildcards as their plotted data.
@@ -132,7 +132,7 @@ b = pyxam.wildcard(set=[1, 2, 3, 4])
 %>
                 What is <%= a %> + <%= b %>?
                 \begin{solution}
-                    <%= pyxam.numerical(a + b) %>
+                    <% pyxam.numerical(a + b) %>
                 \end{solution}
             \titledquestion{14. Calculated Question}
                 Calculated questions can be used to create questions that randomly change when accessed on Moodle. When
@@ -149,9 +149,9 @@ b = pyxam.wildcard(set=[2.5, 4.0, 9.8])
                 The tolerance and percent arguments fron numerical can also be used here. Finally call the pyxam.dataset
                 function outside the solution block and pass in your wildcards.
                 \begin{solution}
-                    <%= pyxam.calculated('{a} + {b}', tolerance=0.1) %>
+                    <% pyxam.calculated('{a} + {b}', tolerance=0.1) %>
                 \end{solution}
-                <%= pyxam.dataset(a, b) %>
+                <% pyxam.dataset(a, b) %>
             \titledquestion{15. Calculated Question Picked From List}
                 Just like with numerical questions you can also use the pick from a list with calculated questions and
                 have the solution picked rather than calculated.
@@ -160,9 +160,9 @@ a = pyxam.wildcard(set=[1, 2, 3, 4])
 %>
                 For example what is <%= {a} %>?
                 \begin{solution}
-                    <%= pyxam.calculated('{a}') %>
+                    <% pyxam.calculated('{a}') %>
                 \end{solution}
-                <%= pyxam.dataset(a) %>
+                <% pyxam.dataset(a) %>
             \titledquestion{16. Constants}
                 Constants can be referened by the following variables.
                 <%= pyxam.number %> will be replaced with the exam number.

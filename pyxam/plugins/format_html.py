@@ -23,6 +23,7 @@ math = {
     '\\tau':        '&tau;',
     '\\omega':      '&omega;',
     '\\phi':        '&phi;',
+    '\\epsilon':    '&ni;',
     '\\emptyset':   '&phi;',
     '\\int_':       '&int;',
     '\\sum_':       '&sum;',

@@ -35,22 +35,22 @@ class pyxam:
         random.shuffle(choices)
         for choice in choices:
             print(choice)
-        return ''
 
     def numerical(solution, tolerance=0, percent=False):
         import options
         if percent:
             tolerance = solution * (tolerance / 100.0)
         if options.state.format() == 'moodle':
-            return ':pyxam.numerical<text>{}</text><tolerance>{}</tolerance><tolerancetype>1</tolerancetype>'.format(solution, tolerance)
-        if tolerance == 0:
-            return config.numerical_format_no_tolerance.format(solution=str(solution))
-        return config.numerical_format.format(
-            solution=str(solution),
-            tolerance=tolerance,
-            lower=float(solution) - tolerance,
-            upper=float(solution) + tolerance
-        )
+            print(':pyxam.numerical<text>{}</text><tolerance>{}</tolerance><tolerancetype>1</tolerancetype>'.format(solution, tolerance))
+        elif tolerance == 0:
+            print(config.numerical_format_no_tolerance.format(solution=str(solution)))
+        else:
+            print(config.numerical_format.format(
+                solution=str(solution),
+                tolerance=tolerance,
+                lower=float(solution) - tolerance,
+                upper=float(solution) + tolerance
+            ))
 
     def calculated(equation, tolerance=0, percent=False):
         import re
@@ -59,16 +59,17 @@ class pyxam:
         if percent:
             tolerance = solution * (tolerance / 100.0)
         if options.state.format() == 'moodle':
-            return ':pyxam.calculated<text>{}</text><tolerance>{}</tolerance><tolerancetype>1</tolerancetype> \
-            <correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength>'.format(equation, tolerance)
+            print(':pyxam.calculated<text>{}</text><tolerance>{}</tolerance><tolerancetype>1</tolerancetype> \
+            <correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength>'.format(equation, tolerance))
         if tolerance == 0:
-            return config.calculated_format_no_tolerance.format(solution=solution)
-        return config.calculated_format.format(
+            print(config.calculated_format_no_tolerance.format(solution=solution))
+            exit()
+        print(config.calculated_format.format(
             solution=str(solution),
             tolerance=tolerance,
             lower=float(solution) - tolerance,
             upper=float(solution) + tolerance
-        )
+        ))
 
     def dataset(*wildcards):
         import options
@@ -85,8 +86,8 @@ class pyxam:
                 for number, value in enumerate(wildcard.set):
                     print('<dataset_item><number>{}</number><value>{}</value></dataset_item>'.format(number + 1, value))
                 print('</dataset_items><number_of_items>{}</number_of_items></dataset_definition>'.format(len(wildcard.set)))
-            return '</dataset_definitions>'
-        return ''
+            print('</dataset_definitions>')
+
 
     def categorize(course, category):
         import options

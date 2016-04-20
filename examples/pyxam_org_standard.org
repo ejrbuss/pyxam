@@ -43,17 +43,17 @@ $\sqrt{2}=7$?
 Numerical questions look like short answer questions except that in the solution block they call the pyxam.numerical
 function. By passing in a numerical solution the question will be set to the numerical type in moodle. What is $\sqrt{16}$?
 *** solution
-<%= pyxam.numerical(4) %>
+<% pyxam.numerical(4) %>
 ** ?:: 8. Numerical Question With Absolute Tolerance
 The pyxam.numerical function also supports a tolerance argument which allows for answers from plus or minus tolerance of
 the answer. What is $\sqrt{16}$ (a numerical tolerance of $\pm 0.1$ will be allowed)?
 *** solution
-<%= pyxam.numerical(4, tolerance=0.1) %>
+<% pyxam.numerical(4, tolerance=0.1) %>
 ** ?:: 9. Numerical Question With Percent Tolerance
 Tolerance for numerical questions can also pe specified in percent by setting the percent flag. What is $\sqrt{16}$ 
 (a numerical tolerance of $\pm 1\%$ will be allowed)?
 *** solution
-<%= pyxam.numerical(4, tolerance=1, percent=True) %>
+<% pyxam.numerical(4, tolerance=1, percent=True) %>
 ** ?:: 10. Using a Plot in a Question
 Plots can be added to any question by settign the fig flag in the noweb format.
 <<echo=False, fig=True>>=
@@ -80,7 +80,7 @@ b = pyxam.wildcard(min=0, max=10)
 %>
 Now that we've set up the question we can ask what is <%= a %> + <%= b %>?
 *** solution
-<%= pyxam.numerical(a + b) %>
+<% pyxam.numerical(a + b) %>
 ** ?:: 12. Plotting Random Numbers
 Plots can use wildcards as their plotted data.
 <<echo=False, fig=True>>=
@@ -110,7 +110,7 @@ b = pyxam.wildcard(set=[1, 2, 3, 4])
 %>
 What is <%= a %> + <%= b %>?
 *** solution
-<%= pyxam.numerical(a + b) %>
+<% pyxam.numerical(a + b) %>
 ** ?:: 14. Calculated Question
 Calculated questions can be used to create questions that randomly change when accessed on Moodle. When outputting to a
 format other than moodle these questions act just like numerical questions. You can use the n argument to the wildcard
@@ -125,9 +125,9 @@ To reference variables within your prompt you have to put the wildcards in curly
 function must be the moodle equation used to calculate solutions. The tolerance and percent arguments fron numerical can
 also be used here. Finally call the pyxam.dataset function outside in the dataset block and pass in your wildcards.
 *** solution
-<%= pyxam.calculated('{a} + {b}', tolerance=0.1) %>
+<% pyxam.calculated('{a} + {b}', tolerance=0.1) %>
 *** dataset
-<%= pyxam.dataset(a, b) %>
+<% pyxam.dataset(a, b) %>
 ** ?:: 15. Calculated Question Picked From List
 Just like with numerical questions you can also use the pick from a list with calculated questions and
 have the solution picked rather than calculated.
@@ -136,9 +136,9 @@ a = pyxam.wildcard(set=[1, 2, 3, 4])
 %>
 For example what is <%= {a} %>?
 *** solution
-<%= pyxam.calculated('{a}') %>
+<% pyxam.calculated('{a}') %>
 *** dataset
-<%= pyxam.dataset(a) %>
+<% pyxam.dataset(a) %>
 ** ?:: 16. Constants
 Constants can be referened by the following variables.
 <%= pyxam.number %> will be replaced with the exam number.
