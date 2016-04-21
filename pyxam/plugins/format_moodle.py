@@ -24,8 +24,9 @@ def composer_preprocessor(intermediate):
     :return: A modified intermediate
     """
     def fix_solutions(token):
-        if not token.definition[0].startswith('<text>'):
-            token.definition = ['<text>'] + token.definition + ['</text>']
+        try:
+            if not filters.has_name(token) and token.definition[0].startswith('<text>'):
+                token.definition = ['<text>'] + token.definition + ['</text>']
         return token
 
     intermediate.ast = filters.promote(intermediate.ast, 'questions')

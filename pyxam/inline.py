@@ -63,7 +63,7 @@ class pyxam:
             <correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength>'.format(equation, tolerance))
         if tolerance == 0:
             print(config.calculated_format_no_tolerance.format(solution=solution))
-            exit()
+            return
         print(config.calculated_format.format(
             solution=str(solution),
             tolerance=tolerance,

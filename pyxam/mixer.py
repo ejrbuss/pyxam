@@ -28,7 +28,7 @@ def setup():
     appropriate names. If any files are in the figure directory they are copied out as well.
     """
     for n in range(options.state.number()):
-        mix(n, {'first': '', 'last': '', 'name': '','number': ''})
+        mix(n, {'first': '', 'last': '', 'name': '','number': ''}, default=True)
     _methods[options.state.method()](options.state.number(), csv_read(options.state.population()))
     print('Template successfully weaved.')
 
@@ -104,10 +104,10 @@ def mix(n, row, default=False):
             '<%\n' + inline
                 .replace('{number}', str(n))
                 .replace('{version}', str(version))
-                .replace('{student_first_name}', config.placeholder[options.state.format()]  if not default else str(row['first']))
-                .replace('{student_last_name}', config.placeholder[options.state.format()]  if not default else str(row['last']))
-                .replace('{student_name}', config.placeholder[options.state.format()] if not default else str(row['name']))
-                .replace('{student_number}', config.placeholder[options.state.format()]  if not default else str(row['number'])) +
+                .replace('{student_first_name}', config.placeholder[options.state.format()]  if default else str(row['first']))
+                .replace('{student_last_name}', config.placeholder[options.state.format()]  if default else str(row['last']))
+                .replace('{student_name}', config.placeholder[options.state.format()] if default else str(row['name']))
+                .replace('{student_number}', config.placeholder[options.state.format()]  if default else str(row['number'])) +
             '\n%>' + fileutil.read(options.state.template())
         )
         lib_loader.weave(path)
@@ -116,10 +116,10 @@ def mix(n, row, default=False):
             '<%\n' + inline
                 .replace('{number}', str(n))
                 .replace('{version}', str(version))
-                .replace('{student_first_name}', config.placeholder[options.state.format()]  if not default else str(row['first']))
-                .replace('{student_last_name}', config.placeholder[options.state.format()]  if not default else str(row['last']))
-                .replace('{student_name}', config.placeholder[options.state.format()] if not default else str(row['name']))
-                .replace('{student_number}', config.placeholder[options.state.format()]  if not default else str(row['number'])) +
+                .replace('{student_first_name}', config.placeholder[options.state.format()]  if default else str(row['first']))
+                .replace('{student_last_name}', config.placeholder[options.state.format()]  if default else str(row['last']))
+                .replace('{student_name}', config.placeholder[options.state.format()] if default else str(row['name']))
+                .replace('{student_number}', config.placeholder[options.state.format()]  if default else str(row['number'])) +
             '\n%>' + fileutil.read(options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex')
         )
         lib_loader.weave(path)

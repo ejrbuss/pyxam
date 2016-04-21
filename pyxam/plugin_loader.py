@@ -38,18 +38,15 @@ def load_plugins():
         try:
             exec('import plugins.{}; load(plugins.{}.load())'.format(plugin, plugin))
             logging.info('Loaded ' + plugin)
-        except:
-            raise
-        #except AttributeError:
-        #    raise PluginError('Failed to load ' + plugin + ': plugin has no load function')
-        #except TypeError:
-        #    raise PluginError('Failed to load ' + plugin + ': plugin returned an invalid plugin signature or was None')
+        except AttributeError:
+            raise PluginError('Failed to load ' + plugin + ': plugin has no load function')
+        except TypeError:
+            raise PluginError('Failed to load ' + plugin + ': plugin returned an invalid plugin signature or was None')
     # Display plugin list and exit
     options.post('Successfully loaded', len(_plugins), ' plugins.')
     if options.state.plugins():
-        for plugin_set in _plugins.values():
-            for author, plugin in plugin_set.items():
-                print('\t' + plugin['name'] + ' by ' + author + '\n\t\t' + plugin['description'])
+        for plugin in _plugins.values():
+            print('\t' + plugin['name'] + ' by ' + plugin['author'] + '\n\t\t' + plugin['description'])
         exit()
 
 
@@ -73,4 +70,4 @@ def load(signature):
     :param signature: The return value of the plugin's load function
     """
     name, author, description = signature
-    _plugins[name] = {author: description}
+    _plugins[name + author] = {'name': name, 'author': author, 'description': description}
