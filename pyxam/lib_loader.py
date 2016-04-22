@@ -33,13 +33,15 @@ def gs(file):
     :param file: The path to the pdf image file
     :return: The new new path to the png file
     """
-    try:
-        with open(os.devnull, 'r') as stdin:
-            subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + file[:-3] + 'png', file], stdin=stdin)
-    except:
-        raise LibError('Ghostscript call failed on file: ' + file)
-    logging.info('Used ghostscript to convert ' + file + ' to png')
-    return file[:-3] + 'png'
+    if file.startswith('.pdf'):
+        try:
+            with open(os.devnull, 'r') as stdin:
+                subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + file[:-3] + 'png', file], stdin=stdin)
+        except:
+            raise LibError('Ghostscript call failed on file: ' + file)
+        logging.info('Used ghostscript to convert ' + file + ' to png')
+        return file[:-3] + 'png'
+    return file
 
 
 def pdflatex(file):

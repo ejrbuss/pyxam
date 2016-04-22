@@ -71,10 +71,10 @@ def csv_read(file):
                         name.append(i)
             # Build and return data
             return [{
-                'number': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in number),
-                'first': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in first),
-                'last': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in last),
-                'name': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in name)
+                'number': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in number).strip(),
+                'first': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in first).strip(),
+                'last': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in last).strip(),
+                'name': ' '.join(rows[i + 1][j] for j in range(len(rows[i + 1])) if j in name).strip()
             } for i in range(len(rows) - 1)]
     except:
         if file is not None:
@@ -94,11 +94,11 @@ def mix(n, row, default=False):
     version = str(chr(n + ord('A')) if options.state.alphabetize() else n + 1)
     if options.state.noweave():
         fileutil.write(
-            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex',
+            options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'].replace(' ', '_').strip(), number=row['number']).strip('_') + '.tex',
             fileutil.read(options.state.template())
         )
     else:
-        path = options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex'
+        path = options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'].replace(' ', '_').strip(), number=row['number']).strip('_') + '.tex'
         fileutil.write(
             path,
             '<%\n' + inline
@@ -120,7 +120,7 @@ def mix(n, row, default=False):
                 .replace('{student_last_name}', config.placeholder[options.state.format()]  if default else str(row['last']))
                 .replace('{student_name}', config.placeholder[options.state.format()] if default else str(row['name']))
                 .replace('{student_number}', config.placeholder[options.state.format()]  if default else str(row['number'])) +
-            '\n%>' + fileutil.read(options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'], number=row['number']).strip('_') + '.tex')
+            '\n%>' + fileutil.read(options.state.cwd() + '/' + config.filename.format(version=version, name=row['name'].replace(' ', '_'), number=row['number']).strip('_') + '.tex')
         )
         lib_loader.weave(path)
 

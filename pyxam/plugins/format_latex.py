@@ -28,6 +28,8 @@ def parser_preprocessor(src):
     :return: The modified source
     """
     src = src.replace('\\question', '\\titledquestion{question}')
+    if options.state.format() not in ['tex', 'pdf', 'dvi']:
+        src = re.sub(r'\\includegraphics.*?{', '\\includegraphics[width= \linewidth]{', src)
     return src
 
 
@@ -103,6 +105,12 @@ def load():
             ('choice', ['\\choice ', (), r'(\\choice)|(\\CorrectChoice)']),
             ('correctchoice', ['\\CorrectChoice ', (), r'(\\choice)|(\\CorrectChoice)']),
             ('verbatim', ['\\begin{verbatim}', (), '\\end{verbatim}', '.']),
+            ('verbython', ['\\begin{verbatim}', (), '\\end{verbatim}', '.']),
+            ('verbhtml', ['\\begin{verbatim}\\end{verbatim}', '.']),
+            ('verbblock', ['\\begin{verbatim}', (), '\\end{verbatim}', '.']),
+            ('h3', ['\textbf{', (), '} \\', '.']),
+            ('h2', ['\subsection{', (), '}', '.']),
+            ('h1', ['\section{', (), '}', '.']),
             ('question', ['\\titled', (), end]),
             ('multichoice', [['title'], (), ['choices'], (), '$']),
             ('shortanswer', [['title'], (), ['solution'], (), '$']),
