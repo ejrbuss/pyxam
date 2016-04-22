@@ -91,6 +91,7 @@ def mix(n, row, default=False):
     :param n: The exam version
     :param row: The row of data
     """
+    logging.info(str(row))
     version = str(chr(n + ord('A')) if options.state.alphabetize() else n + 1)
     if options.state.noweave():
         fileutil.write(
