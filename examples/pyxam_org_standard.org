@@ -159,4 +159,4 @@ Constants can be referened by the following variables.
 <%= pyxam.student_number %> will be replaced with the student number if available.
 ** ?:: 17 Images
 Images can be included in org mode using the following syntax:
-[img](test.png)
+\includegraphics[width= \linewidth]{test.png}

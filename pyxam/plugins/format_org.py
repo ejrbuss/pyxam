@@ -100,7 +100,7 @@ def load():
             ('question', ['** ?', (), '\n\*\*[^*]']),
             ('solution', ['*** solution', (), '\n\*']),
             ('dataset', ['*** dataset', (), '\n\*']),
-            ('img', ['[img](', (), ')', '.']),
+            ('img', ['\includegraphics[width= \\linewidth]{', (), '}', '.']),
             ('choices', ['*** choices', (), '\n\*']),
             ('choice', ['- [ ]', (), '(- \[)|(\n\*)']),
             ('correctchoice', ['- [X]', (), '(- \[)|(\n\*)']),

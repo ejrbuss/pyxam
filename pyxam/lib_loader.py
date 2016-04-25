@@ -33,7 +33,7 @@ def gs(file):
     :param file: The path to the pdf image file
     :return: The new new path to the png file
     """
-    if file.startswith('.pdf'):
+    if file.endswith('.pdf'):
         try:
             with open(os.devnull, 'r') as stdin:
                 subprocess.check_output(['gs', '-sDEVICE=pngalpha', '-sOutputFile=' + file[:-3] + 'png', file], stdin=stdin)
