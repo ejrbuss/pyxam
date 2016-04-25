@@ -66,7 +66,6 @@ def composer_postprocessor(source):
     :param source: The source to transform
     :return: The transformed source
     """
-    print('HERE')
     if not '\\documentclass' in source:
         source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
@@ -77,8 +76,7 @@ def composer_postprocessor(source):
         lambda m : '\\includegraphics[' + m.group(1) + ']{' + fileutil.find_file(m.group(2)) + '}',
         source
     )
-    source = re.sub(r'([^\\])%.*]', r'\1', source)
-    source = re.sub(r'\\include', r'\n\n\\include', source)
+    source = re.sub(r'(\n(((\\%)|[^%\n])*))\\include', r'\1\n\n\\include', source)
     return source
 
 
