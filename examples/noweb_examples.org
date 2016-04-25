@@ -1,0 +1,43 @@
+# Compile this document to pdf using the command:
+#   $ pyxam -f pdf noweb_examples.org
+# Compile this document to html using the command:
+#   $ pyxam -f html noweb_examples.org
+# Set the title of the output document to noweb_example
+<%
+pyxam.args('-t noweb_example')
+%>
+* noweb
+Noweb is a literate programming tool for interweaving code and documentation. Usages come in two major flavors, chunks
+and inline blocks. Chunks allow for flags to be set and greater control over what happens to the embedded code. Inline
+blocks allow for code to be quickly and easily used directly within documentation.
+** chunks
+Chunks are started with a set of double arrows folowed by an equal sign. Chunk options are set between the arrows. A
+chunk is closed by the @ sign. Below is an example of a standard chunk. By default chunks like these will be echoed as
+verbatim code in the final document.
+<<>>=
+print('Hello World')
+@
+In order to stop the code from being echoed to the document the echo option can be disabled. In this case only text
+directly printed by the block will appear in the final document.
+<<echo=False>>=
+print('Hello World')
+@
+Displaying figures can be done by setting the figure flag.
+<<echo=False, fig=True>>=
+import matplotlib.pyplot
+matplotlib.pyplot.plot([1, 2, 3, 4])
+matplotlib.pyplot.show()
+@
+For additional options supported by Pyxam check out the documentation for Pweave at
+http://mpastell.com/pweave/chunks.html
+** inline
+Inline code provides less options but follows a simpler syntax. It can be used in two ways. You can evaluate code
+silently like in the example below. While printed text from the code will still appear in the final document, it will no
+longer appear in a verbatim block.
+<%
+x = 'per' + 'cent'
+%>
+Alternatively you can have the result of the code echoed directly into the document by adding the <%= x %> sign.
+
+
+

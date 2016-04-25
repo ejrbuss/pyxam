@@ -51,7 +51,7 @@ def parser_postprocessor(intermediate):
             definition.insert(0, title)
             return token
         except AttributeError:
-            raise(parser_composer.FormatError('Malformed question token definition:' + str(token)))
+            raise(parser_composer.FormatError('Malformed question token definition:' + parser_composer.str_token(token)))
 
     # Run inner function recursively on the ast
     filters.apply_function(intermediate.ast, def_prompt, 'question', partial=False)
@@ -66,6 +66,7 @@ def composer_postprocessor(source):
     :param source: The source to transform
     :return: The transformed source
     """
+    print('HERE')
     if not '\\documentclass' in source:
         source = '\\documentclass[12pt]{exam}\\usepackage[pdftex]{graphicx}\\begin{document}' + source + '\\end{document}'
     if options.state.solutions():
@@ -76,7 +77,8 @@ def composer_postprocessor(source):
         lambda m : '\\includegraphics[' + m.group(1) + ']{' + fileutil.find_file(m.group(2)) + '}',
         source
     )
-    source = re.sub(r'\n([^%]*)\\include', r'\n\1\n\n\\include', source)
+    source = re.sub(r'([^\\])%.*]', r'\1', source)
+    source = re.sub(r'\\include', r'\n\n\\include', source)
     return source
 
 

@@ -219,7 +219,7 @@ def wait_on_io(fn, timeout=5):
 
 def find_file(path):
     if os.path.isfile(path):
-        return os.path.abspath(path)
+        return os.path.abspath(path).replace(options.state.tmp(), options.state.out())
     if os.path.isfile(os.path.join(os.path.dirname(options.state.template()), path)):
         return os.path.abspath(os.path.join(os.path.dirname(options.state.template()), path))
     if os.path.isfile(os.path.join(os.path.dirname(options.state.out()), path)):

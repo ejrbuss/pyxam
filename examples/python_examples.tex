@@ -1,0 +1,269 @@
+% Compile this document to a pdf using the command:
+%   $ pyxam -s -f pdf python_examples.tex
+% Compile this document to html using the command:
+%   $ pyxam -s -f html python_examples.tex
+% Set the title of the output document to python_examples
+<%
+pyxam.args('-t python_examples')
+%>
+\documentclass[12pt]{exam}
+\usepackage[pdftex]{graphicx}
+\begin{document}
+\section{A Brief Overview of Python}
+Python is a very high level dynamic programming language. Python emphasizes ease of development over performance and low
+level features. These features can still be accessed however thanks to easy interfacing with c code and c based
+libraries.
+\subsection{Hello World}
+Python's hello world program is this simple:
+<<echo=True>>=
+print('Hello World')
+@
+
+\subsection{Formatting Strings}
+A simple task that may be convenient for producing strings is formatting. Here are a couple simple examples.
+<<echo=True>>=
+print('Today is {}'.format('Tuesday'))
+print('The time is {hours}:{minutes}'.format(hours=4, minutes=55))
+@
+
+As you can see arguments for formatting can be supplied in order or with keyword arguments. Additional formatting
+options can be found [online](https://docs.python.org/3.4/library/string.html).
+\subsection{Control Flow}
+Control flow in python is handled with formatting. A tab (typically 3 or 4 spaces and not the tab character) denotes a
+new code block similar to how curly braces denote a code block in c. The example below demonstrates a simple if
+statement.
+<<echo=True>>=
+tired = True
+late = False
+if tired and late:
+    print('sleep')
+else:
+    print('work')
+@
+
+\subsection{Lists and Looping}
+There are many iterable types in Python, but the simplest to understand is the list. A list is an ordered set of
+objects. The objects can be of any type and the list can have items added or removed. Lists can be looped through
+directly using a for loop or indirectly like you would in c. Python has other great features for working with iterable
+objects such as the ability to use negative indexes to access the end of a list.
+<<echo=True>>=
+languages = ['python', 'lisp', 'ruby', 'c', 'c++']
+print(languages)
+languages.append('fortran')
+print(languages)
+languages.remove('c++')
+print(languages)
+# Directly looping through a list
+for language in languages:
+    print(language)
+# Indirectly looping through a list backwards
+for i in range(len(languages)):
+    print(languages[-(i + 1)])
+@
+
+\subsection{Dictionaries}
+Dictionaries are one of the most versatile types in python. They are similar to maps in other programming languages.
+They allow you to associate a key with a value. Keys can be any immutable values (meaning numbers, strings, and tuples)
+and values can be anything. A list comprehension is used below. A list comprehension uses the following syntax:
+\begin{verbatim}
+[f(a_i) for a_i in some_iterable]
+produces the list
+[f(a_0), f(a_1), ..., f(a_n)]
+where a is a member of some_iterable
+\end{verbatim}
+<<echo=True>>=
+dictionary = {
+    'hello': 'bonjour',
+    'my': 'je',
+    'name': 'nom',
+    'is': 'est',
+    'eric': 'eric'
+}
+english = 'Hello my name is Eric'
+print(english)
+translated = ' '.join(dictionary[word.lower()] for word in english.split(' '))
+print(translated.capitalize())
+@
+
+\subsection{Functions}
+You can define functions in python that have their own scope. Python functions are first class objects meaning they can
+be passed around just like any other object. Python also allows for lambda expressions.
+<<echo=True>>=
+global_flag = True
+def test_flag():
+    global global_flag
+    return global_flag
+print(test_flag())
+test_flag = lambda : False
+print(test_flag())
+@
+
+\subsection{Regular Expressions}
+To use regular expressions import the re module. To save yourself from writing many backslashes start patterns with the
+letter r.
+<<echo=True>>=
+import re
+
+unformatted = '7807478238'
+print(unformatted)
+formatted = re.sub(r'(\d{3})(\d{3})(\d{4})', r'(\1) \2-\3', unformatted)
+print(formatted)
+@
+
+\subsection{Math With Python}
+Python supports most of the expected operations (bitwise and boolean operations not shown).
+<<echo=True>>=
+a = -4
+b = 3.14
+print('a =', a, 'b =', b)
+c = a + b
+print('a + b =', c)
+c = a - b
+print('a - b =', c)
+c = a * b
+print('a * b =', c)
+c = a ** b
+print('a to the power of b =', c)
+c = a / b
+print('a divided by b =', c)
+c = a // b
+print('a integer divided by b =', c)
+c = a % b
+print('a modulo b =', c)
+c = abs(a)
+print('|a| =', c)
+c = int(b)
+print('floor(b) =', c)
+c = float(a)
+print('float(a) =', c)
+c = complex(a, b)
+print('a + bi =', c)
+c = c.conjugate()
+print('c* =', c)
+@
+
+\subsection{Math With Wildcards}
+Wildcards are a utility class made to help with generating exams. They support most of the same operations that ints or
+floats do. There are a few major exceptions. You cannot test Wildcards, for instance:
+\begin{verbatim}
+if x > 3:
+\end{verbatim}
+Works fine for ints or floats, but will fail for Wildcards as their value is not decided yet. The second limitation on
+Wildcards is their ability to interact with ints or floats. They can be operate on ints or flaots, but cannot be
+operated on themselves. For instance:
+\begin{verbatim}
+x + 3
+\end{verbatim}
+Is acceptable even if x is a wildcard. The result of the expression will be a new Wildcard. This though:
+\begin{verbatim}
+3 + x
+\end{verbatim}
+Will throw an Exception. The final limitations comes to complex numbers. Operations that would produce complex numbers
+(square root of a negative) will still produce complex Wildcards however the complex and conjugate functions are not
+supported for Wildcards generally.
+<<echo=True>>=
+import random
+
+a = Wildcard(set=random.sample(range(1, 100), 10))
+b = Wildcard(set=random.sample(range(1, 100), 10))
+print('a =', a, 'b =', b)
+c = a + b
+print('a + b =', c)
+c = a - b
+print('a - b =', c)
+c = a * b
+print('a * b =', c)
+c = a ** b
+print('a to the power of b =', c)
+c = a / b
+print('a divided by b =', c)
+c = a // b
+print('a integer divided by b =', c)
+c = a % b
+print('a modulo b =', c)
+c = abs(a)
+print('|a| =', c)
+c = int(b)
+print('floor(b) =', c)
+c = float(a)
+print('float(a) =', c)
+@
+
+\subsection{Figures}
+Figures must be specified using the noweb chunk. There are wide variety of different plots
+[here](http://matplotlib.org/1.4.1/examples/index.html).
+<<echo=True>>=
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+X, Y, Z = axes3d.get_test_data(0.05)
+cset = ax.contour(X, Y, Z, extend3d=True, cmap=cm.coolwarm)
+ax.clabel(cset, fontsize=9, inline=1)
+@
+\subsection{Numpy}
+[What is Numpy?](http://numpy.readthedocs.org/en/latest/user/whatisnumpy.html)
+
+NumPy is the fundamental package for scientific computing in Python. It is a Python library that provides a
+multidimensional array object, various derived objects (such as masked arrays and matrices), and an assortment of
+routines for fast operations on arrays, including mathematical, logical, shape manipulation, sorting, selecting, I/O,
+discrete Fourier transforms, basic linear algebra, basic statistical operations, random simulation and much more.
+
+Here are a couple of simple numpy examples. For further comments on these and more detailed examples head over
+[here](https://docs.scipy.org/doc/numpy-dev/user/quickstart.html).
+<<echo=True>>=
+import numpy
+
+# Declaring an integer array
+a = numpy.array([2, 3, 4])
+print(a)
+print(a.dtype)
+# Declaring a float array
+b = numpy.array([1.2, 3.5, 5.1])
+print(b)
+print(b.dtype)
+# Declaring a complex array
+c = numpy.array([[1,2], [3,4]], dtype=complex)
+print(c)
+print(c.dtype)
+# Creating a multi-dimensional array of zeros
+d = numpy.zeros((3, 4))
+print(d)
+# Creating a multi-dimensional array of ones
+e = numpy.ones((2,3,4))
+print(e)
+# Filling a range, arguments are min, max, step
+f = numpy.arange(10, 30, 5)
+print(f)
+# Ranges can have float steps
+g = numpy.arange(0, 2, 0.3)
+print(g)
+# Arrays can be reshaped
+h = numpy.arange(10000).reshape(100, 100)
+print(h)
+# A set of basic operations
+i = numpy.array([20, 30, 40, 50])
+j = numpy.arange(4)
+print(i - j)
+print(j ** 2)
+print(10 * numpy.sin(i))
+print(a < 35)
+@
+
+
+\subsection{CSV}
+You can easily read in data from csv files and use them like any normal python lists. The with statement used below is a
+context, it defines a start and end function, here it opens a filestream when the block begins and closes it when the
+block finishes or fails.
+<<echo=True>>=
+import csv
+
+with open('population.csv') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+    for row in reader:
+        print('\t'.join(row))
+@
+
+\end{document}

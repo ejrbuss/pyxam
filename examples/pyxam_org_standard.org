@@ -1,3 +1,13 @@
+# Compile this document to a pdf and produce solutions using the command:
+#   $ pyxam -s -f pdf pyxam_tex_standard.org
+# Compile this document to moodle using the command:
+#   $ pyxam -f moodle pyxam_tex_standard.org
+# Compile this document to html and produce solutions using the command:
+#   $ pyxam -s -f html pyxam_tex_standard.org
+# Set the title of the output document to pyxam_standard
+<%
+pyxam.args('-t pyxam_standard')
+%>
 * ?::
 <% pyxam.categorize(course='testing', category='standard') %>
 ** ?:: 1. Essay Question
@@ -147,3 +157,6 @@ Constants can be referened by the following variables.
 <%= pyxam.student_last_name %> will be replaced with the student's last name if available
 <%= pyxam.student_name %> will be replaced with the student's full name if available.
 <%= pyxam.student_number %> will be replaced with the student number if available.
+** ?:: 17 Images
+Images can be included in org mode using the following syntax:
+[img](test.png)

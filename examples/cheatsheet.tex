@@ -1,8 +1,16 @@
+% Compile this document to pdf using the command:
+%   $ pyxam -f pdf cheatsheet.tex
+% Set the title of the output document to cheatsheet
+<%
+pyxam.args('-t cheatsheet')
+%>
 \documentclass[9pt]{extarticle}
+
 \usepackage[letterpaper, landscape, margin=.5in]{geometry}
 \usepackage{multicol}
 \usepackage{hyperref}
 \pagestyle{empty}
+
 \begin{document}
 \centering\section*{Pyxam Cheat Sheet v0.3.5}
 \begin{multicols}{2}

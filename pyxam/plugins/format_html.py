@@ -66,7 +66,7 @@ def composer_postprocessor(src):
     # String replacements
     for symbol in math:
         src = src.replace(symbol, math[symbol])
-    src = re.sub(r'\[img]\((.*?)\)', r'<img src="\1">', src)
+    src = re.sub(r'\[img\]\((.*?)\)', r'<img src="\1">', src)
     src = re.sub(r'\[([^\[\]\n]+)\]\(([^()\n]+)\)', r'<a href="\2">\1</a>', src)
     src = re.sub(r'\n{3}', '<br /><br />', src)
     src = re.sub(r'\n{2}', '<br />', src)
@@ -128,6 +128,7 @@ def load():
             ('verbython', ['<pre class="verb-python">', (), '</pre>', '.']),
             ('verbhtml', ['<div></div>', (), '<div></div>', '.']),
             ('verbblock', ['<pre class="verb-block">', (), '</pre>', '.']),
+            ('verbquote', ['<div class="verb-quote">', (), '</div>', '.']),
             ('verbexpr', ['<pre class="verb-expr">', (), '</pre>', '.']),
             ('newline', ['<br />', '.'])
         ])

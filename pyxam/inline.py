@@ -88,7 +88,6 @@ class pyxam:
                 print('</dataset_items><number_of_items>{}</number_of_items></dataset_definition>'.format(len(wildcard.set)))
             print('</dataset_definitions>')
 
-
     def categorize(course, category):
         import options
         if options.state.format() == 'moodle':

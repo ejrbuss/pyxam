@@ -30,7 +30,7 @@ def setup():
     for n in range(options.state.number()):
         mix(n, {'first': '', 'last': '', 'name': '','number': ''}, default=True)
     _methods[options.state.method()](options.state.number(), csv_read(options.state.population()))
-    print('Template successfully weaved.')
+    options.post('Template successfully weaved.')
 
 
 def csv_read(file):

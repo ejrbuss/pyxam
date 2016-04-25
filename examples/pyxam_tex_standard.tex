@@ -1,8 +1,16 @@
-% To generate a pdf from this file with solutions: 
-%    $ pyxam -s -f pdf pyxam_tex_standard.tex
+% Compile this document to a pdf and produce solutions using the command:
+%   $ pyxam -s -f pdf pyxam_tex_standard.tex
+% Compile this document to moodle using the command:
+%   $ pyxam -f moodle pyxam_tex_standard.tex
+% Compile this document to html and produce solutions using the command:
+%   $ pyxam -s -f html pyxam_tex_standard.tex
+% Set the title of the output document to pyxam_standard
+<%
+pyxam.args('-t pyxam_standard')
+%>
 \documentclass[12pt]{exam}
 
-    % The graphicx package is needed for figures
+    % The graphicx package is needed for figures and images
     \usepackage[pdftex]{graphicx}
 
     \begin{document}
@@ -171,5 +179,8 @@ a = pyxam.wildcard(set=[1, 2, 3, 4])
                 <%= pyxam.student_last_name %> will be replaced with the student's last name if available
                 <%= pyxam.student_name %> will be replaced with the student's full name if available.
                 <%= pyxam.student_number %> will be replaced with the student number if available.
+            \titledquestion{17. Images}
+                Images can be included as they would in a normal LaTex document.
+                \includegraphics[width= \linewidth]{test.png}
         \end{questions}
     \end{document}

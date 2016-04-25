@@ -1,0 +1,49 @@
+% Adopted from octave_sample.mdw from http://mpastell.com/pweave/examples/
+% Compile this file to pdf using the command:
+%   $ pyxam -f pdf -shl matlab matlab_example.tex
+% Compile this file to moodle using the command:
+%   $ pyxam -f moodle -shl matlab matlab_example.tex
+% Compile this file to html using the command:
+%   $ pyxam -f html -shl matlab matlab_example.tex
+% Set the title of the output document to matlab_example
+<%
+pyxam.args('-t matlab_example')
+%>
+\documentclass[12pt]{exam}
+
+    % The graphicx package is needed for figures and images
+    \usepackage[pdftex]{graphicx}
+
+    \begin{document}
+        \section{Using Octave with Pweave}
+            You can also use Pyxam with GNU Octave or Matlab. You can use inline code chunks like in Python documents: \\
+            Give y value 300 <%y=300;%> in hidden chunk. \\
+            And let's verify that it worked: \\
+<<>>=
+y
+@
+            You can also display the result from inline chunk 2+5=<%=2+5%>
+        \section{Solving Least Squares}
+            Trying out plotting features:
+<<fig=True>>=
+x = (0:25) + randn(1, 26);
+y = linspace(0, 5, length(x));
+a = x' \ y'
+plot(x , y, 'o')
+hold on
+plot(x, a*x, 'r')
+hold off
+figure()
+hist(a*x - y)
+title('Histogram of residuals')
+@
+            And include a plot but hide the code:
+<<fig=True, echo=False, caption="Sinc function">>=
+x = linspace(0, 4*pi, 200);
+plot(x, sinc(x), 'linewidth', 1)
+hold on
+plot(x, sinc(0.7*x), 'g', 'linewidth', 1)
+hold off
+xlabel('x')
+ylabel('sinc(x)')
+@
