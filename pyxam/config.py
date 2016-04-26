@@ -103,8 +103,12 @@ Strings used to identify columns in a csv files that match a student number
 """
 number_column_identifiers = ['studentid', 'id', 'identificationnumber']
 """
+The placeholder for replacing meta data in default versions and solution files
 """
 placeholder = collections.defaultdict(lambda: '')
+"""
+Format specific placeholders
+"""
 placeholder['tex'] = '\hrulefill'
 placeholder['pdf'] = '\hrulefill'
 """

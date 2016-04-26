@@ -12,11 +12,11 @@ pyxam.args('-t noweb_example')
 \usepackage[pdftex]{graphicx}
 
 \begin{document}
-    \section{noweb}
+    \section*{noweb}
         Noweb is a literate programming tool for interweaving code and documentation. Usages come in two major flavors,
         chunks and inline blocks. Chunks allow for flags to be set and greater control over what happens to the embedded
         code. Inline blocks allow for code to be quickly and easily used directly within documentation.
-        \subsection{chunks}
+        \subsection*{chunks}
             Chunks are started with a set of double arrows folowed by an equal sign. Chunk options are set between the
             arrows. A chunk is closed by the @ sign. Below is an example of a standard chunk. By default chunks like
             these will be echoed as verbatim code in the final document.
@@ -36,7 +36,7 @@ matplotlib.pyplot.show()
 @
             For additional options supported by Pyxam check out the documentation for Pweave at
             http://mpastell.com/pweave/chunks.html
-        \subsection{inline}
+        \subsection*{inline}
             Inline code provides less options but follows a simpler syntax. It can be used in two ways. You can
             evaluate code silently like in the example below. While printed text from the code will still appear in the
             final document, it will no longer appear in a verbatim block.

@@ -9,6 +9,13 @@
             margin: 0 auto;
             width: 100%;
         }
+        pre {
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        }
         .content {
             padding: 4em;
             width: 50%;
@@ -52,7 +59,7 @@
         }
         .verbatim {
             margin: 1em;
-            background: #F7F7F7;
+            background: #F0F1F2;
             font-family: monospace;
             font-size: 1.1em;
             padding: 1em;

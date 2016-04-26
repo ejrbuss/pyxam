@@ -8,12 +8,13 @@ the command line and compile LaTeX files. Example usage:
 $ ./pyxam.py -f pdf my_file.tex
 ```
 """
+import os
 import config
 import options
 import fileutil
-import parser_composer
 import lib_loader
 import process_list
+import parser_composer
 
 
 signature = 'PDF support', 'ejrbuss', 'PDF export support'

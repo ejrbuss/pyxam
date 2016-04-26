@@ -15,7 +15,7 @@ pyxam.args('-t matlab_example')
     \usepackage[pdftex]{graphicx}
 
     \begin{document}
-        \section{Using Octave with Pweave}
+        \section*{Using Octave with Pweave}
             You can also use Pyxam with GNU Octave or Matlab. You can use inline code chunks like in Python documents: \\
             Give y value 300 <%y=300;%> in hidden chunk. \\
             And let's verify that it worked: \\
@@ -23,7 +23,7 @@ pyxam.args('-t matlab_example')
 y
 @
             You can also display the result from inline chunk 2+5=<%=2+5%>
-        \section{Solving Least Squares}
+        \section*{Solving Least Squares}
             Trying out plotting features:
 <<fig=True>>=
 x = (0:25) + randn(1, 26);
