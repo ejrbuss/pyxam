@@ -53,6 +53,12 @@ class Map(dict):
 
 
 def same_caller(cache={}):
+    """
+    Util function for checking if the caller of the function who called this function is the same as its last caller.
+
+    :param cache: The cache of previous callers
+    :return: True if this caller is the same as the last
+    """
     caller, caller_caller = inspect.stack()[1][3], inspect.stack()[2][3]
     same = caller in cache and cache[caller] == caller_caller
     cache[caller] = caller_caller

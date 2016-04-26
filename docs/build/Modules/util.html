@@ -1590,6 +1590,15 @@ Provides utility classes and functinos to other Modules.
 
     
 ***
+**same_caller**(*cache={}*)
+
+    
+    Util function for checking if the caller of the function who called this function is the same as its last caller.
+
+    <br />`cache`  The cache of previous callers
+    **<br />returns&nbsp;**  True if this caller is the same as the last
+    
+***
 View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//util.py)">
 <li class="searchable" id="#util_py"><a href="https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/util.html">util</a></li>
 </ul></li><li class="accordion-toggle"><b><a href="#">Plugins</a></b><ul class="nav accordion-content">
@@ -2046,7 +2055,8 @@ m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
 # Access using attribute notation
 assert(m.firstname == 'Eduardo')
 # Access using index notation
-assert(m['lastname'] == 'Pool')</pre><hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//util.py">source</a>
+assert(m['lastname'] == 'Pool')</pre><hr /><br /><b>same_caller</b>(<i>cache={}</i>)<br />    
+    Util function for checking if the caller of the function who called this function is the same as its last caller.<br />    <br /><pre class="verb-expr">cache</pre>The cache of previous callers<br /><b><br />returns&nbsp;</b>True if this caller is the same as the last<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//util.py">source</a>
         <hr />
         <div class='credits'>
             Built with <a href='https://github.com/balancededge/pyxam'>Pyxam</a>
