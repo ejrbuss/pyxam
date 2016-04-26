@@ -1,5 +1,5 @@
 # Pyxam
-Pyxam is a recreation of the R exam package functionality in python. After development details? head over to the [docs](https://rawgit.com/balancededge/pyxam/master/docs/build/1_Getting_Started.html).
+Pyxam is a recreation of the R exam package functionality in python. After development details? head over to the [docs](https://rawgit.com/balancededge/pyxam/master/docs/build/0_Overview.html).
 
 ## Overview.
 Pyxam is Framework for streamlining the exam generation process. Pyxam provides tools that allow you to:
