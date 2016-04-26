@@ -43,7 +43,7 @@ def load_plugins():
         except TypeError:
             raise PluginError('Failed to load ' + plugin + ': plugin returned an invalid plugin signature or was None')
     # Display plugin list and exit
-    options.post('Successfully loaded', len(_plugins), ' plugins.')
+    options.post('Successfully loaded', len(_plugins), 'plugins.')
     if options.state.plugins():
         for plugin in _plugins.values():
             print('\t' + plugin['name'] + ' by ' + plugin['author'] + '\n\t\t' + plugin['description'])
