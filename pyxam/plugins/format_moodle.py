@@ -59,7 +59,7 @@ def load():
             ('title', ['<name> <text>', (), '</text> </name>', '.']),
             ('prompt', ['<questiontext format="html"> <text> <![CDATA[', (), ']]> </text> </questiontext>', '.']),
             ('solution', ['<answer fraction="100">', (), '<feedback> <text> Correct </text> </feedback> </answer>', '.']),
-            ('img', ['<img alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
+            ('img', ['<img style="width: 100%" alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
             ('choice', ['<answer fraction="0"> <text>', (), '</text> <feedback> <text>Incorrect</text> </feedback> </answer>', '.']),
             ('correctchoice', ['<answer fraction="100"> <text>', (), '</text> <feedback> <text>Correct</text> </feedback> </answer>', '.']),
             ('verbatim', ['<pre class="verbatim">', (), '</pre>', '.']),

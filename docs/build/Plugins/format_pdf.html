@@ -7,6 +7,13 @@
         color: #333333;
         outline: none !important;
     }
+    pre {
+        white-space: pre-wrap;       /* css-3 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    }
     body {
         margin: 0;
         background: #EFEFEF;
@@ -570,7 +577,21 @@ Strings used to identify columns in a csv files that match a student name
 
 ***
 
+
+***
+
+
+***
+
 Strings used to identify columns in a csv files that match a student number
+
+***
+
+The placeholder for replacing meta data in default versions and solution files
+
+***
+
+Format specific placeholders
 
 ***
 
@@ -715,7 +736,7 @@ This Module provides helper functions for working with files.
     Copy the figure directory to the out directory along with its children.
     
 ***
-**remove**(*file*)
+**remove**(*file, force=False*)
 
     
     Remove a list of files or individual file. If removing a directory all contents of that directory will also be
@@ -1081,14 +1102,6 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
 Module for interacting with external modules and libraries.
 
 ***
-**weave**()
-
-    
-    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
-    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
-    version number.
-    
-***
 **gs**(*file*)
 
     
@@ -1134,7 +1147,7 @@ Mixes and weaves the template file.
     **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
     
 ***
-**mix**(*n, row*)
+**mix**(*n, row, default=False*)
 
     
     Takes an exam version and row of data and prepares a file for the formatter. If weaving is enabled a .mix with the
@@ -1539,7 +1552,7 @@ these dependencies will result in an exit statement and a recommendation todo `p
      - `build_files` fixes paths and builds all necessary files
      - `run_commands` prepossesses commands in the template (see [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html))
      - `post_status` posts the current state of all options
-     - `weave` runs any inline code within the template
+     - `mix` runs any inline code within the template
      - `parse` reads the template document into an intermediate format (see [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/parser_composer.py))
      - `compose` converts the intermediate format into the output format
      - `export` moves files from the tmp directory to the final out directory

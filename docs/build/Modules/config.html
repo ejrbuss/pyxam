@@ -7,6 +7,13 @@
         color: #333333;
         outline: none !important;
     }
+    pre {
+        white-space: pre-wrap;       /* css-3 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    }
     body {
         margin: 0;
         background: #EFEFEF;
@@ -570,7 +577,21 @@ Strings used to identify columns in a csv files that match a student name
 
 ***
 
+
+***
+
+
+***
+
 Strings used to identify columns in a csv files that match a student number
+
+***
+
+The placeholder for replacing meta data in default versions and solution files
+
+***
+
+Format specific placeholders
 
 ***
 
@@ -715,7 +736,7 @@ This Module provides helper functions for working with files.
     Copy the figure directory to the out directory along with its children.
     
 ***
-**remove**(*file*)
+**remove**(*file, force=False*)
 
     
     Remove a list of files or individual file. If removing a directory all contents of that directory will also be
@@ -1081,14 +1102,6 @@ View the [source](https://rawgit.com/balancededge/pyxam/master/docs/build/../../
 Module for interacting with external modules and libraries.
 
 ***
-**weave**()
-
-    
-    Call pweave on the current template file. The doctype is set to tex and the figure and shell arguments are set to
-    their respective. Weaved files are written to files in the tmp directory named `template_n` where n is the
-    version number.
-    
-***
 **gs**(*file*)
 
     
@@ -1134,7 +1147,7 @@ Mixes and weaves the template file.
     **<br />returns&nbsp;**  a list of dictionaries containing `number` and `name` entries
     
 ***
-**mix**(*n, row*)
+**mix**(*n, row, default=False*)
 
     
     Takes an exam version and row of data and prepares a file for the formatter. If weaving is enabled a .mix with the
@@ -1539,7 +1552,7 @@ these dependencies will result in an exit statement and a recommendation todo `p
      - `build_files` fixes paths and builds all necessary files
      - `run_commands` prepossesses commands in the template (see [bang](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/bang.html))
      - `post_status` posts the current state of all options
-     - `weave` runs any inline code within the template
+     - `mix` runs any inline code within the template
      - `parse` reads the template document into an intermediate format (see [formatter](https://rawgit.com/balancededge/pyxam/master/docs/build/Modules/parser_composer.py))
      - `compose` converts the intermediate format into the output format
      - `export` moves files from the tmp directory to the final out directory
@@ -2040,7 +2053,7 @@ docs/build directory one level up from the source directory.<hr />The git_docs s
 https://rawgit.com/username_of_repo_owner/repo/branch/docs/build<hr /><h2>Formatter</h2>The following configuration options relate to parsing and formatting.<br />The default_filters should be a list of functions to apply to a parsed ast prior to parser post processing. By default:<ul><li>Comments are removed<li>Unknowns are popped (unknowns are replaced with their first recognized child)<li>Consecutive strings are homogenized (combined)<li>Question types are transformed (ex. multichoice to multiselect)<li>The builtins pyxamnumerical and pyxamcalcualted are removed</ul><hr /><h2>Formatting</h2>The following configuration options relate to formatting of various auto-generated strings.<br />The filename is the postfix format for exported files. This will appear after the title of the exam followed by an
 underscore. The exam version, student name, and student number can all be specified.<hr />The numerical_format defines the default format of numerical answers. The solution, tolerance (as an absolute value) and
 upper and lower bounds can all be specified.<hr />The numerical_format_no_tolerance defines the format of numerical answers when the tolerance is zero.<hr />The calculated_format defines the default format of calculated answers. The solution, tolerance (as an absolute value)
-and upper and lower bounds can all be specified.<hr />The calculated_format_no_tolerance defines the format of calclated answers when the tolerance is zero.<hr /><h2>CSV</h2>The following configuration options relate to reading in CSV files.<br /><br />Strings used to identify columns in a csv files that match a student name<hr />Strings used to identify columns in a csv files that match a student number<hr /><h2>Logging</h2>The following configuration options relate to logging.<br />The default_logging defines the default logging level.<hr />The logging_format defines the default format for logging messages.<hr /><h2>Options</h2>The following configuration options relate to command line options<br />The default out directory.<hr />The default tmp directory.<hr />The default figure directory.<hr />The default number of exam versions.<hr />The default exam title.<hr />The default output format.<hr />The default shell to run python through.<hr />The default CSV mixing method.<hr />Set whether exams are numerated or alphabetized.<hr />Set whether pweave is disabled by default.<hr />Set whether debug mode is disabled by default.<hr />Set whether solutiosn are enabled by default.<hr />Set the default number of LaTeX recompilations.<hr />Set the default random seed.<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py">source</a>
+and upper and lower bounds can all be specified.<hr />The calculated_format_no_tolerance defines the format of calclated answers when the tolerance is zero.<hr /><h2>CSV</h2>The following configuration options relate to reading in CSV files.<br /><br />Strings used to identify columns in a csv files that match a student name<hr /><hr /><hr />Strings used to identify columns in a csv files that match a student number<hr />The placeholder for replacing meta data in default versions and solution files<hr />Format specific placeholders<hr /><h2>Logging</h2>The following configuration options relate to logging.<br />The default_logging defines the default logging level.<hr />The logging_format defines the default format for logging messages.<hr /><h2>Options</h2>The following configuration options relate to command line options<br />The default out directory.<hr />The default tmp directory.<hr />The default figure directory.<hr />The default number of exam versions.<hr />The default exam title.<hr />The default output format.<hr />The default shell to run python through.<hr />The default CSV mixing method.<hr />Set whether exams are numerated or alphabetized.<hr />Set whether pweave is disabled by default.<hr />Set whether debug mode is disabled by default.<hr />Set whether solutiosn are enabled by default.<hr />Set the default number of LaTeX recompilations.<hr />Set the default random seed.<hr />View the <a href="https://rawgit.com/balancededge/pyxam/master/docs/build/../../pyxam//config.py">source</a>
         <hr />
         <div class='credits'>
             Built with <a href='https://github.com/balancededge/pyxam'>Pyxam</a>

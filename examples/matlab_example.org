@@ -1,10 +1,10 @@
-% Adopted from octave_sample.mdw from http://mpastell.com/pweave/examples/
-% Compile this file to pdf using the command:
-%   $ pyxam -f pdf -shl matlab matlab_example.org
-% Compile this file to moodle using the command:
-%   $ pyxam -f moodle -shl matlab matlab_example.org
-% Compile this file to html using the command:
-%   $ pyxam -f html -shl matlab matlab_example.org
+# Adopted from octave_sample.mdw from http://mpastell.com/pweave/examples/
+# Compile this file to pdf using the command:
+#   $ pyxam -f pdf -shl matlab matlab_example.org
+# Compile this file to moodle using the command:
+#   $ pyxam -f moodle -shl matlab matlab_example.org
+# Compile this file to html using the command:
+#   $ pyxam -f html -shl matlab matlab_example.org
 * Using Octave with Pweave
 You can also use Pyxam with GNU Octave or Matlab. You can use inline code chunks like in Python documents:
 
