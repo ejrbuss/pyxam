@@ -53,11 +53,6 @@ class Map(dict):
 
 
 def same_caller(cache={}):
-    """
-
-    :param cache:
-    :return:
-    """
     caller, caller_caller = inspect.stack()[1][3], inspect.stack()[2][3]
     same = caller in cache and cache[caller] == caller_caller
     cache[caller] = caller_caller
