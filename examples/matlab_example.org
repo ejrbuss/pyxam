@@ -5,10 +5,6 @@
 %   $ pyxam -f moodle -shl matlab matlab_example.org
 % Compile this file to html using the command:
 %   $ pyxam -f html -shl matlab matlab_example.org
-% Set the title of the output document to matlab_example
-<%
-pyxam.args('-t matlab_example')
-%>
 * Using Octave with Pweave
 You can also use Pyxam with GNU Octave or Matlab. You can use inline code chunks like in Python documents:
 
