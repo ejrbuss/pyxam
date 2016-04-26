@@ -27,7 +27,7 @@ Many of these steps will change depending on your options. For instance when con
 ## Dependencies
 Pyxam has a number of software requirements*:
  - You will need a LaTeX compiler which can be run from the command line with:
- ```bash
+ ```
  $ pdflatex [options] file
  ```
  - The [exam package](https://www.ctan.org/pkg/exam?lang=en) for LaTeX
@@ -44,35 +44,35 @@ Additionally if you try to run Pyxam without any of the following Python modules
 
 ## Installation
 To install Pyxam download the files from Github either by cloning the repository:
-```bash
+```
 $ git clone https://github.com/balancededge/pyxam
 ```
 Or by using the Github web interface and clicking the Download ZIP button in the upper right. After the project is 
 cloned or the zip is unzipped navigate to the top level directory containing `setup.py`. In the command line run:
-```bash
+```
 $ ./setup.py install
 ```
 You may need to run the script with python and/or under superuser (sudo). Installing Pyxam will make the program 
 available at the commandline via the bash script `pyxam` as well as any other python script by using `import pyxam`
 ## Updating
 In order to update pyxam simply pull the project again from Github:
-```bash
+```
 $ git pull
 ```
 And run the setup file again.
 ## Running Pyxam
 Pyxam is command line tool. Its basic usage looks like:
-```bash
+```
 $ pyxam [options] template
 ```
 Note that there is not strict ordering on the options or template. Options can appear before or after the file or even both. Options can be flags, such as the `solutions` flag which simply toggles the creation of a solutions file for formats that support it. Or options can speciify variables such as the ` out` option which sets the output directory. Variables such as paths can be given as absolute paths or paths relative to the current working directory.
 ### Typical Output
 In this section we will look at the output of a typical pyxam usage. In this example we are converting the LaTeX standard file to PDF as well as requesting two different versions of the file.
-```bash
+```
 $ pyxam --number 2 --format pdf pyxam_tex_standard.tex 
 ```
 When run from the command line Pyxam will display this title message along with its version number.
-```bash
+```
     ____                           
    / __ \__  ___  ______ _____ ___ 
   / /_/ / / / / |/_/ __ `/ __ `__ \ 
@@ -83,15 +83,15 @@ When run from the command line Pyxam will display this title message along with 
         Latex Exam Generation. v0.3.5 
 ```
 As explained in the overview section the first thing Pyxam does is load its plugin files so as you might expect the first informative piece of text relates to plugins. Here we get confirmation that 11 plugin files were loaded.
-```bash
+```
 Successfully loaded 11 plugins.
 ```
 Next we recieve a message telling us that the template file was succesfully run through [Pweave](http://mpastell.com/pweave/).
-```bash
+```
 Template successfully weaved.
 ```
 After weaving all the options are loaded from the command line and the template file and so it is safe to show the user the status table. The status table displays all the current value of options for the pyxam process. 
-```bash
+```
 ==========================================STATUS TABLE=========================================
  Name         Value
 ===============================================================================================
@@ -123,7 +123,7 @@ After weaving all the options are loaded from the command line and the template 
 ===============================================================================================
 ```
 After the status the format used to parse and reconstruct the file are provided.
-```bash
+```
 Using tex format to parse /home/ebuss/pyxam/examples/tmp/v1.tex
 Using tex format to parse /home/ebuss/pyxam/examples/tmp/v2.tex
 Successfully parsed tex.
@@ -131,19 +131,19 @@ Successfully parsed tex.
 Successfully composed tex.
 ```
 Because we specified PDF as the output format an additional set of messages tell us how many files will be compiled and when compiling is finished. Because we specified two versions two files need to be compiled.
-```bash
+```
 Compiling 2 files.
 Finished compiling.
 ```
 If everthing was succesful you will see a goodbye message.
-```bash
+```
 Thanks for using Pyxam, have a nice day!
 ```
 ### Debugging
 Running a file through Pyxam requires a lot of things to be *correct*. This is difficult particularly with so many pieces of software working together. In the case of the last example any Python in the template file needed to be able to pass through [Pweave](http://mpastell.com/pweave/) without a hitch, the LaTeX had to be parseable by Pyxam, and compilable by your LaTeX compiler. When debugging the first step you should take is to look at what step in the process the failure occured. If for instance you do not even see the title displayed chances are you are using a faulty plugin. If you see the title but no status table chances are there is an error in the code of your template file. If the file is parsed but not composed chances are you are trying to use language features not supported by Pyxam.
 
 If these steps fail to help you find a solution the next step is to enable the debug flag and start logging:
-```bash
+```
 $ pyxam --number 2 --format pdf pyxam_tex_standard.tex --debug --logging 10 
 ```
 The debug flag will prevent Pyxam from cleaning up temporary files and logging will display extra messages to help you understand exactly what Pyxam is up to. If the issue was in the PDF compiling stage you will now be able to see the .tex file that was being compiled along with its respective .log and .aux. If the issue occured earlier you can open up the temporary directory and checkout the parsed-ast and composed-ast files which provide a human readable view of the tree your template file was parsed into.
