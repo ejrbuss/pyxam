@@ -12,6 +12,8 @@ import filters
 
 signature = 'moodle format', 'ejrbuss', 'Format for producing and viewing moodle xml files'
 
+mathjax = '<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax:{inlineMath:[["$","$"],["\\(","\\)"]]}});</script>'
+
 
 def composer_preprocessor(intermediate):
     """
@@ -41,7 +43,10 @@ def composer_postprocessor(source):
     :param source: The source to transform
     :return: The transformed source
     """
-    return xml.dom.minidom.parseString(source).toprettyxml()
+    try:
+        return xml.dom.minidom.parseString(source).toprettyxml()
+    except:
+        return source
 
 
 def load():
@@ -54,10 +59,10 @@ def load():
         description=signature[2],
         format=collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
-            ('$', ['$$', (), '$$', '.']),
+            ('$', [' $', (), '$ ', '.']),
             ('questions', ['<?xml version="1.0" ?> <quiz>', (), '</quiz>', '.']),
-            ('title', ['<name> <text>', (), '</text> </name>', '.']),
-            ('prompt', ['<questiontext format="html"> <text> <![CDATA[', (), ']]> </text> </questiontext>', '.']),
+            ('title', ['<name> <text>', (), '</text></name>', '.']),
+            ('prompt', ['<questiontext format="html"> <text> <![CDATA[', mathjax, (), ']]> </text> </questiontext>', '.']),
             ('solution', ['<answer fraction="100">', (), '<feedback> <text> Correct </text> </feedback> </answer>', '.']),
             ('img', ['<img style="width: 100%" alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
             ('choice', ['<answer fraction="0"> <text>', (), '</text> <feedback> <text>Incorrect</text> </feedback> </answer>', '.']),

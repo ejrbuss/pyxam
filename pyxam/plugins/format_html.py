@@ -16,22 +16,6 @@ import collections
 signature = 'html format', 'ejrbuss', 'Format for exporting html files'
 
 
-# Map of LaTeX math symbols to their HTML code counterparts
-math = {
-    '\\theta':      '&theta;',
-    '\\pi':         '&pi;',
-    '\\tau':        '&tau;',
-    '\\omega':      '&omega;',
-    '\\phi':        '&phi;',
-    '\\epsilon':    '&ni;',
-    '\\emptyset':   '&phi;',
-    '\\int_':       '&int;',
-    '\\sum_':       '&sum;',
-    '\\pm':         '&#177;',
-    '+/-':          '&#177;'
-}
-
-
 def composer_preprocessor(intermediate):
     """
     Performs the following modifications to the intermediate:
@@ -61,11 +45,7 @@ def composer_postprocessor(src):
     :param src: The source to process
     :return: The processed source
     """
-    # Regex replacements
-    src = re.sub(r'\\sqrt\{(.*?)\}', r'&radic;\1', src)
     # String replacements
-    for symbol in math:
-        src = src.replace(symbol, math[symbol])
     src = re.sub(r'\[img\]\((.*?)\)', r'<img src="\1">', src)
     src = re.sub(r'\[([^\[\]\n]+)\]\(([^()\n]+)\)', r'<a href="\2">\1</a>', src)
     src = re.sub(r'\n{3}', '<br /><br />', src)
@@ -105,7 +85,7 @@ def load():
         format=collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
             ('questions', ['<div class="questions">', (), '</div>', '.']),
-            ('$', ['<span class="latex"> ', (), ' </span>', '.']),
+            ('$', [' $', (), '$ ', '.']),
             ('title', ['<div class="title">', (), '</div>', '.']),
             ('solution', ['<div class="solution">', (), '</div>', '.']),
             ('img', ['<img alt="Embedded Image" src="data:image/png;base64,', (), '">', '.']),
