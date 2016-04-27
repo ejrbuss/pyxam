@@ -1,0 +1,97 @@
+# Compile this document to a pdf using the command:
+#   $ pyxam -s -f pdf moodle_101.org
+# Compile this document to html using the command:
+#   $ pyxam -s -f html moodle_101.org
+# Set the title of the output document to moodle_101
+<%
+pyxam.args('-t moodle_101')
+%>
+* Moodle 101
+Moodle has a much smaller set of options than other formats as you are not only displaying questions, but also
+formulating a model for solving them. Basic questions in Moodle behave almost exactly like those of other formats. This
+document will explain the more complex situations in Moodle.
+** Code Blocks in Moodle
+For most use cases there are five main ways to wrap code,
+ - Code chunk for a figure
+ - An echoed Code Chunk
+ - A silent Code Chunk
+ - An echoed inline block
+ - A silent inline block
+
+Immediately there is confusion produced from the fact that echo here means two different things. For the code chunk
+echo means that your code will be copied verbatim into the final document inside of the format specific verbatim
+section. For the inline block echo means that the result of the provided expression will be echoed (like what occurs
+at the Python command line). As an example:
+<<echo=True>>=
+3 + 4
+@
+and <%= 3 + 4 %> produce very different results. You may have also noted that the echoed result of the inline block does not appear in
+a verbatim section. This is very imporant to the Moodle format. Another detail of the inline echoed block is that it may
+only contain a single expression unlike its silent equivalent.
+<br /><br />
+The next difference between chunks and blocks to be considered is how the print statement is treated by both. Here are
+two examples of the two silent ways of writing code:
+<<echo=False>>=
+print('Hello World')
+@
+and <% print('Hello World') %>.
+Both printed the resulting text however the chunk still printed that text into a verbatim section.
+** Numerical Questions
+To create a numerical question create a typical shortanswer question, but in the solutions block instead of writing
+out the answer call the following api function:
+```
+pyxam.numerical(solution=[solution], tolerance=[tolerance], percent=[percent])
+```
+This function will use print to produce the needed XML for moodle. In order for this to work this XML cannot be
+within a verbatim section, as such the function must be called within a silent inline block.
+<br /><br />
+The values that are accepted by the solution are either integers, floats, or Wildcards. Regardless of which you use this
+question will always have the same answer when opened in Moodle.
+** Calculated Questions
+In order to have different questions for different students in Moodle you need to use Wildcards and the Calculated
+question type. What is going on here is that Moodle creates a small database for variables. For instance {x} may have
+the values 1, 2, 3, and 4. Whenever you open that question in Moodle it makes a random selection of one value for each
+variable. It should be noted that the same item index is used for every variable picked. Meaning if the first value for
+{x} is used than the first value of {y} is used. This will allow us to do questions of the pick from a list sort.
+<br /><br />
+Pyxam provides the wildcard class to help create these datasets. They can be created directly from a list of numbers or
+by defining a maximum, minimum, and a number to generate. Here are two examples:
+<<>>=
+x = pyxam.wildcard(set=[1, 2, 3, 4])
+y = pyxam.wildcard(min=1, max=10, n=4)
+@
+When wildcards are used outside of Moodle they will pick a value based off of the exam version. So if we try to print
+these values we can see their internal dataset as well as their value current value given the exam version:
+```
+The data set for x is: <%= x.set %>
+The current value of x is: <%= x %>
+The data set for y is: <%= y.set %>
+The current value of y is: <%= y %>
+```
+Additionally wildcards have most of the basic mathematical operations defined for
+them, so you can add/subtract/divide/multiply/modulo etc. them together. Additionally you can add integers and floats to
+them so long as the wildcard is the first variable in the operation.
+<br />
+To make reference to your variables in a Moodle question you simply place them in curly brackets in an echoed inline
+block. For example x is <%= {x} %>. When exporting to formats other than Moodle this block will take on the value of
+x, but in Moodle it will be formatted so that Moodle recognizes it as a data item.
+<br /><br />
+The final step in using calculated questions is writing the solution. Like with numerical questions you can define
+tolerances and the function call must occur in a silent inline block, however the solution argument is replaced with the
+equation argument. This equation is a string that is used by Moodle to calculate the answer, hence the name
+"calculated". For simple questions Moodle may provide the sufficient math operations to solve the equation, if for
+instance if we wanted to add x and y, for the solution we would simply put:
+```
+pyxam.calculated(equation='{x} + {y}')
+```
+In which case the answer to the question will be calculated by Moodle every time you open the question. If however you
+want to do more complex calculations than Moodle allows you can take an alternative approach. Calculate your result and
+store it into a variable:
+<<>>=
+c = x ** y
+@
+Now c is your solution and for your equation you can simply put:
+```
+pyxam.calculated(equation='{c}')
+```
+This functionality essentially simulates a pick from a list question type.

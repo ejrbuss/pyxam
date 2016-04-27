@@ -85,6 +85,7 @@ def load():
         format=collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
             ('questions', ['<div class="questions">', (), '</div>', '.']),
+            ('$$', [' $$', (), '$$ ', '.']),
             ('$', [' $', (), '$ ', '.']),
             ('title', ['<div class="title">', (), '</div>', '.']),
             ('solution', ['<div class="solution">', (), '</div>', '.']),
@@ -92,7 +93,7 @@ def load():
             ('choice', ['<div class="choice">', (), '</div>', '.']),
             ('correctchoice', ['<div class="correctchoice">', (), '</div>', '.']),
             ('tolerance', [' tolerance ', (), '.']),
-            ('verbatim', ['<pre class="verbatim">', (), '</pre>', '.']),
+            ('verbatim', ['<pre class="verb-block">', (), '</pre>', '.']),
             ('true', ['<div class=True>True</div>', '.']),
             ('false', ['<div class=False>False</div>', '.']),
             ('h3', ['<h3>', (), '</h3>', '.']),

@@ -59,6 +59,7 @@ def load():
         description=signature[2],
         format=collections.OrderedDict([
             ('comment', ['<!--', (), '-->', '.']),
+            ('$$', [' $$', (), '$$ ', '.']),
             ('$', [' $', (), '$ ', '.']),
             ('questions', ['<?xml version="1.0" ?> <quiz>', (), '</quiz>', '.']),
             ('title', ['<name> <text>', (), '</text></name>', '.']),

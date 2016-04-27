@@ -58,6 +58,11 @@ def parser_postprocessor(intermediate):
     return intermediate
 
 
+def composer_preprocessor(intermediate):
+    intermediate.ast = filters.wrap_lists(intermediate.ast)
+    return intermediate
+
+
 def composer_postprocessor(source):
     """
     Adds the necessary boilerplate commands to the LaTeX file if they are not present as well as enables solutions if
@@ -90,6 +95,7 @@ def load():
         description=signature[2],
         parser_preprocessor=parser_preprocessor,
         parser_postprocessor=parser_postprocessor,
+        composer_preprocessor=composer_preprocessor,
         composer_postprocessor=composer_postprocessor,
         left_paren='{',
         right_paren='}',
@@ -97,6 +103,7 @@ def load():
         format=collections.OrderedDict([
             ('comment', ['%', (), '\n']),
             ('commentblock', ['\\begin{comment}', (), '\\end{comment}', '.']),
+            ('$$', ['$$', (), '$$', '.']),
             ('$', ['$', (), '$', '.']),
             ('questions', ['\\begin{questions}', (), '\\end{questions}', '.']),
             ('solution', ['\\begin{solution}', (), '\\end{solution}', '.']),
@@ -112,6 +119,8 @@ def load():
             ('h3', ['\\textbf{', (), '} \\\\', '.']),
             ('h2', ['\\subsection*{', (), '}', '.']),
             ('h1', ['\\section*{', (), '}', '.']),
+            ('list', [' \\begin{description} ', (), ' \\end{description} ', '.']),
+            ('listitem', ['\item ', (), '\n']),
             ('newline', ['\\\\', '.']),
             ('center', ['\\begin{center}', (), '\\end{center}', '.']),
             ('question', ['\\titled', (), end]),
