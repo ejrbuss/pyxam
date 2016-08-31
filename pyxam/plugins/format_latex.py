@@ -45,7 +45,7 @@ def parser_postprocessor(intermediate):
         try:
             definition = token.definition[0].definition
             title, prompt = definition.pop(0), []
-            while len(definition) > 0 and (not hasattr(definition[0], 'name') or definition[0].name in ['$', 'img', 'verbatim']):
+            while len(definition) > 0 and (not hasattr(definition[0], 'name') or filters.has_name(definition[0], ['$', 'img', 'verbatim', 'emphasis'])):
                 prompt.append(definition.pop(0))
             definition.insert(0, util.Map({'name': 'prompt', 'definition': prompt}))
             definition.insert(0, title)

@@ -30,9 +30,16 @@ def composer_preprocessor(intermediate):
             token.definition = ['<text>'] + token.definition + ['</text>']
         return token
 
+    def escape_html(token):
+        for i in range(len(token.definition)):
+            if not filters.has_name(token.definition[i]):
+                token.definition[i] = token.definition[i].replace('(', '&#40;').replace(')', '&#41;')
+        return token
+    
     intermediate.ast = filters.promote(intermediate.ast, 'questions')
     intermediate.ast = filters.img64(intermediate.ast)
     intermediate.ast = filters.apply_function(intermediate.ast, fix_solutions, 'solution')
+    intermediate.ast = filters.apply_function(intermediate.ast, escape_html, 'prompt')
     return intermediate
 
 
@@ -86,6 +93,9 @@ def load():
             ('items', ['<dataset_items>', (), '</dataset_items>', '.']),
             ('itemnumber', ['<dataset_item><number>', (), '</number>', '.']),
             ('itemvalue', ['<value>', (), '</value></dataset_item>', '.']),
+            ('emphasis3', ['<i><b> ', (), ' </b></i>', '.']),
+            ('emphasis2', ['<b> ', (), ' </b>', '.']),
+            ('emphasis1', ['<i> ', (), ' </i>', '.']),
             ('decimal', ['<correctanswerformat>1</correctanswerformat><correctanswerlength>', (), '</correctanswerlength>', '.'])
         ]),
         composer_preprocessor=composer_preprocessor,

@@ -1,0 +1,37 @@
+% Compile this document to a pdf and produce solutions using the command:
+%   $ pyxam -s -f pdf pyxam_tex_standard.tex
+% Compile this document to moodle using the command:
+%   $ pyxam -f moodle pyxam_tex_standard.tex
+% Compile this document to html and produce solutions using the command:
+%   $ pyxam -s -f html pyxam_tex_standard.tex
+% Set the title of the output document to pyxam_standard
+<%
+pyxam.args('-t moodle_update_1')
+%>
+\documentclass[12pt]{exam}
+
+    % The graphicx package is needed for figures and images
+    \usepackage[pdftex]{graphicx}
+
+    \begin{document}
+        \begin{questions}
+
+            \titledquestion{1. Wildcard Functions}
+<<echo=False>>=
+import math
+A = pyxam.wildcard(set=[1, 2, 3, 4])
+B = pyxam.wildcard(set=[25, 36, 49, 64])
+# Wildcards can now be defined via function, here we define the function
+def solution(a, b):
+    return a + math.sqrt(b)
+# Here we create the wildcard, note arguments a and b are members of the sets A and B
+C = pyxam.wildcard(function=solution, args=[A, B])
+@
+                Find $ <%= {A} %> + \sqrt{<%= {B} %>} $. (brackets \textit{italics} and \textbf{bold} are now supported as well).
+                \begin{solution}
+                 <% pyxam.calculated('{C}', tolerance=20.0) %>
+                \end{solution}
+                <% pyxam.dataset(A, B, C) %>
+
+        \end{questions}
+    \end{document}

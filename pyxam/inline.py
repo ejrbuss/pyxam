@@ -96,9 +96,14 @@ class pyxam:
 
 class Wildcard:
 
-    def __init__(self, name='', wildcard=None, min=None, max=None, set=None, n=pyxam.number, decimals=0):
+    def __init__(self, name='', function=None, args=[], wildcard=None, min=None, max=None, set=None, n=pyxam.number, decimals=0):
         self.name = str(name)
         self.decimals = decimals
+        if function is not None:
+            def call(i):
+                new_args = [arg.set[i] for arg in args]
+                return function(*new_args)
+            set = [call(i) for i in range(len(args[0].set))]
         if wildcard is not None:
             self.set = wildcard.set
             self.min = wildcard.min
