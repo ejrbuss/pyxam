@@ -34,6 +34,8 @@ def build_files():
     if os.path.isdir(options.state.tmp()) and not options.state.api() and \
             input('Temporary directory already exists. Continue anyways? (y/n)') != 'y':
         exit('Cancelling operation.')
+    else:
+        remove(options.state.tmp())
     # Build tmp directory
     if not os.path.exists(options.state.tmp()):
         os.mkdir(options.state.tmp())
@@ -151,7 +153,7 @@ def remove(file, force=False):
         logging.info('Removing file or directory: ' + file)
         if os.path.isfile(file):
             os.remove(file)
-        else:
+        elif os.path.isdir(file):
             shutil.rmtree(file)
     else:
         [remove(f) for f in file]
